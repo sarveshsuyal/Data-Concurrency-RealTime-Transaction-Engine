@@ -147,20 +147,29 @@ Data-Concurrency-RealTime-Transaction-Engine/
    ```bash
    npm run dev
    ```
-   Open `http://localhost:5173` in your browser. Sign in using `admin@datacore.io` / `AdminPassword123!`.
+   * **Admin Observability Portal:** Open `http://localhost:5173` in your browser. Sign in using `admin@datacore.io` / `AdminPassword123!`.
+   * **Customer Mobile App Simulator:** Open `http://localhost:5173/customer` to test live customer transfers and wallet balances.
 
 ---
 
 ### 4.3 Flutter Mobile Application Setup
 
-1. **Navigate to mobile-app and fetch dependencies:**
+1. **Navigate to mobile-app:**
    ```bash
    cd mobile-app
-   flutter pub get
    ```
 
-2. **Run on Android emulator or connected device:**
+2. **Run on Chrome (Web on Localhost):**
    ```bash
+   flutter create --platforms=web .
+   flutter pub get
+   flutter run -d chrome --web-port=3000
+   ```
+
+3. **Or run on Android Emulator:**
+   ```bash
+   flutter create --platforms=android .
+   flutter pub get
    flutter run
    ```
 
