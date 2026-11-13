@@ -27,6 +27,164 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void _showUserMenuSheet(BuildContext context, AuthProvider auth, AccountModel? account) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCBD5E1),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              CircleAvatar(
+                radius: 34,
+                backgroundColor: const Color(0xFF436CF0).withOpacity(0.12),
+                child: Text(
+                  auth.user?.fullName.isNotEmpty == true ? auth.user!.fullName[0].toUpperCase() : 'U',
+                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Color(0xFF436CF0)),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                auth.user?.fullName ?? 'Customer',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                auth.user?.email ?? '',
+                style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+              ),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFBBF7D0)),
+                ),
+                child: const Text('KYC VERIFIED • TIER 3 CUSTOMER', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF16A34A))),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('PRIMARY ACCOUNT NO.', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+                        const SizedBox(height: 2),
+                        Text(
+                          account?.accountNumber ?? 'DC-XXXX-XXXX',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, fontFamily: 'monospace', color: Color(0xFF0F172A)),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy, size: 16, color: Color(0xFF436CF0)),
+                      onPressed: () {
+                        if (account?.accountNumber != null) {
+                          Clipboard.setData(ClipboardData(text: account!.accountNumber));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Account number copied!')),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF436CF0).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.shield_outlined, color: Color(0xFF436CF0), size: 20),
+                ),
+                title: const Text('Account Profile & Security', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                subtitle: const Text('Manage daily limits, locks & preferences', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                trailing: const Icon(Icons.chevron_right, size: 20, color: Color(0xFF94A3B8)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.go('/profile');
+                },
+              ),
+              const Divider(height: 12),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF8B5CF6).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.pie_chart_outline, color: Color(0xFF8B5CF6), size: 20),
+                ),
+                title: const Text('Statement & Spending Ledger', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                subtitle: const Text('View detailed debit/credit audit trail', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                trailing: const Icon(Icons.chevron_right, size: 20, color: Color(0xFF94A3B8)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.go('/statement');
+                },
+              ),
+              const Divider(height: 12),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.info_outline, color: Color(0xFF10B981), size: 20),
+                ),
+                title: const Text('About DataCore Engine', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+                subtitle: const Text('v1.4.2 • Strict Row-Level Locks & Zero Race Conditions', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                trailing: const Icon(Icons.chevron_right, size: 20, color: Color(0xFF94A3B8)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  showAboutDialog(
+                    context: context,
+                    applicationName: 'DataCore Customer App',
+                    applicationVersion: '1.4.2 (Build 2026)',
+                    applicationLegalese: 'Protected by DataCore Concurrency & Double-Entry Invariant Engine.',
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Color _getStatusColor(String status) {
     switch (status) {
       case 'COMPLETED':
@@ -69,44 +227,57 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Row(
-          children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: const Color(0xFF436CF0).withOpacity(0.15),
-              child: Text(
-                auth.user?.fullName.isNotEmpty == true ? auth.user!.fullName[0].toUpperCase() : 'U',
-                style: const TextStyle(color: Color(0xFF436CF0), fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        title: InkWell(
+          onTap: () => _showUserMenuSheet(context, auth, account),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+            child: Row(
               children: [
-                Text(
-                  auth.user?.fullName ?? 'Customer',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: const Color(0xFF436CF0).withOpacity(0.15),
+                  child: Text(
+                    auth.user?.fullName.isNotEmpty == true ? auth.user!.fullName[0].toUpperCase() : 'U',
+                    style: const TextStyle(color: Color(0xFF436CF0), fontWeight: FontWeight.bold),
+                  ),
                 ),
-                Row(
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF10B981),
-                        shape: BoxShape.circle,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          auth.user?.fullName ?? 'Customer',
+                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.keyboard_arrow_down, size: 16, color: Color(0xFF64748B)),
+                      ],
                     ),
-                    const SizedBox(width: 4),
-                    const Text(
-                      'Connected Ledger',
-                      style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                    Row(
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF10B981),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Text(
+                          'Connected Ledger',
+                          style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
         actions: [
           // Notification Bell with Badge

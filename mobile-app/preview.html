@@ -139,14 +139,17 @@
 
   <!-- ==================== SCREEN 1: HOME ==================== -->
   <div id="screen-home" class="app-screen p-5">
-    <!-- Header -->
+    <!-- Header (Click Name/Avatar to open User Menu) -->
     <div class="flex justify-between items-center mb-5">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 text-base">
-          A
+      <div onclick="openUserMenuModal()" class="flex items-center space-x-3 cursor-pointer group active:scale-95 transition" title="Tap to view Profile & About">
+        <div class="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-200 border-2 border-blue-500/30 flex items-center justify-center font-bold text-blue-600 text-base transition">
+          <span id="header-avatar-initial">A</span>
         </div>
         <div>
-          <h2 class="text-base font-bold text-slate-900 leading-tight">Alice Walker</h2>
+          <div class="flex items-center space-x-1.5">
+            <h2 id="header-user-name" class="text-base font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition">Alice Walker</h2>
+            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:text-blue-600 transition"></i>
+          </div>
           <div class="flex items-center space-x-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span class="text-[11px] text-slate-500 font-medium">Protected Ledger Account</span>
@@ -553,6 +556,97 @@
     </button>
   </div>
 
+  <!-- ==================== USER ABOUT & PROFILE MENU MODAL ==================== -->
+  <div id="modal-user-menu" class="modal-sheet p-6">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    
+    <!-- User Avatar & Bio -->
+    <div class="text-center mb-4">
+      <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold flex items-center justify-center mx-auto mb-2 border-2 border-blue-600/30">
+        <span id="menu-avatar-initial">A</span>
+      </div>
+      <h3 id="menu-user-name" class="text-base font-bold text-slate-900">Alice Walker</h3>
+      <p id="menu-user-email" class="text-xs text-slate-500">alice@datacore.io</p>
+      <div class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold mt-2">
+        <i class="fa-solid fa-circle-check text-[9px]"></i>
+        <span>KYC VERIFIED • TIER 3</span>
+      </div>
+    </div>
+
+    <!-- Account Details Box -->
+    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 mb-4 text-xs">
+      <div class="flex justify-between items-center mb-1.5">
+        <span class="text-[10px] font-bold text-slate-400 uppercase">Primary Ledger Account</span>
+        <button onclick="copyToClipboard(currentUser.accountNo, 'Account number copied!')" class="text-blue-600 text-xs font-bold hover:underline">Copy</button>
+      </div>
+      <span id="menu-account-no" class="font-mono text-xs font-bold text-slate-800">DC-6812-3923</span>
+      <div class="flex justify-between text-[11px] text-slate-500 mt-2 pt-2 border-t border-slate-200/80">
+        <span>Currency: <strong class="text-slate-700">INR (₹)</strong></span>
+        <span>Version: <strong class="text-slate-700">v4 (Canonical)</strong></span>
+      </div>
+    </div>
+
+    <!-- Quick Navigation Links -->
+    <div class="space-y-1 mb-5 text-xs">
+      <div onclick="navigateTo('profile')" class="p-3 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <span class="font-bold text-slate-900 block">Security & Transfer Limits</span>
+            <span class="text-[10px] text-slate-400">Lock transfers, edit daily limit</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+      </div>
+
+      <div onclick="navigateTo('statement')" class="p-3 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <div>
+            <span class="font-bold text-slate-900 block">Statement & Analytics</span>
+            <span class="text-[10px] text-slate-400">View debit/credit audit trail</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+      </div>
+
+      <div onclick="toggleSwitchCustomer()" class="p-3 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div>
+            <span class="font-bold text-slate-900 block">Switch Wallet Account</span>
+            <span id="menu-switch-label" class="text-[10px] text-slate-400">Currently: Alice (Sender)</span>
+          </div>
+        </div>
+        <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Switch</span>
+      </div>
+
+      <div onclick="showAboutInfo()" class="p-3 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <i class="fa-solid fa-circle-info"></i>
+          </div>
+          <div>
+            <span class="font-bold text-slate-900 block">About DataCore Pay</span>
+            <span class="text-[10px] text-slate-400">v1.4.2 • Concurrency Invariant Engine</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
+      </div>
+    </div>
+
+    <!-- Close Button -->
+    <button onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+      Close Menu
+    </button>
+  </div>
+
   <!-- ==================== RECEIVE QR MODAL ==================== -->
   <div id="modal-receive" class="modal-sheet p-6 text-center">
     <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
@@ -723,6 +817,52 @@
   let selectedStrategy = 'PESSIMISTIC';
   let activeHistoryFilter = 'ALL';
   let activeTxId = null;
+
+  let currentUser = {
+    name: 'Alice Walker',
+    email: 'alice@datacore.io',
+    accountNo: 'DC-6812-3923',
+    initial: 'A'
+  };
+
+  function openUserMenuModal() {
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-user-menu').classList.add('active');
+    triggerHaptic();
+  }
+
+  function toggleSwitchCustomer() {
+    if (currentUser.email === 'alice@datacore.io') {
+      currentUser = {
+        name: 'Bob Smith',
+        email: 'bob@datacore.io',
+        accountNo: 'DC-1519-6941',
+        initial: 'B'
+      };
+      document.getElementById('menu-switch-label').innerText = 'Currently: Bob (Receiver)';
+      showToast('Switched to Bob Smith wallet');
+    } else {
+      currentUser = {
+        name: 'Alice Walker',
+        email: 'alice@datacore.io',
+        accountNo: 'DC-6812-3923',
+        initial: 'A'
+      };
+      document.getElementById('menu-switch-label').innerText = 'Currently: Alice (Sender)';
+      showToast('Switched to Alice Walker wallet');
+    }
+    document.getElementById('header-user-name').innerText = currentUser.name;
+    document.getElementById('header-avatar-initial').innerText = currentUser.initial;
+    document.getElementById('menu-user-name').innerText = currentUser.name;
+    document.getElementById('menu-user-email').innerText = currentUser.email;
+    document.getElementById('menu-avatar-initial').innerText = currentUser.initial;
+    document.getElementById('menu-account-no').innerText = currentUser.accountNo;
+  }
+
+  function showAboutInfo() {
+    closeAllModals();
+    alert('DataCore Pay Mobile\nVersion: 1.4.2 (Production Preview)\nLedger Engine: Double-Entry Cryptographic Invariant\nConcurrency Model: Canonical Row-Locks (SELECT FOR UPDATE)');
+  }
 
   function saveState() {
     localStorage.setItem(STORAGE_KEYS.BALANCE, balance.toString());
