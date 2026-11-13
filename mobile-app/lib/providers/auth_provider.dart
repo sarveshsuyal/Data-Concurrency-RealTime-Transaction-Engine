@@ -56,9 +56,15 @@ class AuthProvider with ChangeNotifier {
       return true;
     } on DioException catch (e) {
       _isLoading = false;
-      _errorMessage = e.response?.data['detail'] ??
-          e.response?.data['non_field_errors']?[0] ??
-          'Invalid credentials.';
+      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+        _errorMessage = 'Backend is waking from sleep. Please wait a few seconds and try again.';
+      } else if (e.response == null) {
+        _errorMessage = 'Unable to connect to server. Check your network or server status.';
+      } else {
+        _errorMessage = e.response?.data['detail'] ??
+            e.response?.data['non_field_errors']?[0] ??
+            'Invalid credentials.';
+      }
       notifyListeners();
       return false;
     } catch (e) {
@@ -99,11 +105,17 @@ class AuthProvider with ChangeNotifier {
       return true;
     } on DioException catch (e) {
       _isLoading = false;
-      final errors = e.response?.data;
-      if (errors is Map) {
-        _errorMessage = errors.values.map((v) => v is List ? v.first : v.toString()).join('\n');
+      if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+        _errorMessage = 'Backend is waking from sleep. Please wait a few seconds and try again.';
+      } else if (e.response == null) {
+        _errorMessage = 'Unable to connect to server. Check your network or server status.';
       } else {
-        _errorMessage = 'Registration failed.';
+        final errors = e.response?.data;
+        if (errors is Map) {
+          _errorMessage = errors.values.map((v) => v is List ? v.first : v.toString()).join('\n');
+        } else {
+          _errorMessage = 'Registration failed.';
+        }
       }
       notifyListeners();
       return false;

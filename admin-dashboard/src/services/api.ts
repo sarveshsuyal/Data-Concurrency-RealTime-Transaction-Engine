@@ -43,6 +43,12 @@ apiClient.interceptors.response.use(
 );
 
 export const api = {
+  // Public Health / Connectivity
+  checkHealth: async () => {
+    const response = await apiClient.get('/health/');
+    return response.data;
+  },
+
   // Authentication
   login: async (email: string, password: string) => {
     const response = await apiClient.post('/api/auth/login/', { email, password });
