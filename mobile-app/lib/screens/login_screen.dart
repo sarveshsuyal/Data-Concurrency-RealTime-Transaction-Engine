@@ -190,6 +190,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text('Bob', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF334155))),
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: () => _fillAccount('charlie@datacore.io', 'Password123!'),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFCBD5E1)),
+                      ),
+                      child: const Text('Charlie', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF334155))),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 24),

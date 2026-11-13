@@ -137,6 +137,62 @@
   <!-- Modal Backdrop -->
   <div id="backdrop" class="modal-backdrop" onclick="closeAllModals()"></div>
 
+  <!-- ==================== SCREEN 0: LOGIN & WALLET SELECTOR ==================== -->
+  <div id="screen-login" class="app-screen p-5 hidden">
+    <!-- App Brand Header -->
+    <div class="text-center pt-3 pb-5">
+      <div class="w-14 h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-2xl mx-auto mb-3 shadow-lg shadow-blue-500/30">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <h2 class="text-2xl font-black text-slate-900 tracking-tight">DataCore Pay</h2>
+      <p class="text-xs text-slate-500 mt-0.5">High-Concurrency Real-Time Wallet</p>
+      <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold mt-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>DOUBLE-ENTRY INVARIANT ACTIVE</span>
+      </div>
+    </div>
+
+    <!-- Quick Switch Wallet List -->
+    <div class="flex justify-between items-center mb-2.5">
+      <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Select Wallet to Sign In</span>
+      <span class="text-[10px] text-blue-600 font-bold">1-Tap Fast Access</span>
+    </div>
+
+    <div id="login-wallet-cards" class="space-y-2.5 mb-5">
+      <!-- Injected by renderLoginWallets() -->
+    </div>
+
+    <!-- Divider -->
+    <div class="flex items-center my-4">
+      <div class="flex-1 border-t border-slate-200"></div>
+      <span class="px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Or Sign In with Credentials</span>
+      <div class="flex-1 border-t border-slate-200"></div>
+    </div>
+
+    <!-- Credentials Form -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-4 shadow-sm mb-4 space-y-3">
+      <div>
+        <label class="text-[10px] font-bold text-slate-400 uppercase">Email Address or Account ID</label>
+        <input id="login-email-input" type="text" value="alice@datacore.io" placeholder="e.g. alice@datacore.io or DC-6812-3923" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-slate-400 uppercase">PIN / Password</label>
+        <input id="login-password-input" type="password" value="Password123!" placeholder="••••••••••••" class="w-full mt-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
+      </div>
+      <button onclick="handleManualLogin()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition">
+        Sign In to Wallet
+      </button>
+    </div>
+
+    <!-- Register New Custom Wallet Button -->
+    <div class="bg-slate-100/80 border border-slate-200/80 rounded-2xl p-3 text-center mb-6">
+      <span class="text-xs text-slate-600 font-medium">Need another test wallet?</span>
+      <button onclick="openRegisterWalletModal()" class="text-xs font-bold text-blue-600 hover:underline ml-1">
+        + Create Custom Wallet
+      </button>
+    </div>
+  </div>
+
   <!-- ==================== SCREEN 1: HOME ==================== -->
   <div id="screen-home" class="app-screen p-5">
     <!-- Header (Click Name/Avatar to open User Menu) -->
@@ -483,11 +539,11 @@
 
     <!-- User Card -->
     <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm text-center mb-4">
-      <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold flex items-center justify-center mx-auto mb-3">
-        A
+      <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold flex items-center justify-center mx-auto mb-3 border-2 border-blue-500/20">
+        <span id="profile-avatar-initial">A</span>
       </div>
-      <h3 class="text-base font-bold text-slate-900">Alice Walker</h3>
-      <p class="text-xs text-slate-500 mb-2">alice@datacore.io</p>
+      <h3 id="profile-user-name" class="text-base font-bold text-slate-900">Alice Walker</h3>
+      <p id="profile-user-email" class="text-xs text-slate-500 mb-2">alice@datacore.io</p>
       <span class="inline-block px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
         CUSTOMER: VERIFIED
       </span>
@@ -524,12 +580,28 @@
       </div>
     </div>
 
+    <!-- Active Session & Logout -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm mb-4">
+      <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Active Session</h4>
+      <p class="text-[11px] text-slate-500 mb-3">Sign out from your active wallet session to return to login or switch users.</p>
+      <div class="flex space-x-2">
+        <button onclick="openSwitchWalletSheet()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition active:scale-98">
+          <i class="fa-solid fa-users text-slate-500"></i>
+          <span>Switch</span>
+        </button>
+        <button onclick="logout()" class="flex-1 py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition active:scale-98">
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Persistent Data Reset Button -->
     <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm mb-4">
       <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Wallet Management</h4>
-      <p class="text-[11px] text-slate-500 mb-3">All your transfers are automatically saved. If you wish to reset your test wallet back to ₹10,000:</p>
-      <button onclick="resetWallet()" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 rounded-xl text-xs font-bold transition">
-        Reset Test Wallet to ₹10,000
+      <p class="text-[11px] text-slate-500 mb-3">All your transfers are automatically saved. If you wish to reset all wallets back to factory balances:</p>
+      <button onclick="resetWallet()" class="w-full py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-xl text-xs font-bold transition">
+        Reset All Wallets to Default
       </button>
     </div>
   </div>
@@ -614,17 +686,30 @@
         <i class="fa-solid fa-chevron-right text-slate-300 text-xs"></i>
       </div>
 
-      <div onclick="toggleSwitchCustomer()" class="p-3 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
+      <div onclick="openSwitchWalletSheet()" class="p-3 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
         <div class="flex items-center space-x-3">
           <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
             <i class="fa-solid fa-users"></i>
           </div>
           <div>
             <span class="font-bold text-slate-900 block">Switch Wallet Account</span>
-            <span id="menu-switch-label" class="text-[10px] text-slate-400">Currently: Alice (Sender)</span>
+            <span id="menu-switch-label" class="text-[10px] text-slate-400">Switch user or select wallet</span>
           </div>
         </div>
         <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">Switch</span>
+      </div>
+
+      <div onclick="logout()" class="p-3 bg-rose-50/80 hover:bg-rose-100 border border-rose-200 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </div>
+          <div>
+            <span class="font-bold text-rose-700 block">Sign Out of Wallet</span>
+            <span class="text-[10px] text-rose-500">Exit and return to login screen</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-chevron-right text-rose-400 text-xs"></i>
       </div>
 
       <div onclick="showAboutInfo()" class="p-3 bg-white hover:bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between cursor-pointer active:scale-98 transition">
@@ -665,12 +750,12 @@
     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-4 text-left">
       <div class="flex justify-between items-center mb-1">
         <span class="text-[10px] font-bold text-slate-400 uppercase">Account Number</span>
-        <button onclick="copyToClipboard('DC-6812-3923', 'Account number copied!')" class="text-blue-600 text-xs font-bold">Copy</button>
+        <button onclick="copyToClipboard(currentUser.accountNo, 'Account number copied!')" class="text-blue-600 text-xs font-bold">Copy</button>
       </div>
-      <span class="font-mono text-xs font-bold text-slate-800">DC-6812-3923</span>
+      <span id="receive-account-no" class="font-mono text-xs font-bold text-slate-800">DC-6812-3923</span>
     </div>
 
-    <button onclick="copyToClipboard('DataCore: DC-6812-3923 (alice@datacore.io)', 'Payment handle copied!')" class="w-full py-3.5 bg-blue-600 text-white rounded-2xl font-bold text-xs shadow-md">
+    <button id="receive-share-btn" onclick="copyToClipboard('DataCore: ' + currentUser.accountNo + ' (' + currentUser.email + ')', 'Payment handle copied!')" class="w-full py-3.5 bg-blue-600 text-white rounded-2xl font-bold text-xs shadow-md">
       Share Payment Handle
     </button>
   </div>
@@ -725,8 +810,52 @@
     </div>
   </div>
 
+  <!-- ==================== SWITCH WALLET MODAL ==================== -->
+  <div id="modal-switch-wallet" class="modal-sheet p-6">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex justify-between items-center mb-1">
+      <h3 class="text-base font-bold text-slate-900">Switch Wallet</h3>
+      <button onclick="logout()" class="text-xs font-bold text-rose-600 hover:underline">Full Sign Out</button>
+    </div>
+    <p class="text-xs text-slate-500 mb-4">Select an active wallet to switch into instantly:</p>
+    
+    <div id="switch-wallet-list" class="space-y-2 mb-4">
+      <!-- Injected by renderSwitchWalletOptions() -->
+    </div>
+
+    <button onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+      Cancel
+    </button>
+  </div>
+
+  <!-- ==================== CREATE NEW WALLET MODAL ==================== -->
+  <div id="modal-create-wallet" class="modal-sheet p-6">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <h3 class="text-base font-bold text-slate-900 mb-1">Create Test Wallet</h3>
+    <p class="text-xs text-slate-500 mb-4">Provision a new simulated wallet account</p>
+    
+    <div class="space-y-3 mb-5">
+      <div>
+        <label class="text-[10px] font-bold text-slate-500 uppercase">Full Name</label>
+        <input id="new-wallet-name" type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600" placeholder="e.g. David Miller">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-slate-500 uppercase">Email Address</label>
+        <input id="new-wallet-email" type="email" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600" placeholder="e.g. david@datacore.io">
+      </div>
+      <div>
+        <label class="text-[10px] font-bold text-slate-500 uppercase">Starting Balance (₹)</label>
+        <input id="new-wallet-balance" type="number" value="10000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600" placeholder="10000">
+      </div>
+    </div>
+
+    <button onclick="saveAndCreateCustomWallet()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xs shadow-md">
+      Create & Log In
+    </button>
+  </div>
+
   <!-- Bottom Navigation Bar -->
-  <div class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex justify-around items-center px-4 z-30">
+  <div id="bottom-nav" class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex justify-around items-center px-4 z-30">
     <button onclick="navigateTo('home')" id="tab-home" class="tab-btn active flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
       <i class="fa-solid fa-house text-lg"></i>
       <span class="text-[10px] font-bold mt-1">Home</span>
@@ -753,124 +882,421 @@
 <script>
   // ================= STORAGE KEYS =================
   const STORAGE_KEYS = {
-    BALANCE: 'datacore_pay_persistent_balance',
-    TRANSACTIONS: 'datacore_pay_persistent_transactions',
-    NOTIFICATIONS: 'datacore_pay_persistent_notifications',
-    LOCKED: 'datacore_pay_persistent_locked',
-    DAILY_LIMIT: 'datacore_pay_persistent_daily_limit',
-    PAYEES: 'datacore_pay_persistent_payees'
+    WALLETS: 'datacore_multi_wallets_v3',
+    ACTIVE_USER: 'datacore_active_user_email'
   };
 
-  const DEFAULT_INITIAL_BALANCE = 10000.00;
-  const DEFAULT_INITIAL_TRANSACTIONS = [
-    { id: 'tx-101', type: 'DEBIT', to: 'bob@datacore.io', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '9.2 ms' },
-    { id: 'tx-102', type: 'CREDIT', to: 'charlie@datacore.io', amount: 1500.00, desc: 'API Consultancy Fee', date: 'Nov 12', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '12.4 ms' },
-    { id: 'tx-103', type: 'DEBIT', to: 'cloud-settlement@datacore.io', amount: 500.00, desc: 'Node Hosting', date: 'Nov 11', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '7.8 ms' }
-  ];
+  // Factory Default Test Accounts with Realistic Balances & History
+  const DEFAULT_INITIAL_WALLETS = {
+    'alice@datacore.io': {
+      id: 'usr_alice',
+      name: 'Alice Walker',
+      email: 'alice@datacore.io',
+      accountNo: 'DC-6812-3923',
+      initial: 'A',
+      role: 'Merchant & Sender',
+      color: 'blue',
+      balance: 10000.00,
+      dailyLimit: 50000.00,
+      isTransfersLocked: false,
+      transactions: [
+        { id: 'tx-101', type: 'DEBIT', to: 'bob@datacore.io', toName: 'Bob Smith', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '9.2 ms' },
+        { id: 'tx-102', type: 'CREDIT', to: 'charlie@datacore.io', toName: 'Charlie Davis', amount: 1500.00, desc: 'API Consultancy Fee', date: 'Nov 12', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '12.4 ms' },
+        { id: 'tx-103', type: 'DEBIT', to: 'cloud-settlement@datacore.io', toName: 'Cloud Settlement', amount: 500.00, desc: 'Node Hosting', date: 'Nov 11', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '7.8 ms' }
+      ],
+      notifications: [
+        { id: 'n1', title: 'Protected Ledger Active', msg: 'Canonical row-locking guarantees 0 race conditions.', unread: true, time: '10m ago' },
+        { id: 'n2', title: 'Test Funds Provisioned', msg: '₹10,000 initial test balance is ready.', unread: false, time: '1d ago' }
+      ],
+      payees: [
+        { id: 'p1', name: 'Bob Smith', email: 'bob@datacore.io', initials: 'BS' },
+        { id: 'p2', name: 'Charlie Davis', email: 'charlie@datacore.io', initials: 'CD' },
+        { id: 'p3', name: 'Cloud Node', email: 'cloud-settlement@datacore.io', initials: 'CN' }
+      ]
+    },
+    'bob@datacore.io': {
+      id: 'usr_bob',
+      name: 'Bob Smith',
+      email: 'bob@datacore.io',
+      accountNo: 'DC-1519-6941',
+      initial: 'B',
+      role: 'Receiver & Developer',
+      color: 'emerald',
+      balance: 5250.00,
+      dailyLimit: 50000.00,
+      isTransfersLocked: false,
+      transactions: [
+        { id: 'tx-101', type: 'CREDIT', to: 'alice@datacore.io', toName: 'Alice Walker', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '9.2 ms' }
+      ],
+      notifications: [
+        { id: 'nb1', title: 'Funds Received', msg: '₹250.00 received from Alice Walker (Dinner split)', unread: true, time: 'Yesterday' }
+      ],
+      payees: [
+        { id: 'p1', name: 'Alice Walker', email: 'alice@datacore.io', initials: 'AW' },
+        { id: 'p2', name: 'Charlie Davis', email: 'charlie@datacore.io', initials: 'CD' }
+      ]
+    },
+    'charlie@datacore.io': {
+      id: 'usr_charlie',
+      name: 'Charlie Davis',
+      email: 'charlie@datacore.io',
+      accountNo: 'DC-4806-5873',
+      initial: 'C',
+      role: 'Security Auditor',
+      color: 'purple',
+      balance: 2500.00,
+      dailyLimit: 25000.00,
+      isTransfersLocked: false,
+      transactions: [
+        { id: 'tx-102', type: 'DEBIT', to: 'alice@datacore.io', toName: 'Alice Walker', amount: 1500.00, desc: 'API Consultancy Fee', date: 'Nov 12', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '12.4 ms' }
+      ],
+      notifications: [
+        { id: 'nc1', title: 'Transfer Settled', msg: '₹1,500.00 sent to Alice Walker for API Consultancy Fee', unread: false, time: 'Nov 12' }
+      ],
+      payees: [
+        { id: 'p1', name: 'Alice Walker', email: 'alice@datacore.io', initials: 'AW' },
+        { id: 'p2', name: 'Bob Smith', email: 'bob@datacore.io', initials: 'BS' }
+      ]
+    }
+  };
 
-  const DEFAULT_INITIAL_NOTIFICATIONS = [
-    { id: 'n1', title: 'Protected Ledger Active', msg: 'Canonical row-locking guarantees 0 race conditions.', unread: true, time: '10m ago' },
-    { id: 'n2', title: 'Test Funds Provisioned', msg: '₹10,000 initial test balance is ready.', unread: false, time: '1d ago' }
-  ];
-
-  const DEFAULT_INITIAL_PAYEES = [
-    { id: 'p1', name: 'Bob', email: 'bob@datacore.io', initials: 'BS' },
-    { id: 'p2', name: 'Charlie', email: 'charlie@datacore.io', initials: 'CD' },
-    { id: 'p3', name: 'Cloud', email: 'cloud-settlement@datacore.io', initials: 'CS' }
-  ];
-
-  // ================= LOAD PERSISTENT STATE =================
-  let balance = parseFloat(localStorage.getItem(STORAGE_KEYS.BALANCE));
-  if (isNaN(balance)) {
-    balance = DEFAULT_INITIAL_BALANCE;
-    localStorage.setItem(STORAGE_KEYS.BALANCE, balance.toString());
-  }
-
-  let dailyLimit = parseFloat(localStorage.getItem(STORAGE_KEYS.DAILY_LIMIT)) || 50000.00;
-
-  let transactions = [];
+  // ================= LOAD PERSISTENT WALLETS =================
+  let wallets = {};
   try {
-    const savedTx = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
-    transactions = savedTx ? JSON.parse(savedTx) : DEFAULT_INITIAL_TRANSACTIONS;
+    const saved = localStorage.getItem(STORAGE_KEYS.WALLETS);
+    wallets = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_INITIAL_WALLETS));
   } catch (_) {
-    transactions = DEFAULT_INITIAL_TRANSACTIONS;
+    wallets = JSON.parse(JSON.stringify(DEFAULT_INITIAL_WALLETS));
   }
 
-  let notifications = [];
-  try {
-    const savedNotifs = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
-    notifications = savedNotifs ? JSON.parse(savedNotifs) : DEFAULT_INITIAL_NOTIFICATIONS;
-  } catch (_) {
-    notifications = DEFAULT_INITIAL_NOTIFICATIONS;
+  // Active Session Email (null when logged out)
+  let activeUserEmail = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER);
+  if (activeUserEmail === null) {
+    // If first-ever launch, default to Alice
+    activeUserEmail = 'alice@datacore.io';
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, activeUserEmail);
   }
 
-  let payees = [];
-  try {
-    const savedPayees = localStorage.getItem(STORAGE_KEYS.PAYEES);
-    payees = savedPayees ? JSON.parse(savedPayees) : DEFAULT_INITIAL_PAYEES;
-  } catch (_) {
-    payees = DEFAULT_INITIAL_PAYEES;
-  }
-
-  let isTransfersLocked = localStorage.getItem(STORAGE_KEYS.LOCKED) === 'true';
+  let currentUser = wallets[activeUserEmail] || null;
+  let balance = currentUser ? currentUser.balance : 0;
+  let dailyLimit = currentUser ? (currentUser.dailyLimit || 50000.00) : 50000.00;
+  let transactions = currentUser ? (currentUser.transactions || []) : [];
+  let notifications = currentUser ? (currentUser.notifications || []) : [];
+  let payees = currentUser ? (currentUser.payees || []) : [];
+  let isTransfersLocked = currentUser ? !!currentUser.isTransfersLocked : false;
   let isBalanceHidden = false;
   let selectedStrategy = 'PESSIMISTIC';
   let activeHistoryFilter = 'ALL';
   let activeTxId = null;
 
-  let currentUser = {
-    name: 'Alice Walker',
-    email: 'alice@datacore.io',
-    accountNo: 'DC-6812-3923',
-    initial: 'A'
-  };
+  function saveCurrentWalletState() {
+    if (!currentUser || !currentUser.email) return;
+    wallets[currentUser.email] = {
+      ...currentUser,
+      balance: balance,
+      dailyLimit: dailyLimit,
+      transactions: transactions,
+      notifications: notifications,
+      payees: payees,
+      isTransfersLocked: isTransfersLocked
+    };
+    localStorage.setItem(STORAGE_KEYS.WALLETS, JSON.stringify(wallets));
+  }
+
+  // ================= LOGIN & LOGOUT LIFECYCLE =================
+  function loginAs(email) {
+    if (!wallets[email]) {
+      showToast('Wallet not found for this account', false);
+      return;
+    }
+
+    closeAllModals();
+    activeUserEmail = email;
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, email);
+
+    currentUser = wallets[email];
+    balance = currentUser.balance;
+    dailyLimit = currentUser.dailyLimit || 50000.00;
+    transactions = currentUser.transactions || [];
+    notifications = currentUser.notifications || [];
+    payees = currentUser.payees || [];
+    isTransfersLocked = !!currentUser.isTransfersLocked;
+
+    // Update Lock Checkbox
+    const lockCheckbox = document.getElementById('lock-transfers');
+    if (lockCheckbox) lockCheckbox.checked = isTransfersLocked;
+
+    // Show Bottom Navigation
+    const nav = document.getElementById('bottom-nav');
+    if (nav) nav.classList.remove('hidden');
+
+    // Update User Profile & Menu bindings
+    updateUserBindings();
+
+    // Render components
+    renderBalance();
+    renderPayees();
+    renderTransactions();
+    renderNotifications();
+
+    // Navigate to Home screen
+    navigateTo('home');
+    showToast(`Signed into ${currentUser.name}'s wallet`);
+    triggerHaptic();
+  }
+
+  function logout() {
+    saveCurrentWalletState();
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, '');
+    activeUserEmail = '';
+    currentUser = null;
+
+    closeAllModals();
+
+    // Hide bottom navigation
+    const nav = document.getElementById('bottom-nav');
+    if (nav) nav.classList.add('hidden');
+
+    // Hide all app screens
+    ['home', 'transfer', 'history', 'statement', 'notifications', 'profile'].forEach(id => {
+      const screen = document.getElementById(`screen-${id}`);
+      if (screen) screen.classList.add('hidden');
+      const tab = document.getElementById(`tab-${id}`);
+      if (tab) tab.classList.remove('active');
+    });
+
+    // Show login screen
+    const loginScreen = document.getElementById('screen-login');
+    if (loginScreen) loginScreen.classList.remove('hidden');
+
+    // Render fresh login wallet cards with latest balances
+    renderLoginWallets();
+
+    showToast('Signed out from wallet');
+    triggerHaptic();
+  }
+
+  function handleManualLogin() {
+    const input = document.getElementById('login-email-input').value.trim();
+    if (!input) {
+      return showToast('Please enter an email address or wallet ID', false);
+    }
+
+    const clean = input.toLowerCase();
+    let matchedEmail = null;
+
+    Object.keys(wallets).forEach(k => {
+      const w = wallets[k];
+      if (w.email.toLowerCase() === clean || w.accountNo.toLowerCase() === clean) {
+        matchedEmail = k;
+      }
+    });
+
+    if (matchedEmail) {
+      loginAs(matchedEmail);
+    } else {
+      // Auto-provision wallet for new email
+      const name = clean.split('@')[0].replace(/[^a-zA-Z]/g, ' ') || 'New User';
+      const cleanName = name.charAt(0).toUpperCase() + name.slice(1);
+      createCustomWallet(cleanName, clean.includes('@') ? clean : `${clean}@datacore.io`, 10000);
+    }
+  }
+
+  function renderLoginWallets() {
+    const container = document.getElementById('login-wallet-cards');
+    if (!container) return;
+
+    let html = '';
+    const colorStyles = {
+      blue: { bg: 'bg-blue-100', text: 'text-blue-600', border: 'border-blue-500/20' },
+      emerald: { bg: 'bg-emerald-100', text: 'text-emerald-700', border: 'border-emerald-500/20' },
+      purple: { bg: 'bg-purple-100', text: 'text-purple-600', border: 'border-purple-500/20' },
+      amber: { bg: 'bg-amber-100', text: 'text-amber-700', border: 'border-amber-500/20' }
+    };
+
+    Object.keys(wallets).forEach(email => {
+      const w = wallets[email];
+      const col = colorStyles[w.color || 'blue'] || colorStyles.blue;
+      const formattedBal = w.balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      html += `
+        <div onclick="loginAs('${w.email}')" class="bg-white hover:bg-slate-50 border border-slate-200/90 hover:border-blue-400 rounded-2xl p-3.5 flex items-center justify-between cursor-pointer active:scale-98 transition shadow-sm group">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-2xl ${col.bg} ${col.text} flex items-center justify-center font-bold text-lg border ${col.border} shadow-inner group-hover:scale-105 transition">
+              ${w.initial}
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="font-bold text-xs text-slate-900 group-hover:text-blue-600 transition">${w.name}</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 uppercase">${w.role || 'USER'}</span>
+              </div>
+              <span class="text-[10px] text-slate-400 font-mono block mt-0.5">${w.accountNo}</span>
+              <span class="text-[10px] text-slate-500 font-medium">${w.email}</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-mono text-xs font-black text-slate-900 block">₹${formattedBal}</span>
+            <span class="text-[10px] font-bold text-blue-600 flex items-center justify-end space-x-1 mt-1 group-hover:translate-x-0.5 transition">
+              <span>Sign In</span>
+              <i class="fa-solid fa-arrow-right text-[9px]"></i>
+            </span>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  function openSwitchWalletSheet() {
+    closeAllModals();
+    renderSwitchWalletOptions();
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-switch-wallet').classList.add('active');
+    triggerHaptic();
+  }
+
+  function renderSwitchWalletOptions() {
+    const list = document.getElementById('switch-wallet-list');
+    if (!list) return;
+
+    let html = '';
+    const colorStyles = {
+      blue: { bg: 'bg-blue-100', text: 'text-blue-600' },
+      emerald: { bg: 'bg-emerald-100', text: 'text-emerald-700' },
+      purple: { bg: 'bg-purple-100', text: 'text-purple-600' },
+      amber: { bg: 'bg-amber-100', text: 'text-amber-700' }
+    };
+
+    Object.keys(wallets).forEach(email => {
+      const w = wallets[email];
+      const isCurrent = currentUser && currentUser.email === w.email;
+      const col = colorStyles[w.color || 'blue'] || colorStyles.blue;
+      const formattedBal = w.balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      html += `
+        <div onclick="loginAs('${w.email}')" class="p-3 rounded-2xl border ${isCurrent ? 'bg-blue-50/60 border-blue-300' : 'bg-white hover:bg-slate-50 border-slate-200'} flex items-center justify-between cursor-pointer active:scale-98 transition">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl ${col.bg} ${col.text} flex items-center justify-center font-bold text-sm">
+              ${w.initial}
+            </div>
+            <div>
+              <span class="font-bold text-xs text-slate-900 block">${w.name} ${isCurrent ? '<span class="text-[9px] font-bold text-blue-600 bg-blue-100/60 px-1.5 py-0.5 rounded">Active</span>' : ''}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${w.accountNo}</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-mono text-xs font-bold text-slate-900 block">₹${formattedBal}</span>
+            <span class="text-[9px] font-semibold text-slate-400">${w.email}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    list.innerHTML = html;
+  }
+
+  function openRegisterWalletModal() {
+    closeAllModals();
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-create-wallet').classList.add('active');
+    triggerHaptic();
+  }
+
+  function saveAndCreateCustomWallet() {
+    const name = document.getElementById('new-wallet-name').value.trim();
+    const email = document.getElementById('new-wallet-email').value.trim().toLowerCase();
+    const initialBal = parseFloat(document.getElementById('new-wallet-balance').value) || 10000;
+
+    if (!name || !email) {
+      return showToast('Please enter both name and email', false);
+    }
+
+    createCustomWallet(name, email, initialBal);
+  }
+
+  function createCustomWallet(name, email, initialBal) {
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const randomMid = Math.floor(1000 + Math.random() * 9000);
+    const accountNo = `DC-${randomMid}-${randomSuffix}`;
+    const initial = name.charAt(0).toUpperCase();
+
+    const newWallet = {
+      id: `usr_${Date.now()}`,
+      name: name,
+      email: email,
+      accountNo: accountNo,
+      initial: initial,
+      role: 'Custom Wallet',
+      color: 'amber',
+      balance: initialBal,
+      dailyLimit: 50000.00,
+      isTransfersLocked: false,
+      transactions: [],
+      notifications: [
+        { id: `n-${Date.now()}`, title: 'Wallet Created', msg: `Welcome ${name}! Your wallet is provisioned with ₹${initialBal.toFixed(2)}.`, unread: true, time: 'Just now' }
+      ],
+      payees: [
+        { id: 'p1', name: 'Alice Walker', email: 'alice@datacore.io', initials: 'AW' },
+        { id: 'p2', name: 'Bob Smith', email: 'bob@datacore.io', initials: 'BS' }
+      ]
+    };
+
+    wallets[email] = newWallet;
+    localStorage.setItem(STORAGE_KEYS.WALLETS, JSON.stringify(wallets));
+    closeAllModals();
+    showToast(`Created wallet for ${name}!`);
+    loginAs(email);
+  }
+
+  function updateUserBindings() {
+    if (!currentUser) return;
+
+    // Header Home
+    const headerName = document.getElementById('header-user-name');
+    const headerInit = document.getElementById('header-avatar-initial');
+    if (headerName) headerName.innerText = currentUser.name;
+    if (headerInit) headerInit.innerText = currentUser.initial;
+
+    // User Menu Modal
+    const menuName = document.getElementById('menu-user-name');
+    const menuEmail = document.getElementById('menu-user-email');
+    const menuInit = document.getElementById('menu-avatar-initial');
+    const menuAcc = document.getElementById('menu-account-no');
+    const menuSwitch = document.getElementById('menu-switch-label');
+    if (menuName) menuName.innerText = currentUser.name;
+    if (menuEmail) menuEmail.innerText = currentUser.email;
+    if (menuInit) menuInit.innerText = currentUser.initial;
+    if (menuAcc) menuAcc.innerText = currentUser.accountNo;
+    if (menuSwitch) menuSwitch.innerText = `Active: ${currentUser.name} (${currentUser.role || 'Wallet'})`;
+
+    // Profile Screen
+    const profName = document.getElementById('profile-user-name');
+    const profEmail = document.getElementById('profile-user-email');
+    const profInit = document.getElementById('profile-avatar-initial');
+    const profLimit = document.getElementById('profile-limit-text');
+    if (profName) profName.innerText = currentUser.name;
+    if (profEmail) profEmail.innerText = currentUser.email;
+    if (profInit) profInit.innerText = currentUser.initial;
+    if (profLimit) profLimit.innerText = `Max ₹${dailyLimit.toLocaleString('en-IN')} / day`;
+
+    // Receive Modal
+    const recAcc = document.getElementById('receive-account-no');
+    const recBtn = document.getElementById('receive-share-btn');
+    if (recAcc) recAcc.innerText = currentUser.accountNo;
+    if (recBtn) recBtn.setAttribute('onclick', `copyToClipboard('DataCore: ${currentUser.accountNo} (${currentUser.email})', 'Payment handle copied!')`);
+  }
 
   function openUserMenuModal() {
+    updateUserBindings();
     document.getElementById('backdrop').classList.add('active');
     document.getElementById('modal-user-menu').classList.add('active');
     triggerHaptic();
   }
 
-  function toggleSwitchCustomer() {
-    if (currentUser.email === 'alice@datacore.io') {
-      currentUser = {
-        name: 'Bob Smith',
-        email: 'bob@datacore.io',
-        accountNo: 'DC-1519-6941',
-        initial: 'B'
-      };
-      document.getElementById('menu-switch-label').innerText = 'Currently: Bob (Receiver)';
-      showToast('Switched to Bob Smith wallet');
-    } else {
-      currentUser = {
-        name: 'Alice Walker',
-        email: 'alice@datacore.io',
-        accountNo: 'DC-6812-3923',
-        initial: 'A'
-      };
-      document.getElementById('menu-switch-label').innerText = 'Currently: Alice (Sender)';
-      showToast('Switched to Alice Walker wallet');
-    }
-    document.getElementById('header-user-name').innerText = currentUser.name;
-    document.getElementById('header-avatar-initial').innerText = currentUser.initial;
-    document.getElementById('menu-user-name').innerText = currentUser.name;
-    document.getElementById('menu-user-email').innerText = currentUser.email;
-    document.getElementById('menu-avatar-initial').innerText = currentUser.initial;
-    document.getElementById('menu-account-no').innerText = currentUser.accountNo;
-  }
-
   function showAboutInfo() {
     closeAllModals();
     alert('DataCore Pay Mobile\nVersion: 1.4.2 (Production Preview)\nLedger Engine: Double-Entry Cryptographic Invariant\nConcurrency Model: Canonical Row-Locks (SELECT FOR UPDATE)');
-  }
-
-  function saveState() {
-    localStorage.setItem(STORAGE_KEYS.BALANCE, balance.toString());
-    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
-    localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
-    localStorage.setItem(STORAGE_KEYS.LOCKED, isTransfersLocked.toString());
-    localStorage.setItem(STORAGE_KEYS.DAILY_LIMIT, dailyLimit.toString());
-    localStorage.setItem(STORAGE_KEYS.PAYEES, JSON.stringify(payees));
   }
 
   function updateClock() {
@@ -920,33 +1346,23 @@
     const stmtBal = document.getElementById('stmt-bal');
 
     if (isBalanceHidden) {
-      disp.innerText = '₹••••••';
-      icon.className = 'fa-regular fa-eye-slash text-xs';
+      disp.innerText = '••••••••';
+      icon.className = 'fa-regular fa-eye-slash';
+      if (avail) avail.innerText = '••••';
+      if (stmtBal) stmtBal.innerText = '••••';
     } else {
-      disp.innerText = `₹${balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-      icon.className = 'fa-regular fa-eye text-xs';
+      const formatted = balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      disp.innerText = `₹${formatted}`;
+      icon.className = 'fa-regular fa-eye';
+      if (avail) avail.innerText = `₹${formatted}`;
+      if (stmtBal) stmtBal.innerText = `₹${formatted}`;
     }
-
-    if (avail) avail.innerText = `Available: ₹${balance.toFixed(2)}`;
-    if (stmtBal) stmtBal.innerText = `₹${balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
-    document.getElementById('profile-limit-text').innerText = `Max ₹${dailyLimit.toLocaleString('en-IN')} / day`;
   }
 
-  function toggleTransferLock(locked) {
-    isTransfersLocked = locked;
-    saveState();
-    showToast(locked ? 'Outgoing transfers are now locked' : 'Outgoing transfers unlocked');
-  }
-
-  function promptEditDailyLimit() {
-    const input = prompt('Enter new daily transfer limit (₹):', dailyLimit.toString());
-    const val = parseFloat(input);
-    if (!isNaN(val) && val > 0) {
-      dailyLimit = val;
-      saveState();
-      renderBalance();
-      showToast(`Daily limit set to ₹${val.toLocaleString('en-IN')}`);
-    }
+  function toggleTransferLock(checked) {
+    isTransfersLocked = checked;
+    saveCurrentWalletState();
+    showToast(isTransfersLocked ? 'Transfers locked' : 'Transfers unlocked');
   }
 
   function lockApp() {
@@ -956,47 +1372,75 @@
 
   function unlockApp() {
     document.getElementById('biometric-lock').classList.add('hidden');
-    showToast('Authenticated successfully!');
+    showToast('Biometrics authenticated');
+  }
+
+  function promptEditDailyLimit() {
+    const input = prompt('Enter new daily transfer limit in ₹ (e.g. 50000):', dailyLimit.toString());
+    if (input !== null) {
+      const val = parseFloat(input);
+      if (!isNaN(val) && val > 0) {
+        dailyLimit = val;
+        saveCurrentWalletState();
+        document.getElementById('profile-limit-text').innerText = `Max ₹${dailyLimit.toLocaleString('en-IN')} / day`;
+        showToast(`Daily limit set to ₹${dailyLimit.toLocaleString('en-IN')}`);
+      } else {
+        showToast('Invalid limit amount', false);
+      }
+    }
   }
 
   function resetWallet() {
-    if (confirm('Are you sure you want to reset your test wallet balance back to ₹10,000.00?')) {
-      balance = DEFAULT_INITIAL_BALANCE;
-      transactions = [...DEFAULT_INITIAL_TRANSACTIONS];
-      notifications = [...DEFAULT_INITIAL_NOTIFICATIONS];
-      isTransfersLocked = false;
-      saveState();
-      renderBalance();
-      renderTransactions();
-      renderNotifications();
-      renderPayees();
-      showToast('Wallet reset to ₹10,000.00 successfully!');
-      navigateTo('home');
+    if (confirm('Reset all wallets and transaction ledgers back to default test data?')) {
+      wallets = JSON.parse(JSON.stringify(DEFAULT_INITIAL_WALLETS));
+      localStorage.setItem(STORAGE_KEYS.WALLETS, JSON.stringify(wallets));
+      if (activeUserEmail && wallets[activeUserEmail]) {
+        loginAs(activeUserEmail);
+      } else {
+        loginAs('alice@datacore.io');
+      }
+      showToast('All wallets reset successfully!');
     }
   }
 
   function navigateTo(screenId) {
     closeAllModals();
-    ['home', 'transfer', 'history', 'statement', 'notifications', 'profile'].forEach(id => {
-      document.getElementById(`screen-${id}`).classList.add('hidden');
+    ['login', 'home', 'transfer', 'history', 'statement', 'notifications', 'profile'].forEach(id => {
+      const el = document.getElementById(`screen-${id}`);
+      if (el) el.classList.add('hidden');
       const tab = document.getElementById(`tab-${id}`);
       if (tab) tab.classList.remove('active');
     });
-    document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+
+    const targetScreen = document.getElementById(`screen-${screenId}`);
+    if (targetScreen) targetScreen.classList.remove('hidden');
+
     const activeTab = document.getElementById(`tab-${screenId}`);
     if (activeTab) activeTab.classList.add('active');
+
+    // Hide bottom nav on login screen, show on all other screens
+    const nav = document.getElementById('bottom-nav');
+    if (nav) {
+      if (screenId === 'login') {
+        nav.classList.add('hidden');
+      } else {
+        nav.classList.remove('hidden');
+      }
+    }
   }
 
   function renderPayees() {
     const container = document.getElementById('payees-carousel');
+    if (!container) return;
+
     let html = '';
     payees.forEach(p => {
       html += `
-        <div onclick="selectPayee('${p.email}', '${p.name}')" class="flex flex-col items-center cursor-pointer shrink-0">
-          <div class="w-12 h-12 rounded-full bg-blue-100 border-2 border-blue-600 text-blue-600 flex items-center justify-center font-bold text-sm shadow-sm active:scale-95 transition">
+        <div onclick="selectPayee('${p.email}', '${p.name}')" class="flex flex-col items-center shrink-0 cursor-pointer group active:scale-95 transition">
+          <div class="w-12 h-12 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center justify-center font-bold text-slate-700 text-xs group-hover:border-blue-500 group-hover:bg-blue-50 transition">
             ${p.initials}
           </div>
-          <span class="text-[11px] font-bold text-slate-700 mt-1 max-w-[60px] truncate">${p.name}</span>
+          <span class="text-[11px] font-medium text-slate-600 mt-1.5">${p.name}</span>
         </div>
       `;
     });
@@ -1011,11 +1455,12 @@
   function saveNewPayee() {
     const name = document.getElementById('new-payee-name').value.trim();
     const id = document.getElementById('new-payee-id').value.trim();
-    if (!name || !id) return showToast('Please enter both name and email/account', false);
-
-    const initials = name.split(' ').map(s => s[0]).join('').substring(0, 2).toUpperCase() || 'U';
-    payees.unshift({ id: `p-${Date.now()}`, name, email: id, initials });
-    saveState();
+    if (!name || !id) {
+      return showToast('Please enter both name and identifier', false);
+    }
+    const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'CP';
+    payees.push({ id: `p-${Date.now()}`, name, email: id, initials });
+    saveCurrentWalletState();
     renderPayees();
     closeAllModals();
     document.getElementById('new-payee-name').value = '';
@@ -1035,7 +1480,6 @@
 
     transactions.forEach(tx => {
       const isDebit = tx.type === 'DEBIT';
-      // Only count completed non-reversed debits towards active outflow
       if (isDebit && tx.status === 'COMPLETED') {
         totalDebits += tx.amount;
       } else if (!isDebit) {
@@ -1046,6 +1490,7 @@
       const bg = isDebit ? (tx.status === 'REVERSED' ? 'bg-purple-50 text-purple-600' : 'bg-rose-50 text-rose-600') : 'bg-emerald-50 text-emerald-600';
       const icon = isDebit ? (tx.status === 'REVERSED' ? 'fa-rotate-left' : 'fa-arrow-up') : 'fa-arrow-down';
       const sign = isDebit ? '-' : '+';
+      const displayPartner = tx.toName ? `${tx.toName} (${tx.to})` : tx.to;
 
       html += `
         <div onclick="openReceipt('${tx.id}')" class="bg-white border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer active:scale-98 transition">
@@ -1055,7 +1500,7 @@
             </div>
             <div>
               <p class="text-xs font-bold text-slate-900 leading-tight">${tx.desc}</p>
-              <p class="text-[10px] text-slate-400">${tx.to} • ${tx.date}</p>
+              <p class="text-[10px] text-slate-400">${displayPartner} • ${tx.date}</p>
             </div>
           </div>
           <div class="text-right">
@@ -1084,28 +1529,35 @@
       `;
     });
 
-    homeList.innerHTML = html || '<div class="text-center py-6 text-xs text-slate-400">No transactions recorded yet</div>';
-    stmtList.innerHTML = stmtHtml || '<div class="text-center py-6 text-xs text-slate-400">No ledger entries recorded yet</div>';
+    if (homeList) homeList.innerHTML = html || '<div class="text-center py-6 text-xs text-slate-400">No transactions recorded yet</div>';
+    if (stmtList) stmtList.innerHTML = stmtHtml || '<div class="text-center py-6 text-xs text-slate-400">No ledger entries recorded yet</div>';
 
-    document.getElementById('mini-inflow').innerText = `+₹${totalCredits.toFixed(2)}`;
-    document.getElementById('mini-outflow').innerText = `-₹${totalDebits.toFixed(2)}`;
-    document.getElementById('stmt-credits').innerText = `+₹${totalCredits.toFixed(2)}`;
-    document.getElementById('stmt-debits').innerText = `-₹${totalDebits.toFixed(2)}`;
+    const miniIn = document.getElementById('mini-inflow');
+    const miniOut = document.getElementById('mini-outflow');
+    const stmtCred = document.getElementById('stmt-credits');
+    const stmtDeb = document.getElementById('stmt-debits');
+    if (miniIn) miniIn.innerText = `+₹${totalCredits.toFixed(2)}`;
+    if (miniOut) miniOut.innerText = `-₹${totalDebits.toFixed(2)}`;
+    if (stmtCred) stmtCred.innerText = `+₹${totalCredits.toFixed(2)}`;
+    if (stmtDeb) stmtDeb.innerText = `-₹${totalDebits.toFixed(2)}`;
 
     const totalVol = totalCredits + totalDebits;
     const ratio = totalVol > 0 ? Math.round((totalCredits / totalVol) * 100) : 100;
-    document.getElementById('stmt-ratio-label').innerText = `Inflow Ratio: ${ratio}%`;
-    document.getElementById('stmt-count-label').innerText = `Ledger Entries: ${transactions.length}`;
-    document.getElementById('stmt-ratio-bar').style.width = `${ratio}%`;
+    const ratioLabel = document.getElementById('stmt-ratio-label');
+    const countLabel = document.getElementById('stmt-count-label');
+    const ratioBar = document.getElementById('stmt-ratio-bar');
+    if (ratioLabel) ratioLabel.innerText = `Inflow Ratio: ${ratio}%`;
+    if (countLabel) countLabel.innerText = `Ledger Entries: ${transactions.length}`;
+    if (ratioBar) ratioBar.style.width = `${ratio}%`;
 
     filterHistory();
   }
 
-  // ================= BUG 4 FIX: HISTORY FILTERING & SORTING =================
   function setHistoryFilter(filter) {
     activeHistoryFilter = filter;
     ['all', 'debits', 'credits', 'reversed'].forEach(k => {
       const btn = document.getElementById(`hf-${k}`);
+      if (!btn) return;
       if (k === filter.toLowerCase()) {
         btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-sm';
       } else {
@@ -1146,6 +1598,7 @@
       const color = isDebit ? (tx.status === 'REVERSED' ? 'text-purple-600 line-through' : 'text-rose-600') : 'text-emerald-600';
       const bg = isDebit ? (tx.status === 'REVERSED' ? 'bg-purple-50 text-purple-600' : 'bg-rose-50 text-rose-600') : 'bg-emerald-50 text-emerald-600';
       const icon = isDebit ? (tx.status === 'REVERSED' ? 'fa-rotate-left' : 'fa-arrow-up') : 'fa-arrow-down';
+      const displayPartner = tx.toName ? `${tx.toName} (${tx.to})` : tx.to;
 
       html += `
         <div onclick="openReceipt('${tx.id}')" class="bg-white border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer active:scale-98 transition">
@@ -1155,7 +1608,7 @@
             </div>
             <div>
               <p class="text-xs font-bold text-slate-900">${tx.desc}</p>
-              <p class="text-[10px] text-slate-400">${tx.to} • ${tx.date}</p>
+              <p class="text-[10px] text-slate-400">${displayPartner} • ${tx.date}</p>
             </div>
           </div>
           <div class="text-right">
@@ -1170,14 +1623,18 @@
 
   function renderNotifications() {
     const list = document.getElementById('notif-list');
+    if (!list) return;
+
     let html = '';
     const unreadCount = notifications.filter(n => n.unread).length;
     const badge = document.getElementById('notif-badge');
-    if (unreadCount > 0) {
-      badge.style.display = 'flex';
-      badge.innerText = unreadCount;
-    } else {
-      badge.style.display = 'none';
+    if (badge) {
+      if (unreadCount > 0) {
+        badge.style.display = 'flex';
+        badge.innerText = unreadCount;
+      } else {
+        badge.style.display = 'none';
+      }
     }
 
     notifications.forEach((n, idx) => {
@@ -1197,40 +1654,41 @@
         </div>
       `;
     });
-    list.innerHTML = html;
+    list.innerHTML = html || '<div class="text-center py-8 text-xs text-slate-400">No notifications</div>';
   }
 
   function markSingleNotificationRead(idx) {
     if (notifications[idx]) {
       notifications[idx].unread = false;
-      saveState();
+      saveCurrentWalletState();
       renderNotifications();
     }
   }
 
   function markAllNotificationsRead() {
     notifications = notifications.map(n => ({ ...n, unread: false }));
-    saveState();
+    saveCurrentWalletState();
     renderNotifications();
     showToast('All notifications marked read');
   }
 
   function openReceipt(txId) {
     const tx = transactions.find(t => t.id === txId) || transactions[0];
+    if (!tx) return;
     activeTxId = tx.id;
     document.getElementById('rcpt-status-pill').innerText = tx.status;
     document.getElementById('rcpt-status-pill').className = `px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tx.status === 'COMPLETED' ? 'bg-emerald-100 text-emerald-700' : 'bg-purple-100 text-purple-700'}`;
     document.getElementById('rcpt-amount').innerText = `${tx.type === 'DEBIT' ? '-' : '+'}₹${tx.amount.toFixed(2)}`;
     document.getElementById('rcpt-amount').className = `text-2xl font-black ${tx.type === 'DEBIT' ? (tx.status === 'REVERSED' ? 'text-purple-600 line-through' : 'text-rose-600') : 'text-emerald-600'}`;
     document.getElementById('rcpt-desc').innerText = tx.desc;
-    document.getElementById('rcpt-to').innerText = tx.to;
+    document.getElementById('rcpt-to').innerText = tx.toName ? `${tx.toName} (${tx.to})` : tx.to;
     document.getElementById('rcpt-strategy').innerText = `${tx.strategy}`;
     document.getElementById('rcpt-latency').innerText = tx.latency;
     document.getElementById('rcpt-id').innerText = tx.id;
     document.getElementById('rcpt-idem').innerText = `idemp-${tx.id.replace('tx-', '')}`;
 
     const revBtn = document.getElementById('rcpt-reverse-btn');
-    revBtn.style.display = (tx.type === 'DEBIT' && tx.status === 'COMPLETED') ? 'block' : 'none';
+    if (revBtn) revBtn.style.display = (tx.type === 'DEBIT' && tx.status === 'COMPLETED') ? 'block' : 'none';
 
     document.getElementById('backdrop').classList.add('active');
     document.getElementById('modal-receipt').classList.add('active');
@@ -1238,6 +1696,7 @@
 
   function downloadReceipt() {
     const tx = transactions.find(t => t.id === activeTxId) || transactions[0];
+    if (!tx) return;
     const text = `======================================\n` +
       `   DATACORE PAY TRANSACTION RECEIPT   \n` +
       `======================================\n` +
@@ -1263,11 +1722,12 @@
   }
 
   function exportStatementText() {
-    const text = `DataCore Account Statement\nAccount: DC-6812-3923 (alice@datacore.io)\nBalance: ₹${balance.toFixed(2)}\nEntries: ${transactions.length}`;
+    const text = `DataCore Account Statement\nAccount: ${currentUser.accountNo} (${currentUser.email})\nBalance: ₹${balance.toFixed(2)}\nEntries: ${transactions.length}`;
     copyToClipboard(text, 'Statement summary copied!');
   }
 
   function openReceiveModal() {
+    updateUserBindings();
     document.getElementById('backdrop').classList.add('active');
     document.getElementById('modal-receive').classList.add('active');
   }
@@ -1296,13 +1756,14 @@
     selectedStrategy = strat;
     ['pessimistic', 'optimistic', 'atomic'].forEach(s => {
       const btn = document.getElementById(`strat-${s}`);
-      btn.className = 'p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-center transition';
+      if (btn) btn.className = 'p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-center transition';
     });
     const key = strat === 'ATOMIC_CONDITIONAL' ? 'atomic' : strat.toLowerCase();
-    document.getElementById(`strat-${key}`).className = 'p-2.5 rounded-xl border border-blue-600 bg-blue-600 text-white text-center transition';
+    const activeBtn = document.getElementById(`strat-${key}`);
+    if (activeBtn) activeBtn.className = 'p-2.5 rounded-xl border border-blue-600 bg-blue-600 text-white text-center transition';
   }
 
-  // ================= TRANSFER EXECUTION WITH VALIDATIONS =================
+  // ================= CROSS-WALLET TRANSFER EXECUTION =================
   function executeTransfer() {
     if (isTransfersLocked) {
       return showToast('Transfers are locked by security settings', false);
@@ -1318,8 +1779,9 @@
     }
 
     // Validation 2: Self-transfer block
-    if (recipient.toLowerCase() === 'alice@datacore.io' || recipient.toUpperCase() === 'DC-6812-3923') {
-      return showToast('Cannot transfer funds to your own account', false);
+    const recClean = recipient.toLowerCase();
+    if (currentUser && (recClean === currentUser.email.toLowerCase() || recClean === currentUser.accountNo.toLowerCase())) {
+      return showToast('Cannot transfer funds to your own wallet account', false);
     }
 
     // Validation 3: Sufficient balance
@@ -1332,37 +1794,86 @@
       return showToast(`Daily transfer limit of ₹${dailyLimit.toLocaleString('en-IN')} exceeded`, false);
     }
 
-    // Deduct balance
+    // Deduct balance from sender
     balance -= amt;
 
-    const newTx = {
-      id: `tx-${Date.now().toString().slice(-4)}`,
+    const txId = `tx-${Date.now().toString().slice(-4)}`;
+    const latency = `${(Math.random() * 8 + 4).toFixed(1)} ms`;
+
+    // Match recipient in multi-wallet database
+    let recipientName = recipient;
+    let recipientAccountNo = recipient;
+    let targetWalletKey = null;
+
+    Object.keys(wallets).forEach(key => {
+      const w = wallets[key];
+      if (w.email.toLowerCase() === recClean || w.accountNo.toLowerCase() === recClean) {
+        recipientName = w.name;
+        recipientAccountNo = w.accountNo;
+        targetWalletKey = key;
+      }
+    });
+
+    const debitTx = {
+      id: txId,
       type: 'DEBIT',
       to: recipient,
+      toName: recipientName,
       amount: amt,
       desc: note,
       date: 'Just now',
       status: 'COMPLETED',
       strategy: selectedStrategy,
-      latency: `${(Math.random() * 8 + 4).toFixed(1)} ms`
+      latency: latency
     };
 
-    transactions.unshift(newTx);
+    transactions.unshift(debitTx);
 
     notifications.unshift({
       id: `n-${Date.now()}`,
       title: 'Transfer Sent',
-      msg: `₹${amt.toFixed(2)} sent to ${recipient} with ${selectedStrategy} lock.`,
+      msg: `₹${amt.toFixed(2)} sent to ${recipientName} with ${selectedStrategy} lock.`,
       unread: true,
       time: 'Just now'
     });
 
-    saveState();
+    // ================= REAL-TIME CREDIT TO RECIPIENT WALLET =================
+    if (targetWalletKey && wallets[targetWalletKey]) {
+      const targetWallet = wallets[targetWalletKey];
+      targetWallet.balance += amt;
+      if (!targetWallet.transactions) targetWallet.transactions = [];
+      targetWallet.transactions.unshift({
+        id: txId,
+        type: 'CREDIT',
+        to: currentUser.email,
+        toName: currentUser.name,
+        amount: amt,
+        desc: note,
+        date: 'Just now',
+        status: 'COMPLETED',
+        strategy: selectedStrategy,
+        latency: latency
+      });
+      if (!targetWallet.notifications) targetWallet.notifications = [];
+      targetWallet.notifications.unshift({
+        id: `n-rec-${Date.now()}`,
+        title: 'Funds Received',
+        msg: `₹${amt.toFixed(2)} received from ${currentUser.name} (${currentUser.accountNo}) for "${note}".`,
+        unread: true,
+        time: 'Just now'
+      });
+    }
+
+    saveCurrentWalletState();
     renderBalance();
     renderTransactions();
     renderNotifications();
 
-    showToast(`Transferred ₹${amt.toFixed(2)} successfully!`);
+    document.getElementById('transfer-amount').value = '';
+    document.getElementById('transfer-recipient').value = '';
+    document.getElementById('transfer-note').value = '';
+
+    showToast(`Transferred ₹${amt.toFixed(2)} to ${recipientName}!`);
     navigateTo('home');
   }
 
@@ -1373,6 +1884,28 @@
       tx.status = 'REVERSED';
       balance += tx.amount;
 
+      // Deduct from recipient wallet if internal user
+      const recClean = tx.to.toLowerCase();
+      Object.keys(wallets).forEach(key => {
+        const w = wallets[key];
+        if (w.email.toLowerCase() === recClean || w.accountNo.toLowerCase() === recClean) {
+          w.balance = Math.max(0, w.balance - tx.amount);
+          if (w.transactions) {
+            const partnerTx = w.transactions.find(pt => pt.id === tx.id);
+            if (partnerTx) partnerTx.status = 'REVERSED';
+          }
+          if (w.notifications) {
+            w.notifications.unshift({
+              id: `n-rev-${Date.now()}`,
+              title: 'Transaction Reversed',
+              msg: `Ledger reversal of ₹${tx.amount.toFixed(2)} applied by ${currentUser.name}.`,
+              unread: true,
+              time: 'Just now'
+            });
+          }
+        }
+      });
+
       notifications.unshift({
         id: `n-${Date.now()}`,
         title: 'Transaction Reversed',
@@ -1381,7 +1914,7 @@
         time: 'Just now'
       });
 
-      saveState();
+      saveCurrentWalletState();
       renderBalance();
       renderTransactions();
       renderNotifications();
@@ -1390,14 +1923,14 @@
     }
   }
 
-  // Initial Boot
-  const lockCheckbox = document.getElementById('lock-transfers');
-  if (lockCheckbox) lockCheckbox.checked = isTransfersLocked;
-
-  renderBalance();
-  renderPayees();
-  renderTransactions();
-  renderNotifications();
+  // ================= BOOTSTRAP INITIAL VIEW =================
+  if (!activeUserEmail || !wallets[activeUserEmail]) {
+    // If logged out, show Login screen
+    logout();
+  } else {
+    // Show active user wallet
+    loginAs(activeUserEmail);
+  }
 </script>
 
 </body>
