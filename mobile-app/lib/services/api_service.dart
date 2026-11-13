@@ -3,11 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  // Configurable at compile-time via --dart-define=API_BASE_URL=https://your-backend.onrender.com
-  // Defaults to 127.0.0.1 for Web or 10.0.2.2 for Android emulator when not specified
+  // Configurable at compile-time via --dart-define=API_BASE_URL=https://datacore-backend-wktd.onrender.com
+  // Defaults to production Render backend URL
   static const String defaultBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: kIsWeb ? 'http://127.0.0.1:8000' : 'http://10.0.2.2:8000',
+    defaultValue: 'https://datacore-backend-wktd.onrender.com',
   );
   final Dio dio;
   final FlutterSecureStorage storage = const FlutterSecureStorage();

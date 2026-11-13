@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       api_base_url:
-        description: 'Backend API Base URL (e.g. https://datacore-backend.onrender.com)'
+        description: 'Backend API Base URL'
         required: false
-        default: 'https://datacore-backend.onrender.com'
+        default: 'https://datacore-backend-wktd.onrender.com'
         type: string
       create_release:
         description: 'Publish as a downloadable GitHub Release in addition to Workflow Artifact'
@@ -40,7 +40,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-          cache: 'gradle'
 
       - name: Install Flutter
         uses: subosito/flutter-action@v2
@@ -56,7 +55,7 @@ jobs:
         run: |
           if [ ! -d "android" ]; then
             echo "android/ directory not found in mobile-app. Generating scaffolding with flutter create..."
-            flutter create --platforms=android --org com.datacore --project-name datacore_mobile .
+            flutter create --platforms=android --org com.datacore .
           else
             echo "android/ directory exists."
           fi
@@ -81,7 +80,7 @@ jobs:
       - name: Build Android Release APK
         working-directory: mobile-app
         env:
-          TARGET_API_URL: ${{ inputs.api_base_url || 'https://datacore-backend.onrender.com' }}
+          TARGET_API_URL: ${{ inputs.api_base_url || 'https://datacore-backend-wktd.onrender.com' }}
         run: |
           echo "Building Release APK with API_BASE_URL: $TARGET_API_URL"
           flutter build apk --release --dart-define=API_BASE_URL="$TARGET_API_URL"
@@ -99,18 +98,18 @@ jobs:
           retention-days: 30
 
       - name: Create GitHub Release with APK
-        if: startsWith(github.ref, 'refs/tags/v') || github.event.inputs.create_release == 'true'
+        if: (github.event_name == 'workflow_dispatch' && inputs.create_release) || startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: mobile-app/build/app/outputs/flutter-apk/app-release.apk
           name: Release ${{ github.ref_name || 'Latest APK Build' }}
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('apk-{0}', github.run_number) }}
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('apk-v{0}', github.run_number) }}
           body: |
             ### DataCore Customer Mobile Application (Android APK)
 
             - **Build Number:** `${{ github.run_number }}`
             - **Commit:** `${{ github.sha }}`
-            - **Backend API URL:** `${{ inputs.api_base_url || 'https://datacore-backend.onrender.com' }}`
+            - **Backend API URL:** `${{ inputs.api_base_url || 'https://datacore-backend-wktd.onrender.com' }}`
             
             Download `app-release.apk` below and install directly on your Android device.
           draft: false
