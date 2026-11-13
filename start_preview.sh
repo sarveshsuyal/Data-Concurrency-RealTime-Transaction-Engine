@@ -17,8 +17,8 @@ python manage.py migrate --noinput
 python manage.py setup_datacore
 
 # 2. Launch Django API server in background
-echo "[2/3] Launching Django DRF backend on http://127.0.0.1:8000..."
-python manage.py runserver 127.0.0.1:8000 &
+echo "[2/3] Launching Django DRF backend on http://0.0.0.0:8000..."
+python manage.py runserver 0.0.0.0:8000 &
 BACKEND_PID=$!
 
 # Function to kill both on exit
