@@ -43,6 +43,63 @@ class _TransferScreenState extends State<TransferScreen> {
     });
   }
 
+  void _showAddPayeeDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final idController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Add Frequent Payee', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(
+                labelText: 'Contact Name',
+                hintText: 'e.g. Sarah Jenkins',
+                filled: true,
+                fillColor: const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: idController,
+              decoration: InputDecoration(
+                labelText: 'Account No. or Email',
+                hintText: 'e.g. sarah@datacore.io',
+                filled: true,
+                fillColor: const Color(0xFFF8FAFC),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              if (nameController.text.trim().isNotEmpty && idController.text.trim().isNotEmpty) {
+                context.read<AccountProvider>().addBeneficiary(
+                  nameController.text.trim(),
+                  idController.text.trim(),
+                );
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Contact added to Quick Payees!')),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF436CF0)),
+            child: const Text('Add Contact', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _confirmAndSend() {
     final amount = double.tryParse(_amountController.text) ?? 0.0;
     if (amount <= 0) {
@@ -256,10 +313,26 @@ class _TransferScreenState extends State<TransferScreen> {
                 height: 72,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  itemCount: beneficiaries.length,
+                  itemCount: beneficiaries.length + 1,
                   separatorBuilder: (_, __) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {
-                    final b = beneficiaries[index];
+                    if (index == 0) {
+                      return GestureDetector(
+                        onTap: () => _showAddPayeeDialog(context),
+                        child: const Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 22,
+                              backgroundColor: Color(0xFFF1F5F9),
+                              child: Icon(Icons.add, color: Color(0xFF436CF0), size: 20),
+                            ),
+                            SizedBox(height: 4),
+                            Text('Add', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF436CF0))),
+                          ],
+                        ),
+                      );
+                    }
+                    final b = beneficiaries[index - 1];
                     final isSelected = _recipientController.text == b.identifier;
 
                     return GestureDetector(

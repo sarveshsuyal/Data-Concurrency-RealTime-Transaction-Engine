@@ -174,6 +174,19 @@ class AccountProvider with ChangeNotifier {
       return false;
     }
 
+    if (amount <= 0) {
+      _errorMessage = 'Transfer amount must be strictly positive.';
+      notifyListeners();
+      return false;
+    }
+
+    if (receiverIdentifier.trim() == _primaryAccount?.accountNumber ||
+        receiverIdentifier.trim() == _primaryAccount?.userEmail) {
+      _errorMessage = 'Cannot transfer funds to your own account.';
+      notifyListeners();
+      return false;
+    }
+
     if (amount > _dailyLimit) {
       _errorMessage = 'Amount exceeds the daily transfer limit of ₹${_dailyLimit.toStringAsFixed(0)}.';
       notifyListeners();

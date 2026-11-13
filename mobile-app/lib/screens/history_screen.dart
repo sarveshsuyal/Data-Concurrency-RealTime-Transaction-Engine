@@ -15,6 +15,7 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   final _searchController = TextEditingController();
   String _activeFilter = 'ALL';
+  String _sortBy = 'NEWEST';
 
   @override
   void dispose() {
@@ -66,6 +67,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
       return true;
     }).toList();
 
+    if (_sortBy == 'HIGHEST') {
+      filteredTransactions.sort((a, b) => (double.tryParse(b.amount) ?? 0.0).compareTo(double.tryParse(a.amount) ?? 0.0));
+    } else if (_sortBy == 'LOWEST') {
+      filteredTransactions.sort((a, b) => (double.tryParse(a.amount) ?? 0.0).compareTo(double.tryParse(b.amount) ?? 0.0));
+    } else if (_sortBy == 'OLDEST') {
+      filteredTransactions.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -76,6 +85,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
           onPressed: () => context.go('/home'),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.sort_rounded, color: Color(0xFF0F172A)),
+            tooltip: 'Sort Transactions',
+            onSelected: (val) => setState(() => _sortBy = val),
+            itemBuilder: (ctx) => [
+              const PopupMenuItem(value: 'NEWEST', child: Text('Newest First')),
+              const PopupMenuItem(value: 'OLDEST', child: Text('Oldest First')),
+              const PopupMenuItem(value: 'HIGHEST', child: Text('Highest Amount')),
+              const PopupMenuItem(value: 'LOWEST', child: Text('Lowest Amount')),
+            ],
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
