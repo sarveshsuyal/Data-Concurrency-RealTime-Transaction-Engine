@@ -7,7 +7,21 @@ from .models import (
     IdempotencyKey,
     TransactionEvent,
     ConcurrencyExperiment,
-    AuditLog
+    AuditLog,
+    Organization,
+    Workspace,
+    WorkspaceMembership,
+    ApiKey,
+    WebhookEndpoint,
+    WebhookDelivery,
+    Incident,
+    AnomalyRule,
+    AnomalyAlert,
+    ReliabilityObjective,
+    SettlementBatch,
+    Notification,
+    OutboxEvent,
+    BenchmarkRecord
 )
 from authentication.models import User
 
@@ -76,6 +90,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = (
             'id',
+            'correlation_id',
             'sender_account',
             'sender_account_number',
             'sender_email',
@@ -175,7 +190,17 @@ class AuditLogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AuditLog
-        fields = ('id', 'user_email', 'action', 'ip_address', 'user_agent', 'details', 'timestamp')
+        fields = (
+            'id',
+            'user_email',
+            'action',
+            'ip_address',
+            'user_agent',
+            'details',
+            'previous_hash',
+            'current_hash',
+            'timestamp'
+        )
         read_only_fields = fields
 
 
@@ -197,3 +222,105 @@ class IdempotencyKeySerializer(serializers.ModelSerializer):
             'updated_at'
         )
         read_only_fields = fields
+
+
+# =========================================================================
+# Enterprise Domain Serializers
+# =========================================================================
+
+class OrganizationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Organization
+        fields = '__all__'
+        read_only_fields = ('id', 'created_at')
+
+
+class WorkspaceSerializer(serializers.ModelSerializer):
+    organization_name = serializers.CharField(source='organization.name', read_only=True, default='')
+
+    class Meta:
+        model = Workspace
+        fields = '__all__'
+        read_only_fields = ('id', 'created_at')
+
+
+class ApiKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApiKey
+        fields = ('id', 'name', 'prefix', 'scopes', 'is_active', 'expires_at', 'last_used_at', 'created_at')
+        read_only_fields = ('id', 'prefix', 'last_used_at', 'created_at')
+
+
+class WebhookEndpointSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WebhookEndpoint
+        fields = ('id', 'url', 'secret', 'events', 'is_active', 'created_at')
+        read_only_fields = ('id', 'created_at')
+
+
+class WebhookDeliverySerializer(serializers.ModelSerializer):
+    endpoint_url = serializers.CharField(source='endpoint.url', read_only=True)
+
+    class Meta:
+        model = WebhookDelivery
+        fields = '__all__'
+        read_only_fields = fields
+
+
+class IncidentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Incident
+        fields = '__all__'
+        read_only_fields = ('id', 'created_at')
+
+
+class AnomalyRuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnomalyRule
+        fields = '__all__'
+        read_only_fields = ('id', 'created_at')
+
+
+class AnomalyAlertSerializer(serializers.ModelSerializer):
+    rule_name = serializers.CharField(source='rule.name', read_only=True, default='')
+
+    class Meta:
+        model = AnomalyAlert
+        fields = '__all__'
+        read_only_fields = ('id', 'created_at')
+
+
+class ReliabilityObjectiveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReliabilityObjective
+        fields = '__all__'
+        read_only_fields = ('id', 'updated_at')
+
+
+class SettlementBatchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SettlementBatch
+        fields = '__all__'
+        read_only_fields = ('id', 'created_at')
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'
+        read_only_fields = ('id', 'created_at')
+
+
+class OutboxEventSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OutboxEvent
+        fields = '__all__'
+        read_only_fields = ('id', 'created_at')
+
+
+class BenchmarkRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BenchmarkRecord
+        fields = '__all__'
+        read_only_fields = fields
+

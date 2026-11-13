@@ -100,11 +100,137 @@ class Command(BaseCommand):
             RaceExperimentService.run_experiment(
                 admin_user=admin_user,
                 strategy=Transaction.ConcurrencyStrategy.PESSIMISTIC,
-                initial_balance=1000.0,
-                withdrawals=(700.0, 500.0)
+                initial_balance=1000.00,
+                withdrawals=(700.00, 500.00)
             )
             self.stdout.write(self.style.SUCCESS("Demo experiment recorded in Lab!"))
         except Exception as e:
             self.stdout.write(self.style.WARNING(f"Demo experiment note: {e}"))
+
+        # 6. Seed Enterprise Domain Data (Organizations, Workspaces, SLOs, Anomaly Rules, Incidents, Webhooks, API Keys)
+        try:
+            from engine.models import (
+                Organization, Workspace, WorkspaceMembership, ApiKey,
+                WebhookEndpoint, Incident, AnomalyRule, ReliabilityObjective,
+                BenchmarkRecord, Notification
+            )
+            import hashlib, secrets
+
+            org, _ = Organization.objects.get_or_create(
+                name="DataCore Global Financials",
+                defaults={"slug": "datacore-global"}
+            )
+            ws_prod, _ = Workspace.objects.get_or_create(
+                organization=org,
+                name="Production High-Throughput",
+                defaults={"slug": "prod-us-west", "environment": "Production"}
+            )
+            ws_stage, _ = Workspace.objects.get_or_create(
+                organization=org,
+                name="Staging Concurrency Sandbox",
+                defaults={"slug": "staging-sandbox", "environment": "Staging"}
+            )
+            WorkspaceMembership.objects.get_or_create(
+                workspace=ws_prod,
+                user=admin_user,
+                defaults={"role": WorkspaceMembership.Role.OWNER}
+            )
+
+            # SLOs
+            ReliabilityObjective.objects.get_or_create(
+                name="API Availability (30d)",
+                defaults={"target_percentage": 99.9, "current_value": 99.98, "error_budget_consumed": 2.1}
+            )
+            ReliabilityObjective.objects.get_or_create(
+                name="Transfer Latency P95 < 150ms",
+                defaults={"target_percentage": 99.5, "current_value": 99.85, "error_budget_consumed": 14.2}
+            )
+            ReliabilityObjective.objects.get_or_create(
+                name="Double-Entry Invariant Balance",
+                defaults={"target_percentage": 100.0, "current_value": 100.0, "error_budget_consumed": 0.0}
+            )
+
+            # Anomaly Rules
+            AnomalyRule.objects.get_or_create(
+                name="High Value Fund Transfer Ceiling",
+                defaults={
+                    "rule_type": "HIGH_AMOUNT",
+                    "threshold": Decimal("10000.00"),
+                    "severity": "HIGH",
+                    "is_active": True
+                }
+            )
+            AnomalyRule.objects.get_or_create(
+                name="Rapid Transaction Velocity Surge",
+                defaults={
+                    "rule_type": "RAPID_TRANSACTIONS",
+                    "threshold": Decimal("5.00"),
+                    "severity": "CRITICAL",
+                    "is_active": True
+                }
+            )
+
+            # Sample Incidents
+            Incident.objects.get_or_create(
+                title="Transient Lock Contention on Primary Account DC-6812",
+                defaults={
+                    "description": "Observed 12ms lock queue spike during concurrent batch settlement experiment. Resolved cleanly via canonical ordering.",
+                    "severity": Incident.Severity.LOW,
+                    "status": Incident.Status.RESOLVED,
+                    "affected_service": "Database Engine"
+                }
+            )
+
+            # Sample Webhook
+            WebhookEndpoint.objects.get_or_create(
+                user=admin_user,
+                url="https://api.datacore-partner.com/webhooks/transactions",
+                defaults={
+                    "secret": f"whsec_{secrets.token_hex(24)}",
+                    "events": ["transaction.completed", "transaction.failed", "anomaly.detected"],
+                    "is_active": True
+                }
+            )
+
+            # Sample API Key
+            sample_secret = "dc_live_demo991823abce"
+            ApiKey.objects.get_or_create(
+                user=admin_user,
+                name="Enterprise Settlement Service",
+                defaults={
+                    "prefix": "dc_live_demo",
+                    "hashed_key": hashlib.sha256(sample_secret.encode('utf-8')).hexdigest(),
+                    "scopes": ["read:transactions", "write:transfers", "read:observability"],
+                    "is_active": True
+                }
+            )
+
+            # Benchmark Records
+            BenchmarkRecord.objects.get_or_create(
+                workload_type="Pessimistic Row-Lock Workload",
+                strategy="PESSIMISTIC",
+                defaults={
+                    "worker_count": 4,
+                    "iterations": 50,
+                    "tps": 248.5,
+                    "avg_latency_ms": 7.4,
+                    "p95_latency_ms": 11.2,
+                    "p99_latency_ms": 15.8,
+                    "conflict_rate": 0.0
+                }
+            )
+
+            # Notification
+            Notification.objects.get_or_create(
+                user=admin_user,
+                title="System Initialized Successfully",
+                defaults={
+                    "message": "DataCore Enterprise Infrastructure v2 is active with full double-entry ledger enforcement.",
+                    "category": "SYSTEM"
+                }
+            )
+            self.stdout.write(self.style.SUCCESS("Enterprise domain data seeded successfully!"))
+        except Exception as ex:
+            self.stdout.write(self.style.WARNING(f"Enterprise seed note: {ex}"))
 
         self.stdout.write(self.style.SUCCESS("DataCore seeding completed successfully!"))

@@ -47,9 +47,12 @@ class Transaction(models.Model):
     """Core transaction entity."""
     class Status(models.TextChoices):
         PENDING = 'PENDING', 'Pending'
+        PROCESSING = 'PROCESSING', 'Processing'
         COMPLETED = 'COMPLETED', 'Completed'
+        SUCCESS = 'SUCCESS', 'Success'
         FAILED = 'FAILED', 'Failed'
         ROLLED_BACK = 'ROLLED_BACK', 'Rolled Back'
+        REVERSED = 'REVERSED', 'Reversed'
 
     class ConcurrencyStrategy(models.TextChoices):
         PESSIMISTIC = 'PESSIMISTIC', 'Pessimistic Locking'
@@ -58,6 +61,7 @@ class Transaction(models.Model):
         UNSAFE_BASELINE = 'UNSAFE_BASELINE', 'Unsafe Baseline (Lab Only)'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    correlation_id = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True)
     sender_account = models.ForeignKey(
         Account,
         on_delete=models.PROTECT,
@@ -215,7 +219,7 @@ class ConcurrencyExperiment(models.Model):
 
 
 class AuditLog(models.Model):
-    """System-wide audit trail."""
+    """System-wide audit trail with tamper-evident cryptographic chaining."""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -228,6 +232,8 @@ class AuditLog(models.Model):
     ip_address = models.CharField(max_length=50, null=True, blank=True)
     user_agent = models.TextField(blank=True)
     details = models.JSONField(default=dict)
+    previous_hash = models.CharField(max_length=64, blank=True, default='')
+    current_hash = models.CharField(max_length=64, blank=True, default='', db_index=True)
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
@@ -235,3 +241,267 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.timestamp} | {self.action} by {self.user}"
+
+
+# =========================================================================
+# Enterprise Multi-Tenant Hierarchy
+# =========================================================================
+
+class Organization(models.Model):
+    """Top-level enterprise tenant entity."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Workspace(models.Model):
+    """Isolated operational workspace within an organization."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        related_name='workspaces',
+        null=True,
+        blank=True
+    )
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255)
+    environment = models.CharField(max_length=50, default='Production')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.environment})"
+
+
+class WorkspaceMembership(models.Model):
+    """Assigns user access roles within an isolated workspace."""
+    class Role(models.TextChoices):
+        OWNER = 'OWNER', 'Owner'
+        ADMIN = 'ADMIN', 'Admin'
+        MEMBER = 'MEMBER', 'Member'
+        VIEWER = 'VIEWER', 'Viewer'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name='memberships')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='workspace_memberships')
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.MEMBER)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('workspace', 'user')
+
+
+# =========================================================================
+# Developer Platform: API Keys & Webhooks
+# =========================================================================
+
+class ApiKey(models.Model):
+    """Scoped developer API keys stored using secure SHA-256 digests."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='api_keys')
+    workspace = models.ForeignKey(Workspace, on_delete=models.SET_NULL, null=True, blank=True, related_name='api_keys')
+    name = models.CharField(max_length=255)
+    prefix = models.CharField(max_length=24, db_index=True)
+    hashed_key = models.CharField(max_length=128)
+    scopes = models.JSONField(default=list)  # e.g., ["read:transactions", "write:transfers"]
+    is_active = models.BooleanField(default=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.prefix}...)"
+
+
+class WebhookEndpoint(models.Model):
+    """Subscribed webhook endpoint with HMAC signature secret."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='webhook_endpoints')
+    workspace = models.ForeignKey(Workspace, on_delete=models.SET_NULL, null=True, blank=True, related_name='webhooks')
+    url = models.URLField()
+    secret = models.CharField(max_length=128)
+    events = models.JSONField(default=list)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Webhook: {self.url}"
+
+
+class WebhookDelivery(models.Model):
+    """Record of individual webhook delivery attempts and HMAC signatures."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    endpoint = models.ForeignKey(WebhookEndpoint, on_delete=models.CASCADE, related_name='deliveries')
+    event_type = models.CharField(max_length=100)
+    payload = models.JSONField()
+    status = models.CharField(max_length=20, default='SUCCESS')
+    status_code = models.IntegerField(default=200)
+    duration_ms = models.FloatField(default=0.0)
+    error_message = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+# =========================================================================
+# Incident Management & Anomaly Detection
+# =========================================================================
+
+class Incident(models.Model):
+    """Platform incident lifecycle: Detected -> Acknowledged -> Investigating -> Resolved -> Closed."""
+    class Severity(models.TextChoices):
+        LOW = 'LOW', 'Low'
+        MEDIUM = 'MEDIUM', 'Medium'
+        HIGH = 'HIGH', 'High'
+        CRITICAL = 'CRITICAL', 'Critical'
+
+    class Status(models.TextChoices):
+        DETECTED = 'DETECTED', 'Detected'
+        ACKNOWLEDGED = 'ACKNOWLEDGED', 'Acknowledged'
+        INVESTIGATING = 'INVESTIGATING', 'Investigating'
+        RESOLVED = 'RESOLVED', 'Resolved'
+        CLOSED = 'CLOSED', 'Closed'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    severity = models.CharField(max_length=20, choices=Severity.choices, default=Severity.MEDIUM)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.DETECTED)
+    affected_service = models.CharField(max_length=100, default='Transaction Engine')
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"[{self.severity}] {self.title} ({self.status})"
+
+
+class AnomalyRule(models.Model):
+    """Rule definition for automated risk and abnormal transaction detection."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    rule_type = models.CharField(max_length=50)  # RAPID_TRANSACTIONS, HIGH_AMOUNT, REPEATED_FAILURES
+    threshold = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal('10000.00'))
+    severity = models.CharField(max_length=20, default='HIGH')
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.rule_type})"
+
+
+class AnomalyAlert(models.Model):
+    """Triggered anomaly detection alerts."""
+    class Status(models.TextChoices):
+        OPEN = 'OPEN', 'Open'
+        RESOLVED = 'RESOLVED', 'Resolved'
+        FALSE_POSITIVE = 'FALSE_POSITIVE', 'False Positive'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    rule = models.ForeignKey(AnomalyRule, on_delete=models.CASCADE, related_name='alerts', null=True, blank=True)
+    transaction = models.ForeignKey(Transaction, on_delete=models.SET_NULL, null=True, blank=True, related_name='anomaly_alerts')
+    title = models.CharField(max_length=255)
+    details = models.JSONField(default=dict)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.OPEN)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+# =========================================================================
+# Reliability Objectives (SLO) & Financial Settlement
+# =========================================================================
+
+class ReliabilityObjective(models.Model):
+    """SLO target definitions and rolling error budget burn metrics."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    target_percentage = models.FloatField(default=99.9)
+    current_value = models.FloatField(default=99.95)
+    error_budget_consumed = models.FloatField(default=12.4)
+    time_window = models.CharField(max_length=50, default='30d')
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.name}: {self.current_value}% / {self.target_percentage}%"
+
+
+class SettlementBatch(models.Model):
+    """Internal ledger settlement batch for accounting reconciliation."""
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
+        SETTLED = 'SETTLED', 'Settled'
+        FAILED = 'FAILED', 'Failed'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    batch_number = models.CharField(max_length=64, unique=True)
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal('0.00'))
+    currency = models.CharField(max_length=3, default='INR')
+    transaction_count = models.IntegerField(default=0)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.SETTLED)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    settled_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Batch {self.batch_number} [{self.status}]"
+
+
+class Notification(models.Model):
+    """In-app notifications for alerts and system events."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    category = models.CharField(max_length=50, default='SYSTEM')
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class OutboxEvent(models.Model):
+    """Transactional Outbox for reliable asynchronous event publishing."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    event_type = models.CharField(max_length=100, db_index=True)
+    aggregate_type = models.CharField(max_length=100)
+    aggregate_id = models.CharField(max_length=255)
+    payload = models.JSONField()
+    status = models.CharField(max_length=20, default='PENDING', db_index=True)
+    retry_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    published_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+
+class BenchmarkRecord(models.Model):
+    """Persisted performance and latency measurements."""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    workload_type = models.CharField(max_length=100)
+    strategy = models.CharField(max_length=50)
+    worker_count = models.IntegerField(default=4)
+    iterations = models.IntegerField(default=50)
+    tps = models.FloatField(default=0.0)
+    avg_latency_ms = models.FloatField(default=0.0)
+    p95_latency_ms = models.FloatField(default=0.0)
+    p99_latency_ms = models.FloatField(default=0.0)
+    conflict_rate = models.FloatField(default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+

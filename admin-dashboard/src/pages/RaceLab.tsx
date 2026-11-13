@@ -318,8 +318,73 @@ export const RaceLab: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {/* Deadlock & Cyclic Lock Contention Simulator */}
+          <DeadlockCard />
         </div>
       </div>
+    </div>
+  );
+};
+
+const DeadlockCard: React.FC = () => {
+  const [deadlockResult, setDeadlockResult] = useState<any>(null);
+  const [running, setRunning] = useState(false);
+
+  const handleRunDeadlock = async () => {
+    setRunning(true);
+    try {
+      const res = await api.simulateDeadlock();
+      setDeadlockResult(res);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-sm font-bold text-slate-100">Deadlock & Cyclic Dependency Simulator</h3>
+          <p className="text-xs text-slate-400">Demonstrates why reverse row-locking produces circular wait deadlocks</p>
+        </div>
+        <button
+          onClick={handleRunDeadlock}
+          disabled={running}
+          className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold text-xs hover:opacity-90 flex items-center space-x-1.5"
+        >
+          {running ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-white" />}
+          <span>Simulate Deadlock</span>
+        </button>
+      </div>
+
+      {deadlockResult && (
+        <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 font-mono text-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400">Deadlock State Detected:</span>
+            <span className={`px-2 py-0.5 rounded font-bold uppercase text-[10px] ${
+              deadlockResult.deadlock_detected ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400'
+            }`}>
+              {deadlockResult.deadlock_detected ? 'Deadlock / Conflict Triggered' : 'Clean'}
+            </span>
+          </div>
+
+          <div className="space-y-1 text-[11px] text-slate-300">
+            {deadlockResult.worker_1?.events?.map((ev: string, i: number) => (
+              <p key={i}>• {ev}</p>
+            ))}
+            {deadlockResult.worker_2?.events?.map((ev: string, i: number) => (
+              <p key={i}>• {ev}</p>
+            ))}
+          </div>
+
+          <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-300 text-[11px] font-sans">
+            <strong>DataCore Invariant:</strong> {deadlockResult.resolution}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

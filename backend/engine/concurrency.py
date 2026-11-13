@@ -225,3 +225,146 @@ class ConcurrencyStrategyHandler:
             })
 
         return sender, receiver
+
+    @staticmethod
+    def execute_deadlock_simulation(acc_a_id, acc_b_id, amount=Decimal('50.00')):
+        """
+        Demonstrates why naive reverse locking deadlocks and how DataCore prevents it.
+        Worker 1: locks Account A, then attempts to lock Account B.
+        Worker 2: locks Account B, then attempts to lock Account A.
+        """
+        import threading
+        results = {
+            'worker_1': {'status': 'PENDING', 'events': []},
+            'worker_2': {'status': 'PENDING', 'events': []},
+            'deadlock_detected': False,
+            'resolution': 'DataCore canonical lock sorting (min/max UUID) resolves cyclic dependencies.'
+        }
+        barrier = threading.Barrier(2)
+
+        def worker_1_task():
+            try:
+                results['worker_1']['events'].append('Worker 1: Acquiring lock on Account A')
+                with transaction.atomic():
+                    acc_a = Account.objects.select_for_update().get(id=acc_a_id)
+                    results['worker_1']['events'].append('Worker 1: Acquired Account A')
+                    barrier.wait(timeout=2.0)
+                    time.sleep(0.05)
+                    results['worker_1']['events'].append('Worker 1: Attempting reverse lock on Account B (contended)')
+                    acc_b = Account.objects.select_for_update().get(id=acc_b_id)
+                    results['worker_1']['status'] = 'COMPLETED'
+            except Exception as e:
+                results['worker_1']['status'] = 'ABORTED'
+                results['worker_1']['events'].append(f'Worker 1 Conflict: {type(e).__name__}')
+                results['deadlock_detected'] = True
+
+        def worker_2_task():
+            try:
+                results['worker_2']['events'].append('Worker 2: Acquiring lock on Account B')
+                with transaction.atomic():
+                    acc_b = Account.objects.select_for_update().get(id=acc_b_id)
+                    results['worker_2']['events'].append('Worker 2: Acquired Account B')
+                    barrier.wait(timeout=2.0)
+                    time.sleep(0.05)
+                    results['worker_2']['events'].append('Worker 2: Attempting reverse lock on Account A (contended)')
+                    acc_a = Account.objects.select_for_update().get(id=acc_a_id)
+                    results['worker_2']['status'] = 'COMPLETED'
+            except Exception as e:
+                results['worker_2']['status'] = 'ABORTED'
+                results['worker_2']['events'].append(f'Worker 2 Conflict: {type(e).__name__}')
+                results['deadlock_detected'] = True
+
+        t1 = threading.Thread(target=worker_1_task)
+        t2 = threading.Thread(target=worker_2_task)
+        t1.start()
+        t2.start()
+        t1.join(timeout=3.0)
+        t2.join(timeout=3.0)
+
+        return results
+
+
+# =========================================================================
+# Distributed Systems Failure Lab Simulators
+# =========================================================================
+
+class RetryStormSimulator:
+    """Demonstrates request retries, exponential backoff, and full jitter."""
+    @staticmethod
+    def simulate_retries(strategy="EXPONENTIAL_JITTER", attempts=5, base_delay_ms=50):
+        import random
+        timeline = []
+        current_delay = base_delay_ms
+
+        for attempt in range(1, attempts + 1):
+            if strategy == "IMMEDIATE":
+                delay = 0
+            elif strategy == "FIXED":
+                delay = base_delay_ms
+            elif strategy == "EXPONENTIAL":
+                delay = base_delay_ms * (2 ** (attempt - 1))
+            elif strategy == "EXPONENTIAL_JITTER":
+                max_delay = base_delay_ms * (2 ** (attempt - 1))
+                delay = random.uniform(base_delay_ms, max_delay)
+            else:
+                delay = base_delay_ms
+
+            simulated_success = (attempt == attempts)
+            timeline.append({
+                'attempt': attempt,
+                'delay_ms': round(delay, 2),
+                'outcome': 'SUCCESS' if simulated_success else 'NETWORK_TIMEOUT',
+                'strategy': strategy
+            })
+
+        total_duration = sum(item['delay_ms'] for item in timeline)
+        return {
+            'strategy': strategy,
+            'total_attempts': attempts,
+            'total_latency_ms': round(total_duration, 2),
+            'timeline': timeline,
+            'summary': f"Strategy {strategy} resolved after {attempts} attempts with total backoff {round(total_duration, 2)} ms."
+        }
+
+
+class CircuitBreakerSimulator:
+    """Demonstrates Circuit Breaker state transitions: CLOSED -> OPEN -> HALF-OPEN -> CLOSED."""
+    @staticmethod
+    def simulate_circuit_breaker(failure_threshold=3, total_requests=8):
+        states = []
+        failure_count = 0
+        state = "CLOSED"
+
+        for req in range(1, total_requests + 1):
+            if state == "CLOSED":
+                if req <= failure_threshold:
+                    failure_count += 1
+                    outcome = "SERVICE_UNAVAILABLE"
+                    if failure_count >= failure_threshold:
+                        state = "OPEN"
+                else:
+                    outcome = "SUCCESS"
+            elif state == "OPEN":
+                outcome = "FAST_FAIL_SHORT_CIRCUIT"
+                # Transition to HALF_OPEN after 2 fast-fails
+                if req >= failure_threshold + 2:
+                    state = "HALF_OPEN"
+            elif state == "HALF_OPEN":
+                outcome = "CANARY_SUCCESS"
+                state = "CLOSED"
+                failure_count = 0
+
+            states.append({
+                'request_index': req,
+                'circuit_state': state,
+                'outcome': outcome,
+                'failures_tracked': failure_count
+            })
+
+        return {
+            'failure_threshold': failure_threshold,
+            'final_state': state,
+            'history': states,
+            'explanation': "Circuit breaker prevents cascade failures by tripping to OPEN upon reaching consecutive threshold failures."
+        }
+

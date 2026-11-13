@@ -1,5 +1,6 @@
 class TransactionModel {
   final String id;
+  final String? correlationId;
   final String? senderAccount;
   final String senderAccountNumber;
   final String senderEmail;
@@ -18,6 +19,7 @@ class TransactionModel {
 
   TransactionModel({
     required this.id,
+    this.correlationId,
     this.senderAccount,
     required this.senderAccountNumber,
     required this.senderEmail,
@@ -38,6 +40,7 @@ class TransactionModel {
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
       id: json['id'] ?? '',
+      correlationId: json['correlation_id'],
       senderAccount: json['sender_account'],
       senderAccountNumber: json['sender_account_number'] ?? 'SYSTEM_DEPOSIT',
       senderEmail: json['sender_email'] ?? 'system@datacore.io',
