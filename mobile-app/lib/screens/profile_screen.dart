@@ -341,19 +341,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(
               width: double.infinity,
               height: 52,
-              child: OutlinedButton.icon(
+              child: ElevatedButton.icon(
                 onPressed: () async {
                   await auth.logout();
                   if (context.mounted) {
                     context.go('/login');
                   }
                 },
-                icon: const Icon(Icons.logout, color: Color(0xFFEF4444), size: 18),
-                label: const Text('Sign Out', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Color(0xFFFECACA)),
-                  backgroundColor: const Color(0xFFFEF2F2),
+                icon: const Icon(Icons.logout, color: Colors.white, size: 18),
+                label: const Text('Log Out of Wallet', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFEF4444),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  elevation: 2,
                 ),
               ),
             ),
