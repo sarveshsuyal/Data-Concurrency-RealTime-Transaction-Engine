@@ -17,7 +17,7 @@ class TransactionModel {
   final String createdAt;
   final String? completedAt;
 
-  TransactionModel({
+  const TransactionModel({
     required this.id,
     this.correlationId,
     this.senderAccount,
@@ -58,4 +58,9 @@ class TransactionModel {
       completedAt: json['completed_at'],
     );
   }
+
+  bool get isCompleted => status == 'COMPLETED' || status == 'SUCCESS';
+  bool get isFailed => status == 'FAILED';
+  bool get isReversed => status == 'REVERSED' || status == 'ROLLED_BACK';
+  bool get isPending => status == 'PENDING';
 }

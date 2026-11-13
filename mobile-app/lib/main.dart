@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'services/api_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/account_provider.dart';
+import 'providers/notification_provider.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
@@ -11,6 +12,8 @@ import 'screens/home_screen.dart';
 import 'screens/transfer_screen.dart';
 import 'screens/history_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/notification_screen.dart';
+import 'screens/statement_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +24,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider(apiService)),
         ChangeNotifierProvider(create: (_) => AccountProvider(apiService)),
+        ChangeNotifierProvider(create: (_) => NotificationProvider(apiService)),
       ],
       child: const DataCoreCustomerApp(),
     ),
@@ -37,6 +41,8 @@ final GoRouter _router = GoRouter(
     GoRoute(path: '/transfer', builder: (context, state) => const TransferScreen()),
     GoRoute(path: '/history', builder: (context, state) => const HistoryScreen()),
     GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
+    GoRoute(path: '/notifications', builder: (context, state) => const NotificationScreen()),
+    GoRoute(path: '/statement', builder: (context, state) => const StatementScreen()),
   ],
 );
 
@@ -54,8 +60,9 @@ class DataCoreCustomerApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF436CF0),
           primary: const Color(0xFF436CF0),
-          background: const Color(0xFFF8FAFC),
+          surface: const Color(0xFFF8FAFC),
         ),
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         fontFamily: 'Roboto',
       ),
     );

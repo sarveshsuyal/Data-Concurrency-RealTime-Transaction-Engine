@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/account_provider.dart';
+import '../providers/notification_provider.dart';
+import '../models/beneficiary_model.dart';
 
 class TransferScreen extends StatefulWidget {
   const TransferScreen({super.key});
@@ -14,6 +16,7 @@ class _TransferScreenState extends State<TransferScreen> {
   final _recipientController = TextEditingController(text: 'bob@datacore.io');
   final _amountController = TextEditingController(text: '250.00');
   final _descController = TextEditingController(text: 'Lunch split');
+  String _selectedStrategy = 'PESSIMISTIC';
 
   @override
   void dispose() {
@@ -23,11 +26,37 @@ class _TransferScreenState extends State<TransferScreen> {
     super.dispose();
   }
 
+  void _selectBeneficiary(BeneficiaryModel beneficiary) {
+    setState(() {
+      _recipientController.text = beneficiary.identifier;
+      if (beneficiary.note.isNotEmpty) {
+        _descController.text = beneficiary.note;
+      }
+    });
+  }
+
+  void _addQuickAmount(double delta, double maxBalance) {
+    final current = double.tryParse(_amountController.text) ?? 0.0;
+    final updated = (current + delta).clamp(0.0, maxBalance);
+    setState(() {
+      _amountController.text = updated.toStringAsFixed(2);
+    });
+  }
+
   void _confirmAndSend() {
     final amount = double.tryParse(_amountController.text) ?? 0.0;
     if (amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid positive amount.')),
+      );
+      return;
+    }
+
+    final accountProvider = context.read<AccountProvider>();
+    final currentBal = double.tryParse(accountProvider.primaryAccount?.balance ?? '0') ?? 0.0;
+    if (amount > currentBal) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Insufficient balance for this transaction.')),
       );
       return;
     }
@@ -59,7 +88,7 @@ class _TransferScreenState extends State<TransferScreen> {
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Recipient', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
                       Text(_recipientController.text, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
@@ -67,16 +96,32 @@ class _TransferScreenState extends State<TransferScreen> {
                   ),
                   const Divider(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Amount', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
                       Text('₹${amount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF436CF0))),
                     ],
                   ),
+                  const Divider(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Concurrency Lock', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                      Text(_selectedStrategy, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF0F172A))),
+                    ],
+                  ),
+                  const Divider(height: 20),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Transfer Fee', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
+                      Text('₹0.00 (Zero-Fee)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF10B981))),
+                    ],
+                  ),
                   if (_descController.text.isNotEmpty) ...[
                     const Divider(height: 20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.between,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Note', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
                         Text(_descController.text, style: const TextStyle(fontSize: 13)),
@@ -97,9 +142,16 @@ class _TransferScreenState extends State<TransferScreen> {
                     receiverIdentifier: _recipientController.text,
                     amount: amount,
                     description: _descController.text,
+                    strategy: _selectedStrategy,
                   );
                   if (!mounted) return;
                   if (success) {
+                    context.read<NotificationProvider>().addLocalNotification(
+                      title: 'Transfer Sent',
+                      message: 'Transferred ₹${amount.toStringAsFixed(2)} to ${_recipientController.text}.',
+                      category: 'TRANSFER',
+                    );
+
                     showDialog(
                       context: context,
                       builder: (ctx) => AlertDialog(
@@ -116,9 +168,20 @@ class _TransferScreenState extends State<TransferScreen> {
                           TextButton(
                             onPressed: () {
                               Navigator.pop(ctx);
+                              context.go('/history');
+                            },
+                            child: const Text('View History'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
                               context.go('/home');
                             },
-                            child: const Text('Back to Home'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF436CF0),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            ),
+                            child: const Text('Back to Home', style: TextStyle(color: Colors.white)),
                           ),
                         ],
                       ),
@@ -141,6 +204,9 @@ class _TransferScreenState extends State<TransferScreen> {
   @override
   Widget build(BuildContext context) {
     final accountProvider = context.watch<AccountProvider>();
+    final primaryAccount = accountProvider.primaryAccount;
+    final currentBal = double.tryParse(primaryAccount?.balance ?? '0.00') ?? 0.0;
+    final beneficiaries = accountProvider.beneficiaries;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -183,8 +249,55 @@ class _TransferScreenState extends State<TransferScreen> {
                 const SizedBox(height: 20),
               ],
 
+              // Beneficiaries / Quick Contacts
+              const Text('QUICK CONTACTS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B), letterSpacing: 0.5)),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 72,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: beneficiaries.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    final b = beneficiaries[index];
+                    final isSelected = _recipientController.text == b.identifier;
+
+                    return GestureDetector(
+                      onTap: () => _selectBeneficiary(b),
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 22,
+                            backgroundColor: isSelected ? const Color(0xFF436CF0) : const Color(0xFFE2E8F0),
+                            child: Text(
+                              b.initials,
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : const Color(0xFF334155),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            b.name.split(' ').first,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected ? const Color(0xFF436CF0) : const Color(0xFF64748B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
               // Recipient Input
-              const Text('RECIPIENT (ACCOUNT NO. OR EMAIL)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+              const Text('RECIPIENT (ACCOUNT NO. OR EMAIL)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B), letterSpacing: 0.5)),
               const SizedBox(height: 8),
               TextField(
                 controller: _recipientController,
@@ -200,7 +313,16 @@ class _TransferScreenState extends State<TransferScreen> {
               const SizedBox(height: 20),
 
               // Amount Input
-              const Text('AMOUNT (₹)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('AMOUNT (₹)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B), letterSpacing: 0.5)),
+                  Text(
+                    'Available: ₹${primaryAccount?.balance ?? '0.00'}',
+                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF436CF0)),
+                  ),
+                ],
+              ),
               const SizedBox(height: 8),
               TextField(
                 controller: _amountController,
@@ -215,10 +337,48 @@ class _TransferScreenState extends State<TransferScreen> {
                   enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
                 ),
               ),
+              const SizedBox(height: 10),
+
+              // Quick Amount Chips
+              Wrap(
+                spacing: 8,
+                runSpacing: 6,
+                children: [
+                  _buildAmountChip('+₹100', () => _addQuickAmount(100, currentBal)),
+                  _buildAmountChip('+₹500', () => _addQuickAmount(500, currentBal)),
+                  _buildAmountChip('+₹1,000', () => _addQuickAmount(1000, currentBal)),
+                  _buildAmountChip('+₹5,000', () => _addQuickAmount(5000, currentBal)),
+                  _buildAmountChip('Max Balance', () {
+                    setState(() => _amountController.text = currentBal.toStringAsFixed(2));
+                  }),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              // Concurrency Strategy Selector
+              const Text('CONCURRENCY STRATEGY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B), letterSpacing: 0.5)),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildStrategyPill('PESSIMISTIC', 'Pessimistic', 'Row Lock'),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildStrategyPill('OPTIMISTIC', 'Optimistic', 'Version Check'),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildStrategyPill('ATOMIC_CONDITIONAL', 'Atomic', 'Conditional'),
+                  ),
+                ],
+              ),
+
               const SizedBox(height: 20),
 
               // Description
-              const Text('NOTE / DESCRIPTION (OPTIONAL)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+              const Text('NOTE / DESCRIPTION (OPTIONAL)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B), letterSpacing: 0.5)),
               const SizedBox(height: 8),
               TextField(
                 controller: _descController,
@@ -241,6 +401,7 @@ class _TransferScreenState extends State<TransferScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF436CF0),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
                   ),
                   child: accountProvider.isLoading
                       ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
@@ -249,6 +410,59 @@ class _TransferScreenState extends State<TransferScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAmountChip(String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFCBD5E1)),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF334155)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStrategyPill(String strategyKey, String title, String subtitle) {
+    final isSelected = _selectedStrategy == strategyKey;
+    return GestureDetector(
+      onTap: () => setState(() => _selectedStrategy = strategyKey),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF436CF0) : Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: isSelected ? const Color(0xFF436CF0) : const Color(0xFFE2E8F0)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: isSelected ? Colors.white : const Color(0xFF0F172A),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 9,
+                color: isSelected ? Colors.white70 : const Color(0xFF94A3B8),
+              ),
+            ),
+          ],
         ),
       ),
     );
