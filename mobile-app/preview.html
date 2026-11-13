@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DataCore Pay - Mobile App Preview</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #0b0f19;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #0F172A;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .phone-container {
+      width: 100%;
+      max-width: 412px;
+      height: 100vh;
+      max-height: 890px;
+      background: #F8FAFC;
+      border-radius: 36px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 8px #1e293b;
+    }
+    @media (max-width: 450px) {
+      .phone-container {
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+    .app-screen {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 80px;
+      scrollbar-width: none;
+    }
+    .app-screen::-webkit-scrollbar {
+      display: none;
+    }
+    .modal-sheet {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 28px 28px 0 0;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.15);
+      transform: translateY(105%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 50;
+      max-height: 85%;
+      overflow-y: auto;
+    }
+    .modal-sheet.active {
+      transform: translateY(0);
+    }
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(2px);
+      z-index: 40;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .tab-btn.active {
+      color: #436CF0;
+    }
+    .tab-btn.active i {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+
+<div class="phone-container">
+  <!-- Status Bar -->
+  <div class="pt-3 px-6 pb-2 flex justify-between items-center text-xs font-semibold text-slate-800 select-none bg-slate-50/90 backdrop-blur sticky top-0 z-30">
+    <span id="live-time">09:41</span>
+    <div class="flex items-center space-x-2 text-slate-700">
+      <i class="fa-solid fa-signal text-[10px]"></i>
+      <i class="fa-solid fa-wifi text-[10px]"></i>
+      <i class="fa-solid fa-battery-full text-xs"></i>
+    </div>
+  </div>
+
+  <!-- Toast Alert -->
+  <div id="toast" class="absolute top-12 left-4 right-4 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-none p-3 rounded-2xl bg-slate-900 text-white text-xs shadow-xl flex items-center space-x-2.5">
+    <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <span id="toast-msg">Notification</span>
+  </div>
+
+  <!-- Modal Backdrop -->
+  <div id="backdrop" class="modal-backdrop" onclick="closeAllModals()"></div>
+
+  <!-- ==================== SCREEN 1: HOME ==================== -->
+  <div id="screen-home" class="app-screen p-5">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-5">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 text-base">
+          A
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-slate-900 leading-tight">Alice Walker</h2>
+          <div class="flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span class="text-[11px] text-slate-500 font-medium">Protected Ledger Account</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center space-x-1">
+        <button onclick="navigateTo('notifications')" class="relative p-2 text-slate-700 hover:text-blue-600">
+          <i class="fa-regular fa-bell text-lg"></i>
+          <span id="notif-badge" class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
+        </button>
+        <button onclick="navigateTo('profile')" class="p-2 text-slate-700 hover:text-blue-600">
+          <i class="fa-regular fa-circle-user text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="rounded-3xl p-6 bg-gradient-to-br from-[#2B4FE5] to-[#4F46E5] text-white shadow-xl shadow-blue-600/30 relative overflow-hidden mb-5">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center space-x-2">
+          <span class="text-xs text-white/80 font-medium">Available Balance</span>
+          <button onclick="toggleBalanceVisibility()" class="text-white/70 hover:text-white">
+            <i id="eye-icon" class="fa-regular fa-eye text-xs"></i>
+          </button>
+        </div>
+        <div class="px-2.5 py-1 rounded-full bg-white/20 text-[10px] font-semibold flex items-center space-x-1">
+          <i class="fa-solid fa-shield-halved text-[9px]"></i>
+          <span>Strict Locks</span>
+        </div>
+      </div>
+
+      <div id="balance-display" class="text-3xl font-black tracking-tight mb-4">
+        ₹10,000.00
+      </div>
+
+      <div class="flex justify-between items-center pt-3 border-t border-white/15 text-xs">
+        <div class="flex items-center space-x-2">
+          <span class="font-mono text-white/90 text-xs">DC-6812-3923</span>
+          <button onclick="copyToClipboard('DC-6812-3923', 'Account number copied!')" class="text-white/70 hover:text-white">
+            <i class="fa-regular fa-copy text-xs"></i>
+          </button>
+        </div>
+        <span class="text-[10px] font-bold tracking-wider text-white/70 bg-white/10 px-2 py-0.5 rounded">
+          INR • PERSISTENT
+        </span>
+      </div>
+    </div>
+
+    <!-- 4 Quick Actions -->
+    <div class="grid grid-cols-4 gap-2 mb-6">
+      <button onclick="navigateTo('transfer')" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition">
+        <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-1.5">
+          <i class="fa-solid fa-paper-plane text-sm"></i>
+        </div>
+        <span class="text-xs font-bold text-slate-800">Send</span>
+      </button>
+
+      <button onclick="openReceiveModal()" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition">
+        <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1.5">
+          <i class="fa-solid fa-qrcode text-sm"></i>
+        </div>
+        <span class="text-xs font-bold text-slate-800">Receive</span>
+      </button>
+
+      <button onclick="navigateTo('statement')" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition">
+        <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mb-1.5">
+          <i class="fa-solid fa-chart-pie text-sm"></i>
+        </div>
+        <span class="text-xs font-bold text-slate-800">Statement</span>
+      </button>
+
+      <button onclick="navigateTo('history')" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition">
+        <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mb-1.5">
+          <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+        </div>
+        <span class="text-xs font-bold text-slate-800">History</span>
+      </button>
+    </div>
+
+    <!-- Inflow vs Outflow Mini Banner -->
+    <div class="bg-white border border-slate-200 rounded-2xl p-3.5 mb-6 flex justify-between items-center shadow-sm">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">
+          <i class="fa-solid fa-arrow-down"></i>
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase block">Inflow</span>
+          <span id="mini-inflow" class="text-xs font-bold text-emerald-600">+₹0.00</span>
+        </div>
+      </div>
+      <div class="h-6 w-[1px] bg-slate-200"></div>
+      <div class="flex items-center space-x-2.5">
+        <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center text-xs">
+          <i class="fa-solid fa-arrow-up"></i>
+        </div>
+        <div>
+          <span class="text-[10px] text-slate-400 font-semibold uppercase block">Outflow</span>
+          <span id="mini-outflow" class="text-xs font-bold text-rose-600">-₹0.00</span>
+        </div>
+      </div>
+      <div class="h-6 w-[1px] bg-slate-200"></div>
+      <button onclick="navigateTo('statement')" class="text-xs font-bold text-blue-600 flex items-center space-x-1 hover:underline">
+        <span>Ledger</span>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </button>
+    </div>
+
+    <!-- Recent Transactions Header -->
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-sm font-bold text-slate-900">Recent Transactions</h3>
+      <button onclick="navigateTo('history')" class="text-xs font-bold text-blue-600 hover:underline">View All</button>
+    </div>
+
+    <!-- Transactions List -->
+    <div id="home-tx-list" class="space-y-2.5">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 2: TRANSFER ==================== -->
+  <div id="screen-transfer" class="app-screen p-5 hidden">
+    <div class="flex items-center mb-5">
+      <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600">
+        <i class="fa-solid fa-arrow-left text-base"></i>
+      </button>
+      <h2 class="text-base font-bold text-slate-900 ml-2">Transfer Funds</h2>
+    </div>
+
+    <!-- Frequent Contacts -->
+    <div class="mb-4">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Frequent Payees</span>
+      <div class="flex space-x-3 overflow-x-auto pb-1">
+        <div onclick="selectPayee('bob@datacore.io', 'Bob')" class="flex flex-col items-center cursor-pointer">
+          <div class="w-12 h-12 rounded-full bg-blue-100 border-2 border-blue-600 text-blue-600 flex items-center justify-center font-bold text-sm shadow-sm">BS</div>
+          <span class="text-[11px] font-bold text-slate-700 mt-1">Bob</span>
+        </div>
+        <div onclick="selectPayee('charlie@datacore.io', 'Charlie')" class="flex flex-col items-center cursor-pointer">
+          <div class="w-12 h-12 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm">CD</div>
+          <span class="text-[11px] font-medium text-slate-600 mt-1">Charlie</span>
+        </div>
+        <div onclick="selectPayee('cloud-settlement@datacore.io', 'Cloud')" class="flex flex-col items-center cursor-pointer">
+          <div class="w-12 h-12 rounded-full bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm">CS</div>
+          <span class="text-[11px] font-medium text-slate-600 mt-1">Cloud</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recipient Input -->
+    <div class="mb-4">
+      <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Recipient (Email or Account No.)</label>
+      <div class="relative">
+        <i class="fa-regular fa-user absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+        <input id="transfer-recipient" type="text" value="bob@datacore.io" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm" placeholder="e.g. bob@datacore.io">
+      </div>
+    </div>
+
+    <!-- Amount Input -->
+    <div class="mb-3">
+      <div class="flex justify-between items-center mb-1.5">
+        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Amount (₹)</label>
+        <span id="transfer-avail" class="text-[11px] font-semibold text-blue-600">Available: ₹10,000.00</span>
+      </div>
+      <div class="relative">
+        <span class="absolute left-4 top-2.5 text-xl font-bold text-blue-600">₹</span>
+        <input id="transfer-amount" type="number" value="250.00" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-2xl font-bold text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm" placeholder="0.00">
+      </div>
+    </div>
+
+    <!-- Quick Amount Chips -->
+    <div class="flex flex-wrap gap-2 mb-4">
+      <button onclick="addAmount(100)" class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:border-blue-500 shadow-sm">+₹100</button>
+      <button onclick="addAmount(500)" class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:border-blue-500 shadow-sm">+₹500</button>
+      <button onclick="addAmount(1000)" class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 hover:border-blue-500 shadow-sm">+₹1,000</button>
+      <button onclick="fillMaxAmount()" class="px-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs font-bold text-blue-600 hover:border-blue-500 shadow-sm">Max</button>
+    </div>
+
+    <!-- Concurrency Strategy Selector -->
+    <div class="mb-4">
+      <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Concurrency Strategy</label>
+      <div class="grid grid-cols-3 gap-2">
+        <button id="strat-pessimistic" onclick="setStrategy('PESSIMISTIC')" class="p-2.5 rounded-xl border border-blue-600 bg-blue-600 text-white text-center transition">
+          <div class="text-xs font-bold">Pessimistic</div>
+          <div class="text-[9px] text-white/80">Row Lock</div>
+        </button>
+        <button id="strat-optimistic" onclick="setStrategy('OPTIMISTIC')" class="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-center transition">
+          <div class="text-xs font-bold">Optimistic</div>
+          <div class="text-[9px] text-slate-400">Versioned</div>
+        </button>
+        <button id="strat-atomic" onclick="setStrategy('ATOMIC_CONDITIONAL')" class="p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-center transition">
+          <div class="text-xs font-bold">Atomic</div>
+          <div class="text-[9px] text-slate-400">Conditional</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Note Input -->
+    <div class="mb-6">
+      <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Description (Optional)</label>
+      <div class="relative">
+        <i class="fa-regular fa-comment-dots absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+        <input id="transfer-note" type="text" value="Dinner split" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm" placeholder="What is this for?">
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button onclick="executeTransfer()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-sm shadow-lg shadow-blue-600/30 active:scale-98 transition flex items-center justify-center space-x-2">
+      <i class="fa-solid fa-lock text-xs"></i>
+      <span>Review & Authorize Transfer</span>
+    </button>
+  </div>
+
+  <!-- ==================== SCREEN 3: HISTORY ==================== -->
+  <div id="screen-history" class="app-screen p-5 hidden">
+    <div class="flex items-center mb-4">
+      <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600">
+        <i class="fa-solid fa-arrow-left text-base"></i>
+      </button>
+      <h2 class="text-base font-bold text-slate-900 ml-2">Transaction History</h2>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="relative mb-3">
+      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+      <input id="history-search" oninput="filterHistory()" type="text" class="w-full bg-white border border-slate-200 rounded-2xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm" placeholder="Search by recipient, account or note...">
+    </div>
+
+    <!-- Category Filter Chips -->
+    <div class="flex space-x-2 overflow-x-auto pb-1 mb-4">
+      <button onclick="setHistoryFilter('ALL')" id="hf-all" class="px-3 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-sm">All</button>
+      <button onclick="setHistoryFilter('DEBITS')" id="hf-debits" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-600 border border-slate-200 shadow-sm">Sent (-)</button>
+      <button onclick="setHistoryFilter('CREDITS')" id="hf-credits" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-600 border border-slate-200 shadow-sm">Received (+)</button>
+      <button onclick="setHistoryFilter('REVERSED')" id="hf-reversed" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-600 border border-slate-200 shadow-sm">Reversed</button>
+    </div>
+
+    <!-- History List -->
+    <div id="history-tx-list" class="space-y-2.5">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 4: STATEMENT ==================== -->
+  <div id="screen-statement" class="app-screen p-5 hidden">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center">
+        <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600">
+          <i class="fa-solid fa-arrow-left text-base"></i>
+        </button>
+        <h2 class="text-base font-bold text-slate-900 ml-2">Account Statement</h2>
+      </div>
+      <button onclick="copyToClipboard('Statement summary copied!', 'Statement summary copied!')" class="p-2 text-slate-700 hover:text-blue-600">
+        <i class="fa-solid fa-arrow-up-from-bracket text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Statement Card -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm mb-5">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Current Settled Balance</span>
+          <span id="stmt-bal" class="text-2xl font-black text-slate-900">₹10,000.00</span>
+        </div>
+        <span class="font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">DC-6812-3923</span>
+      </div>
+
+      <!-- Credits vs Debits -->
+      <div class="grid grid-cols-2 gap-2.5 mb-4">
+        <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-100">
+          <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
+            <i class="fa-solid fa-arrow-down text-[10px]"></i>
+            <span>Total Credits</span>
+          </div>
+          <span id="stmt-credits" class="text-base font-bold text-emerald-700">+₹0.00</span>
+        </div>
+        <div class="p-3 rounded-2xl bg-rose-50 border border-rose-100">
+          <div class="flex items-center space-x-1.5 text-rose-700 text-xs font-bold mb-1">
+            <i class="fa-solid fa-arrow-up text-[10px]"></i>
+            <span>Total Debits</span>
+          </div>
+          <span id="stmt-debits" class="text-base font-bold text-rose-700">-₹0.00</span>
+        </div>
+      </div>
+
+      <!-- Inflow Ratio Progress -->
+      <div>
+        <div class="flex justify-between text-[11px] text-slate-500 font-semibold mb-1">
+          <span id="stmt-ratio-label">Inflow Ratio: 100%</span>
+          <span id="stmt-count-label">Ledger Entries: 0</span>
+        </div>
+        <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden flex">
+          <div id="stmt-ratio-bar" class="h-full bg-emerald-500" style="width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="text-sm font-bold text-slate-900 mb-3">Itemized Ledger Journal</h3>
+    <div id="statement-entries-list" class="space-y-2.5">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 5: NOTIFICATIONS ==================== -->
+  <div id="screen-notifications" class="app-screen p-5 hidden">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center">
+        <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600">
+          <i class="fa-solid fa-arrow-left text-base"></i>
+        </button>
+        <h2 class="text-base font-bold text-slate-900 ml-2">Notifications</h2>
+      </div>
+      <button onclick="markAllNotificationsRead()" class="text-xs font-bold text-blue-600 hover:underline">Mark all read</button>
+    </div>
+
+    <div id="notif-list" class="space-y-3">
+      <!-- Injected by JS -->
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 6: PROFILE ==================== -->
+  <div id="screen-profile" class="app-screen p-5 hidden">
+    <div class="flex items-center mb-5">
+      <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600">
+        <i class="fa-solid fa-arrow-left text-base"></i>
+      </button>
+      <h2 class="text-base font-bold text-slate-900 ml-2">Account Profile</h2>
+    </div>
+
+    <!-- User Card -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm text-center mb-4">
+      <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold flex items-center justify-center mx-auto mb-3">
+        A
+      </div>
+      <h3 class="text-base font-bold text-slate-900">Alice Walker</h3>
+      <p class="text-xs text-slate-500 mb-2">alice@datacore.io</p>
+      <span class="inline-block px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
+        CUSTOMER: VERIFIED
+      </span>
+    </div>
+
+    <!-- Security & Limits -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-4 mb-4">
+      <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Security & Limits</h4>
+      
+      <div class="flex justify-between items-center">
+        <div>
+          <span class="text-xs font-bold text-slate-800 block">Lock Outgoing Transfers</span>
+          <span class="text-[10px] text-slate-400">Freeze all debits</span>
+        </div>
+        <input type="checkbox" id="lock-transfers" onchange="toggleTransferLock(this.checked)" class="w-5 h-5 accent-blue-600 cursor-pointer">
+      </div>
+
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <div>
+          <span class="text-xs font-bold text-slate-800 block">Biometric Authentication</span>
+          <span class="text-[10px] text-slate-400">Simulate fingerprint/face unlock</span>
+        </div>
+        <input type="checkbox" checked class="w-5 h-5 accent-blue-600 cursor-pointer">
+      </div>
+
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <div>
+          <span class="text-xs font-bold text-slate-800 block">Daily Limit</span>
+          <span class="text-[10px] text-slate-400">Max ₹50,000 / day</span>
+        </div>
+        <span class="text-xs font-bold text-blue-600">Active</span>
+      </div>
+    </div>
+
+    <!-- Persistent Data Reset Button -->
+    <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm mb-4">
+      <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Wallet Management</h4>
+      <p class="text-[11px] text-slate-500 mb-3">All your transfers are automatically saved. If you wish to reset your test wallet back to ₹10,000:</p>
+      <button onclick="resetWallet()" class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 rounded-xl text-xs font-bold transition">
+        Reset Test Wallet to ₹10,000
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== RECEIVE QR MODAL ==================== -->
+  <div id="modal-receive" class="modal-sheet p-6 text-center">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <h3 class="text-base font-bold text-slate-900 mb-1">Receive Funds</h3>
+    <p class="text-xs text-slate-500 mb-5">Scan QR or share your payment handle</p>
+
+    <!-- QR Simulation Box -->
+    <div class="w-48 h-48 bg-white border-2 border-slate-200 rounded-3xl mx-auto p-4 shadow-sm flex flex-col items-center justify-center mb-5">
+      <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg mb-2">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <i class="fa-solid fa-qrcode text-7xl text-slate-900"></i>
+    </div>
+
+    <!-- Account Details Box -->
+    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-4 text-left">
+      <div class="flex justify-between items-center mb-1">
+        <span class="text-[10px] font-bold text-slate-400 uppercase">Account Number</span>
+        <button onclick="copyToClipboard('DC-6812-3923', 'Account number copied!')" class="text-blue-600 text-xs font-bold">Copy</button>
+      </div>
+      <span class="font-mono text-xs font-bold text-slate-800">DC-6812-3923</span>
+    </div>
+
+    <button onclick="copyToClipboard('DataCore: DC-6812-3923 (alice@datacore.io)', 'Payment handle copied!')" class="w-full py-3.5 bg-blue-600 text-white rounded-2xl font-bold text-xs shadow-md">
+      Share Payment Handle
+    </button>
+  </div>
+
+  <!-- ==================== TRANSACTION RECEIPT & TRACE MODAL ==================== -->
+  <div id="modal-receipt" class="modal-sheet p-6">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex justify-between items-center mb-2">
+      <span id="rcpt-status-pill" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">COMPLETED</span>
+      <span id="rcpt-amount" class="text-2xl font-black text-rose-600">-₹250.00</span>
+    </div>
+    <h3 id="rcpt-desc" class="text-base font-bold text-slate-900 mb-4">Dinner split</h3>
+
+    <!-- Details Box -->
+    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-2.5 mb-4">
+      <div class="flex justify-between">
+        <span class="text-slate-400">Recipient</span>
+        <span id="rcpt-to" class="font-bold text-slate-800">bob@datacore.io</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Strategy</span>
+        <span id="rcpt-strategy" class="font-bold text-blue-600">PESSIMISTIC (Row Lock)</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Engine Latency</span>
+        <span id="rcpt-latency" class="font-bold text-slate-800">8.4 ms</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Transaction ID</span>
+        <span id="rcpt-id" class="font-mono font-bold text-slate-800">tx-98218172</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Idempotency Key</span>
+        <span id="rcpt-idem" class="font-mono text-slate-600">uuid-v4-active</span>
+      </div>
+    </div>
+
+    <!-- Invariant badge -->
+    <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] flex items-center space-x-2 mb-4">
+      <i class="fa-solid fa-check-double text-xs text-emerald-600"></i>
+      <span>Double-entry invariant confirmed & committed.</span>
+    </div>
+
+    <div class="flex space-x-2">
+      <button onclick="copyToClipboard('Receipt copied!', 'Receipt copied!')" class="flex-1 py-3 border border-slate-200 rounded-xl font-bold text-xs text-slate-700">
+        Copy Receipt
+      </button>
+      <button id="rcpt-reverse-btn" onclick="executeReversal()" class="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs shadow-md">
+        Request Reversal
+      </button>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex justify-around items-center px-4 z-30">
+    <button onclick="navigateTo('home')" id="tab-home" class="tab-btn active flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+      <i class="fa-solid fa-house text-lg"></i>
+      <span class="text-[10px] font-bold mt-1">Home</span>
+    </button>
+    <button onclick="navigateTo('transfer')" id="tab-transfer" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+      <i class="fa-solid fa-paper-plane text-lg"></i>
+      <span class="text-[10px] font-bold mt-1">Transfer</span>
+    </button>
+    <button onclick="navigateTo('statement')" id="tab-statement" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+      <i class="fa-solid fa-chart-pie text-lg"></i>
+      <span class="text-[10px] font-bold mt-1">Statement</span>
+    </button>
+    <button onclick="navigateTo('history')" id="tab-history" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+      <i class="fa-solid fa-clock-rotate-left text-lg"></i>
+      <span class="text-[10px] font-bold mt-1">History</span>
+    </button>
+    <button onclick="navigateTo('profile')" id="tab-profile" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+      <i class="fa-solid fa-user text-lg"></i>
+      <span class="text-[10px] font-bold mt-1">Profile</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  // ================= STORAGE KEYS =================
+  const STORAGE_KEYS = {
+    BALANCE: 'datacore_pay_persistent_balance',
+    TRANSACTIONS: 'datacore_pay_persistent_transactions',
+    NOTIFICATIONS: 'datacore_pay_persistent_notifications',
+    LOCKED: 'datacore_pay_persistent_locked'
+  };
+
+  // Default Initial Data (only used on very first visit or manual reset)
+  const DEFAULT_INITIAL_BALANCE = 10000.00;
+  const DEFAULT_INITIAL_TRANSACTIONS = [
+    { id: 'tx-101', type: 'DEBIT', to: 'bob@datacore.io', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '9.2 ms' },
+    { id: 'tx-102', type: 'CREDIT', to: 'charlie@datacore.io', amount: 1500.00, desc: 'API Consultancy Fee', date: 'Nov 12', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '12.4 ms' },
+    { id: 'tx-103', type: 'DEBIT', to: 'cloud-settlement@datacore.io', amount: 500.00, desc: 'Node Hosting', date: 'Nov 11', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '7.8 ms' }
+  ];
+
+  const DEFAULT_INITIAL_NOTIFICATIONS = [
+    { id: 'n1', title: 'Protected Ledger Active', msg: 'Canonical row-locking guarantees 0 race conditions.', unread: true, time: '10m ago' },
+    { id: 'n2', title: 'Test Funds Provisioned', msg: '₹10,000 initial test balance is ready.', unread: false, time: '1d ago' }
+  ];
+
+  // ================= LOAD PERSISTENT STATE =================
+  let balance = parseFloat(localStorage.getItem(STORAGE_KEYS.BALANCE));
+  if (isNaN(balance)) {
+    balance = DEFAULT_INITIAL_BALANCE;
+    localStorage.setItem(STORAGE_KEYS.BALANCE, balance.toString());
+  }
+
+  let transactions = [];
+  try {
+    const savedTx = localStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
+    transactions = savedTx ? JSON.parse(savedTx) : DEFAULT_INITIAL_TRANSACTIONS;
+  } catch (_) {
+    transactions = DEFAULT_INITIAL_TRANSACTIONS;
+  }
+  localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
+
+  let notifications = [];
+  try {
+    const savedNotifs = localStorage.getItem(STORAGE_KEYS.NOTIFICATIONS);
+    notifications = savedNotifs ? JSON.parse(savedNotifs) : DEFAULT_INITIAL_NOTIFICATIONS;
+  } catch (_) {
+    notifications = DEFAULT_INITIAL_NOTIFICATIONS;
+  }
+  localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
+
+  let isTransfersLocked = localStorage.getItem(STORAGE_KEYS.LOCKED) === 'true';
+
+  let isBalanceHidden = false;
+  let selectedStrategy = 'PESSIMISTIC';
+  let activeTxId = null;
+
+  // Save Helpers
+  function saveState() {
+    localStorage.setItem(STORAGE_KEYS.BALANCE, balance.toString());
+    localStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(transactions));
+    localStorage.setItem(STORAGE_KEYS.NOTIFICATIONS, JSON.stringify(notifications));
+    localStorage.setItem(STORAGE_KEYS.LOCKED, isTransfersLocked.toString());
+  }
+
+  function updateClock() {
+    const d = new Date();
+    const h = String(d.getHours()).padStart(2, '0');
+    const m = String(d.getMinutes()).padStart(2, '0');
+    document.getElementById('live-time').innerText = `${h}:${m}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  function showToast(msg, isSuccess = true) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-msg');
+    const toastIcon = document.getElementById('toast-icon');
+    toastMsg.innerText = msg;
+    toastIcon.className = isSuccess ? 'fa-solid fa-circle-check text-emerald-400' : 'fa-solid fa-circle-xmark text-rose-400';
+    toast.classList.remove('-translate-y-20', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    setTimeout(() => {
+      toast.classList.add('-translate-y-20', 'opacity-0');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }, 2500);
+  }
+
+  function copyToClipboard(text, alertMsg) {
+    navigator.clipboard.writeText(text);
+    showToast(alertMsg);
+  }
+
+  function toggleBalanceVisibility() {
+    isBalanceHidden = !isBalanceHidden;
+    renderBalance();
+  }
+
+  function renderBalance() {
+    const disp = document.getElementById('balance-display');
+    const icon = document.getElementById('eye-icon');
+    const avail = document.getElementById('transfer-avail');
+    const stmtBal = document.getElementById('stmt-bal');
+
+    if (isBalanceHidden) {
+      disp.innerText = '₹••••••';
+      icon.className = 'fa-regular fa-eye-slash text-xs';
+    } else {
+      disp.innerText = `₹${balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      icon.className = 'fa-regular fa-eye text-xs';
+    }
+
+    if (avail) avail.innerText = `Available: ₹${balance.toFixed(2)}`;
+    if (stmtBal) stmtBal.innerText = `₹${balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+  }
+
+  function toggleTransferLock(locked) {
+    isTransfersLocked = locked;
+    saveState();
+    showToast(locked ? 'Outgoing transfers are now locked' : 'Outgoing transfers unlocked');
+  }
+
+  function resetWallet() {
+    if (confirm('Are you sure you want to reset your test wallet balance back to ₹10,000.00?')) {
+      balance = DEFAULT_INITIAL_BALANCE;
+      transactions = [...DEFAULT_INITIAL_TRANSACTIONS];
+      notifications = [...DEFAULT_INITIAL_NOTIFICATIONS];
+      isTransfersLocked = false;
+      saveState();
+      renderBalance();
+      renderTransactions();
+      renderNotifications();
+      showToast('Wallet reset to ₹10,000.00 successfully!');
+      navigateTo('home');
+    }
+  }
+
+  function navigateTo(screenId) {
+    closeAllModals();
+    ['home', 'transfer', 'history', 'statement', 'notifications', 'profile'].forEach(id => {
+      document.getElementById(`screen-${id}`).classList.add('hidden');
+      const tab = document.getElementById(`tab-${id}`);
+      if (tab) tab.classList.remove('active');
+    });
+    document.getElementById(`screen-${screenId}`).classList.remove('hidden');
+    const activeTab = document.getElementById(`tab-${screenId}`);
+    if (activeTab) activeTab.classList.add('active');
+  }
+
+  function renderTransactions() {
+    const homeList = document.getElementById('home-tx-list');
+    const historyList = document.getElementById('history-tx-list');
+    const stmtList = document.getElementById('statement-entries-list');
+
+    let html = '';
+    let stmtHtml = '';
+
+    let totalCredits = 0;
+    let totalDebits = 0;
+
+    transactions.forEach(tx => {
+      const isDebit = tx.type === 'DEBIT';
+      if (isDebit) {
+        totalDebits += tx.amount;
+      } else {
+        totalCredits += tx.amount;
+      }
+
+      const color = isDebit ? 'text-rose-600' : 'text-emerald-600';
+      const bg = isDebit ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600';
+      const icon = isDebit ? 'fa-arrow-up' : 'fa-arrow-down';
+      const sign = isDebit ? '-' : '+';
+
+      html += `
+        <div onclick="openReceipt('${tx.id}')" class="bg-white border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer active:scale-98 transition">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl ${bg} flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid ${icon}"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-900 leading-tight">${tx.desc}</p>
+              <p class="text-[10px] text-slate-400">${tx.to} • ${tx.date}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold ${color}">${sign}₹${tx.amount.toFixed(2)}</span>
+            <span class="block text-[9px] font-bold ${tx.status === 'COMPLETED' ? 'text-emerald-600' : 'text-purple-600'} uppercase">${tx.status}</span>
+          </div>
+        </div>
+      `;
+
+      stmtHtml += `
+        <div class="bg-white border border-slate-200 rounded-2xl p-3 flex justify-between items-center text-xs">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-lg ${bg} flex items-center justify-center text-xs">
+              <i class="fa-solid ${icon}"></i>
+            </div>
+            <div>
+              <span class="font-bold text-slate-900 block">${tx.desc}</span>
+              <span class="text-[10px] text-slate-400 font-mono">${tx.date}</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="font-bold ${color}">${sign}₹${tx.amount.toFixed(2)}</span>
+            <span class="text-[10px] text-slate-400 block font-mono">${tx.status}</span>
+          </div>
+        </div>
+      `;
+    });
+
+    homeList.innerHTML = html || '<div class="text-center py-6 text-xs text-slate-400">No transactions recorded yet</div>';
+    historyList.innerHTML = html || '<div class="text-center py-6 text-xs text-slate-400">No transactions recorded yet</div>';
+    stmtList.innerHTML = stmtHtml || '<div class="text-center py-6 text-xs text-slate-400">No ledger entries recorded yet</div>';
+
+    // Update Mini Stats & Statement Summaries
+    document.getElementById('mini-inflow').innerText = `+₹${totalCredits.toFixed(2)}`;
+    document.getElementById('mini-outflow').innerText = `-₹${totalDebits.toFixed(2)}`;
+    document.getElementById('stmt-credits').innerText = `+₹${totalCredits.toFixed(2)}`;
+    document.getElementById('stmt-debits').innerText = `-₹${totalDebits.toFixed(2)}`;
+
+    const totalVol = totalCredits + totalDebits;
+    const ratio = totalVol > 0 ? Math.round((totalCredits / totalVol) * 100) : 100;
+    document.getElementById('stmt-ratio-label').innerText = `Inflow Ratio: ${ratio}%`;
+    document.getElementById('stmt-count-label').innerText = `Ledger Entries: ${transactions.length}`;
+    document.getElementById('stmt-ratio-bar').style.width = `${ratio}%`;
+  }
+
+  function renderNotifications() {
+    const list = document.getElementById('notif-list');
+    let html = '';
+    const unreadCount = notifications.filter(n => n.unread).length;
+    const badge = document.getElementById('notif-badge');
+    if (unreadCount > 0) {
+      badge.style.display = 'flex';
+      badge.innerText = unreadCount;
+    } else {
+      badge.style.display = 'none';
+    }
+
+    notifications.forEach(n => {
+      html += `
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-start space-x-3">
+          <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-shield-halved text-xs"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-bold text-slate-900">${n.title}</span>
+              <span class="text-[9px] text-slate-400">${n.time}</span>
+            </div>
+            <p class="text-[11px] text-slate-600 mt-0.5 leading-snug">${n.msg}</p>
+          </div>
+        </div>
+      `;
+    });
+    list.innerHTML = html;
+  }
+
+  function markAllNotificationsRead() {
+    notifications = notifications.map(n => ({ ...n, unread: false }));
+    saveState();
+    renderNotifications();
+    showToast('All notifications marked read');
+  }
+
+  function openReceipt(txId) {
+    const tx = transactions.find(t => t.id === txId) || transactions[0];
+    activeTxId = tx.id;
+    document.getElementById('rcpt-status-pill').innerText = tx.status;
+    document.getElementById('rcpt-amount').innerText = `${tx.type === 'DEBIT' ? '-' : '+'}₹${tx.amount.toFixed(2)}`;
+    document.getElementById('rcpt-amount').className = `text-2xl font-black ${tx.type === 'DEBIT' ? 'text-rose-600' : 'text-emerald-600'}`;
+    document.getElementById('rcpt-desc').innerText = tx.desc;
+    document.getElementById('rcpt-to').innerText = tx.to;
+    document.getElementById('rcpt-strategy').innerText = `${tx.strategy}`;
+    document.getElementById('rcpt-latency').innerText = tx.latency;
+    document.getElementById('rcpt-id').innerText = tx.id;
+    document.getElementById('rcpt-idem').innerText = `idemp-${tx.id.replace('tx-', '')}`;
+
+    const revBtn = document.getElementById('rcpt-reverse-btn');
+    revBtn.style.display = (tx.type === 'DEBIT' && tx.status === 'COMPLETED') ? 'block' : 'none';
+
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-receipt').classList.add('active');
+  }
+
+  function openReceiveModal() {
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-receive').classList.add('active');
+  }
+
+  function closeAllModals() {
+    document.getElementById('backdrop').classList.remove('active');
+    document.querySelectorAll('.modal-sheet').forEach(m => m.classList.remove('active'));
+  }
+
+  function selectPayee(email, name) {
+    document.getElementById('transfer-recipient').value = email;
+    showToast(`Recipient set to ${name}`);
+  }
+
+  function addAmount(delta) {
+    const el = document.getElementById('transfer-amount');
+    const val = (parseFloat(el.value) || 0) + delta;
+    el.value = val.toFixed(2);
+  }
+
+  function fillMaxAmount() {
+    document.getElementById('transfer-amount').value = balance.toFixed(2);
+  }
+
+  function setStrategy(strat) {
+    selectedStrategy = strat;
+    ['pessimistic', 'optimistic', 'atomic'].forEach(s => {
+      const btn = document.getElementById(`strat-${s}`);
+      btn.className = 'p-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-center transition';
+    });
+    const key = strat === 'ATOMIC_CONDITIONAL' ? 'atomic' : strat.toLowerCase();
+    document.getElementById(`strat-${key}`).className = 'p-2.5 rounded-xl border border-blue-600 bg-blue-600 text-white text-center transition';
+  }
+
+  function executeTransfer() {
+    if (isTransfersLocked) {
+      return showToast('Transfers are locked by security settings', false);
+    }
+
+    const amt = parseFloat(document.getElementById('transfer-amount').value) || 0;
+    const recipient = document.getElementById('transfer-recipient').value.trim();
+    const note = document.getElementById('transfer-note').value.trim() || 'Fund Transfer';
+
+    if (amt <= 0) return showToast('Enter valid transfer amount', false);
+    if (amt > balance) return showToast('Insufficient account balance', false);
+
+    // 1. Deduct balance permanently
+    balance -= amt;
+
+    // 2. Create and persist new debit transaction
+    const newTx = {
+      id: `tx-${Date.now().toString().slice(-4)}`,
+      type: 'DEBIT',
+      to: recipient,
+      amount: amt,
+      desc: note,
+      date: 'Just now',
+      status: 'COMPLETED',
+      strategy: selectedStrategy,
+      latency: `${(Math.random() * 8 + 4).toFixed(1)} ms`
+    };
+
+    transactions.unshift(newTx);
+
+    // 3. Add notification
+    notifications.unshift({
+      id: `n-${Date.now()}`,
+      title: 'Transfer Sent',
+      msg: `₹${amt.toFixed(2)} sent to ${recipient} with ${selectedStrategy} lock.`,
+      unread: true,
+      time: 'Just now'
+    });
+
+    // 4. Save to permanent storage so refresh will NEVER reset or refund
+    saveState();
+
+    // 5. Update UI
+    renderBalance();
+    renderTransactions();
+    renderNotifications();
+
+    showToast(`Transferred ₹${amt.toFixed(2)} successfully!`);
+    navigateTo('home');
+  }
+
+  function executeReversal() {
+    if (!activeTxId) return;
+    const tx = transactions.find(t => t.id === activeTxId);
+    if (tx && tx.status === 'COMPLETED' && tx.type === 'DEBIT') {
+      tx.status = 'REVERSED';
+      balance += tx.amount;
+
+      notifications.unshift({
+        id: `n-${Date.now()}`,
+        title: 'Transaction Reversed',
+        msg: `Compensatory ledger reversal of ₹${tx.amount.toFixed(2)} completed.`,
+        unread: true,
+        time: 'Just now'
+      });
+
+      // Save to permanent storage
+      saveState();
+
+      renderBalance();
+      renderTransactions();
+      renderNotifications();
+      closeAllModals();
+      showToast(`Transaction ${tx.id} reversed and refunded!`);
+    }
+  }
+
+  function filterHistory() {
+    const q = document.getElementById('history-search').value.toLowerCase();
+    const list = document.getElementById('history-tx-list');
+    const filtered = transactions.filter(t => t.desc.toLowerCase().includes(q) || t.to.toLowerCase().includes(q));
+    let html = '';
+    filtered.forEach(tx => {
+      const isDebit = tx.type === 'DEBIT';
+      html += `
+        <div onclick="openReceipt('${tx.id}')" class="bg-white border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl ${isDebit ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'} flex items-center justify-center font-bold">
+              <i class="fa-solid ${isDebit ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-900">${tx.desc}</p>
+              <p class="text-[10px] text-slate-400">${tx.to} • ${tx.date}</p>
+            </div>
+          </div>
+          <span class="text-xs font-bold ${isDebit ? 'text-rose-600' : 'text-emerald-600'}">${isDebit ? '-' : '+'}₹${tx.amount.toFixed(2)}</span>
+        </div>
+      `;
+    });
+    list.innerHTML = html || '<div class="text-center py-8 text-xs text-slate-400">No transactions match query</div>';
+  }
+
+  // Initial Load
+  const lockCheckbox = document.getElementById('lock-transfers');
+  if (lockCheckbox) lockCheckbox.checked = isTransfersLocked;
+
+  renderBalance();
+  renderTransactions();
+  renderNotifications();
+</script>
+
+</body>
+</html>
