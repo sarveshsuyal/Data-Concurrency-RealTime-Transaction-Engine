@@ -175,22 +175,95 @@ Data-Concurrency-RealTime-Transaction-Engine/
 
 ---
 
-## 5. Deployment Guide
+## 5. Deployment Guide (3-Side Architecture)
 
-### Backend & PostgreSQL on Render
-1. Push this repository to GitHub.
-2. In Render, select **Blueprints** and connect your repository pointing to `render.yaml`.
-3. Render automatically provisions:
-   - One managed PostgreSQL database.
-   - One Django Web Service with automated migrations and Gunicorn execution.
+### 5.1 Side 1: Admin Dashboard on Vercel
+Deploy the React + Vite + Tailwind CSS admin dashboard globally on Vercel with automated continuous deployment.
 
-### Admin Dashboard on Vercel
-1. Import the repository into Vercel.
-2. Set Root Directory to `admin-dashboard`.
-3. Framework Preset: **Vite**.
-4. Set Environment Variable:
-   - `VITE_API_BASE_URL`: `https://your-render-backend.onrender.com`
-5. Deploy.
+#### Option A: Via Vercel Web Dashboard (Recommended)
+1. Navigate to [vercel.com](https://vercel.com) and log in.
+2. Click **Add New...** > **Project**.
+3. Import your GitHub repository (`sarveshsuyal/Data-Concurrency-RealTime-Transaction-Engine`).
+4. In the **Configure Project** screen:
+   - **Framework Preset**: `Vite`
+   - **Root Directory**: Click *Edit* and select `admin-dashboard`.
+   - **Build Command**: `npm run build` (or leave default `tsc && vite build`)
+   - **Output Directory**: `dist`
+5. Expand **Environment Variables**:
+   - `VITE_API_BASE_URL`: Enter your live Render backend URL (e.g., `https://datacore-backend.onrender.com`).
+6. Click **Deploy**. Vercel will build and assign an HTTPS URL (e.g., `https://datacore-admin.vercel.app`).
+
+#### Option B: Via Vercel CLI
+```bash
+cd admin-dashboard
+npx vercel
+# Follow prompts: Link to existing project or create new, set build settings
+# Set production environment variable:
+npx vercel env add VITE_API_BASE_URL production
+# Deploy to production:
+npx vercel --prod
+```
+
+---
+
+### 5.2 Side 2: Centralized Backend on Render
+Deploy the Django REST Framework backend on Render. You can deploy directly **without a separate database** using Django's built-in SQLite, or connect a managed PostgreSQL instance for production-grade row locks.
+
+#### Option A: Direct Web Service (Zero Separate Database Required)
+1. Go to [dashboard.render.com](https://dashboard.render.com) and click **New +** > **Web Service**.
+2. Connect your GitHub repository (`sarveshsuyal/Data-Concurrency-RealTime-Transaction-Engine`).
+3. Configure the service settings:
+   - **Name**: `datacore-backend`
+   - **Region**: Oregon (or your preferred region)
+   - **Branch**: `main`
+   - **Root Directory**: (Leave blank — root of repo)
+   - **Runtime**: `Python 3`
+   - **Build Command**:
+     ```bash
+     pip install -r backend/requirements.txt && python backend/manage.py collectstatic --no-input && python backend/manage.py migrate && python backend/manage.py setup_datacore
+     ```
+   - **Start Command**:
+     ```bash
+     gunicorn config.wsgi:application --chdir backend --bind 0.0.0.0:$PORT --workers 4 --threads 2
+     ```
+   - **Instance Type**: `Free`
+4. Add the following **Environment Variables**:
+   - `PYTHON_VERSION`: `3.12.3`
+   - `DEBUG`: `False`
+   - `DJANGO_SECRET_KEY`: Generate a random secure string (or click Generate)
+   - `ALLOWED_HOSTS`: `.onrender.com,localhost`
+   - `CORS_ALLOW_ALL_ORIGINS`: `True`
+   - `SECURE_SSL_REDIRECT`: `True`
+   - `SESSION_COOKIE_SECURE`: `True`
+   - `CSRF_COOKIE_SECURE`: `True`
+5. Click **Create Web Service**. Render will install dependencies, collect static assets via WhiteNoise, execute migrations, and automatically run `setup_datacore` to seed the admin user (`admin@datacore.io` / `AdminPassword123!`) and demo customer accounts.
+
+#### Option B: Using Render Blueprint (`render.yaml`)
+1. In Render, select **Blueprints** > **New Blueprint Instance**.
+2. Connect this repository; Render automatically detects `render.yaml`.
+3. *(Optional)* If you want a managed PostgreSQL database, create one on Render (or Supabase / Neon) and supply its connection string in `DATABASE_URL`. If `DATABASE_URL` is omitted, it operates on built-in SQLite automatically.
+
+---
+
+### 5.3 Side 3: Android Mobile App (.apk) via GitHub Actions (Zero Local Tools Needed)
+Build and download the Android customer mobile app `.apk` directly in the cloud using GitHub Actions. You **do not** need Flutter, Java JDK, Android Studio, or Android SDKs installed on your local computer.
+
+#### How to Trigger Build and Download APK:
+1. Push your code to GitHub on the `main` branch.
+2. In your GitHub repository, click on the **Actions** tab at the top.
+3. In the left sidebar, select the workflow: **Build Android APK**.
+4. Click the **Run workflow** dropdown button on the right:
+   - **Backend API Base URL**: Enter your Render backend URL (e.g., `https://datacore-backend.onrender.com`).
+   - **Publish as a downloadable GitHub Release**: Check `true` (default).
+5. Click the green **Run workflow** button.
+6. GitHub will launch an Ubuntu runner that:
+   - Sets up JDK 17 & Flutter stable.
+   - Generates the Android platform scaffolding with internet permissions.
+   - Compiles the release binary with your Render backend URL injected.
+   - Packages `app-release.apk`.
+7. **Download the APK**:
+   - **From Workflow Artifacts**: Click the completed workflow run. Scroll down to the **Artifacts** section at the bottom of the page and click `datacore-customer-app-release-apk` to download the zip file containing the `.apk`.
+   - **From GitHub Releases**: Go to the **Releases** section on the main page of your repository. Under the generated release, download `app-release.apk` directly to install on any Android phone.
 
 ---
 

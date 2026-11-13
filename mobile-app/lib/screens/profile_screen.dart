@@ -85,7 +85,7 @@ class ProfileScreen extends StatelessWidget {
                   const Text('PRIMARY LEDGER ACCOUNT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
                   const SizedBox(height: 12),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Account Number', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
                       Text(account?.accountNumber ?? 'N/A', style: const TextStyle(fontWeight: FontWeight.bold, fontFamily: 'monospace', fontSize: 13)),
@@ -93,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const Divider(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Currency', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
                       Text(account?.currency ?? 'INR', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
@@ -101,7 +101,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const Divider(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Engine Version', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
                       Text('v${account?.version ?? 0}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),

@@ -3,8 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  // Use 127.0.0.1 for Web/Desktop/localhost; 10.0.2.2 for Android emulator
-  static const String defaultBaseUrl = kIsWeb ? 'http://127.0.0.1:8000' : 'http://10.0.2.2:8000';
+  // Configurable at compile-time via --dart-define=API_BASE_URL=https://your-backend.onrender.com
+  // Defaults to 127.0.0.1 for Web or 10.0.2.2 for Android emulator when not specified
+  static const String defaultBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: kIsWeb ? 'http://127.0.0.1:8000' : 'http://10.0.2.2:8000',
+  );
   final Dio dio;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 

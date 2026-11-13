@@ -59,7 +59,7 @@ class _TransferScreenState extends State<TransferScreen> {
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Recipient', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
                       Text(_recipientController.text, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
@@ -67,7 +67,7 @@ class _TransferScreenState extends State<TransferScreen> {
                   ),
                   const Divider(height: 20),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.between,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Amount', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
                       Text('₹${amount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF436CF0))),
@@ -76,7 +76,7 @@ class _TransferScreenState extends State<TransferScreen> {
                   if (_descController.text.isNotEmpty) ...[
                     const Divider(height: 20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.between,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Note', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
                         Text(_descController.text, style: const TextStyle(fontSize: 13)),
