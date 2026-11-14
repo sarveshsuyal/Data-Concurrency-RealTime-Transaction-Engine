@@ -426,7 +426,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: BottomNavigationBar(
           currentIndex: _currentTabIndex,
-          onTap: (index) => setState(() => _currentTabIndex = index),
+          onTap: (index) {
+            if (index == 2) {
+              context.read<AccountProvider>().fetchTransactions();
+            }
+            setState(() => _currentTabIndex = index);
+          },
           backgroundColor: Colors.white,
           selectedItemColor: AppTheme.primary,
           unselectedItemColor: AppTheme.textMuted,

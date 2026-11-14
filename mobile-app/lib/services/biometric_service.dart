@@ -13,8 +13,8 @@ class BiometricService {
   factory BiometricService() => _instance;
   BiometricService._internal();
 
-  bool _isEnrolled = true;
-  bool _isHardwareAvailable = true;
+  final bool _isEnrolled = true;
+  final bool _isHardwareAvailable = true;
 
   /// Check if device supports platform biometric authentication
   Future<bool> canCheckBiometrics() async {

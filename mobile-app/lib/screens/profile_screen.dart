@@ -311,19 +311,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       final result = await BiometricService().authenticate(
                         reason: 'Scan your fingerprint to enable biometric unlock',
                       );
+                      if (!mounted) return;
                       if (result == BiometricAuthResult.success) {
                         setState(() => _biometricsEnabled = true);
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Biometric security enabled successfully.')),
-                          );
-                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Biometric security enabled successfully.')),
+                        );
                       } else {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Biometric verification cancelled or failed.')),
-                          );
-                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Biometric verification cancelled or failed.')),
+                        );
                       }
                     } else {
                       setState(() => _biometricsEnabled = false);
