@@ -26,11 +26,14 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',')
+    for host in os.environ.get(
+        'ALLOWED_HOSTS',
+        'localhost,127.0.0.1,testserver,.onrender.com,datacore-backend-wktd.onrender.com'
+    ).split(',')
     if host.strip()
 ]
 if '*' not in ALLOWED_HOSTS and DEBUG:
-    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1', 'testserver'])
+    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1', 'testserver', 'datacore-backend-wktd.onrender.com'])
 
 # Application definition
 INSTALLED_APPS = [
@@ -176,11 +179,23 @@ if CORS_ALLOWED_ORIGINS_RAW:
     ]
 else:
     CORS_ALLOWED_ORIGINS = [
+        'https://transactionenngine.vercel.app',
         'http://localhost:3000',
         'http://localhost:5173',
         'http://127.0.0.1:3000',
         'http://127.0.0.1:5173',
     ]
+
+# CSRF Trusted Origins for Render & Vercel
+CSRF_TRUSTED_ORIGINS = [
+    'https://datacore-backend-wktd.onrender.com',
+    'https://*.onrender.com',
+    'https://transactionenngine.vercel.app',
+    'https://*.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:8000',
+]
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [

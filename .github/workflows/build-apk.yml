@@ -23,6 +23,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'gradle'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -31,13 +32,23 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Cache Flutter Pub Packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            mobile-app/.dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('mobile-app/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
       - name: Install Flutter Dependencies
         working-directory: mobile-app
         run: flutter pub get
 
       - name: Build Android Release APK
         working-directory: mobile-app
-        run: flutter build apk --release
+        run: flutter build apk --release --dart-define=API_BASE_URL=https://datacore-backend-wktd.onrender.com
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
