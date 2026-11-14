@@ -3,7 +3,11 @@ name: Build Customer App APK
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -41,3 +45,11 @@ jobs:
           name: DataCore-CustomerApp-Release-APK
           path: mobile-app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: mobile-app/build/app/outputs/flutter-apk/app-release.apk
+          name: "DataCore Customer App ${{ github.ref_name }}"
+          generate_release_notes: true
