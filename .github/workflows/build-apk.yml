@@ -32,7 +32,7 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - name: Checkout project
+      - name: Checkout latest commit
         uses: actions/checkout@v4
 
       - name: Setup Java JDK 17
@@ -41,7 +41,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Flutter
+      - name: Install Flutter SDK
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -50,34 +50,21 @@ jobs:
       - name: Verify Flutter Installation
         run: flutter --version
 
-      - name: Generate Android project scaffolding if missing
+      - name: Clean Flutter Project & Stale Builds
         working-directory: mobile-app
         run: |
-          if [ ! -d "android" ]; then
-            echo "android/ directory not found in mobile-app. Generating scaffolding with flutter create..."
-            flutter create --platforms=android --org com.datacore .
-          else
-            echo "android/ directory exists."
-          fi
+          rm -rf build/
+          flutter clean
 
-      - name: Ensure Internet Permission in AndroidManifest.xml
-        working-directory: mobile-app
-        run: |
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-          if [ -f "$MANIFEST" ]; then
-            if ! grep -q "android.permission.INTERNET" "$MANIFEST"; then
-              echo "Injecting INTERNET permission into $MANIFEST"
-              sed -i '/<manifest/a \    <uses-permission android:name="android.permission.INTERNET"/>' "$MANIFEST"
-            else
-              echo "INTERNET permission already present in $MANIFEST"
-            fi
-          fi
-
-      - name: Install Flutter dependencies
+      - name: Install Flutter Dependencies
         working-directory: mobile-app
         run: flutter pub get
 
-      - name: Build Android Release APK
+      - name: Analyze Dart Source
+        working-directory: mobile-app
+        run: flutter analyze --no-fatal-infos || true
+
+      - name: Build Fresh Android Release APK
         working-directory: mobile-app
         env:
           TARGET_API_URL: ${{ inputs.api_base_url || 'https://datacore-backend-wktd.onrender.com' }}
@@ -85,9 +72,20 @@ jobs:
           echo "Building Release APK with API_BASE_URL: $TARGET_API_URL"
           flutter build apk --release --dart-define=API_BASE_URL="$TARGET_API_URL"
 
-      - name: Verify APK Generated
+      - name: Verify Fresh Release APK Output
         run: |
-          ls -la mobile-app/build/app/outputs/flutter-apk/app-release.apk
+          APK_PATH="mobile-app/build/app/outputs/flutter-apk/app-release.apk"
+          if [ ! -f "$APK_PATH" ]; then
+            echo "ERROR: Release APK was not generated at $APK_PATH"
+            exit 1
+          fi
+          APK_SIZE=$(stat -c%s "$APK_PATH")
+          echo "Generated APK size: $APK_SIZE bytes"
+          if [ "$APK_SIZE" -lt 10000000 ]; then
+            echo "ERROR: APK is abnormally small ($APK_SIZE bytes)"
+            exit 1
+          fi
+          ls -lh "$APK_PATH"
 
       - name: Upload APK as Workflow Artifact
         uses: actions/upload-artifact@v4
@@ -110,6 +108,7 @@ jobs:
             - **Build Number:** `${{ github.run_number }}`
             - **Commit:** `${{ github.sha }}`
             - **Backend API URL:** `${{ inputs.api_base_url || 'https://datacore-backend-wktd.onrender.com' }}`
+            - **UI Framework:** Native Flutter (PhonePe High-Concurrency Edition)
             
             Download `app-release.apk` below and install directly on your Android device.
           draft: false

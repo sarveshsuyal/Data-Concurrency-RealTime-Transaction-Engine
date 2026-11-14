@@ -2,18 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/account_provider.dart';
+import '../theme/app_theme.dart';
+import '../widgets/upi_pin_sheet.dart';
+import '../widgets/success_receipt_screen.dart';
 
 class TransferScreen extends StatefulWidget {
-  const TransferScreen({super.key});
+  final String? initialRecipient;
+
+  const TransferScreen({super.key, this.initialRecipient});
 
   @override
   State<TransferScreen> createState() => _TransferScreenState();
 }
 
 class _TransferScreenState extends State<TransferScreen> {
-  final _recipientController = TextEditingController(text: 'bob@datacore.io');
-  final _amountController = TextEditingController(text: '250.00');
-  final _descController = TextEditingController(text: 'Lunch split');
+  late final TextEditingController _recipientController;
+  final TextEditingController _amountController = TextEditingController(text: '250.00');
+  final TextEditingController _descController = TextEditingController(text: 'Fund Transfer');
+  String _concurrencyStrategy = 'PESSIMISTIC';
+
+  @override
+  void initState() {
+    super.initState();
+    _recipientController = TextEditingController(
+      text: widget.initialRecipient?.isNotEmpty == true
+          ? widget.initialRecipient!
+          : 'bob@datacore.io',
+    );
+  }
 
   @override
   void dispose() {
@@ -23,8 +39,29 @@ class _TransferScreenState extends State<TransferScreen> {
     super.dispose();
   }
 
-  void _confirmAndSend() {
+  void _addAmount(double delta) {
+    final cur = double.tryParse(_amountController.text) ?? 0.0;
+    _amountController.text = (cur + delta).toStringAsFixed(2);
+  }
+
+  void _fillMaxAmount() {
+    final bal = context.read<AccountProvider>().primaryAccount?.balance;
+    if (bal != null) {
+      _amountController.text = bal;
+    }
+  }
+
+  void _onProceedToPay() {
     final amount = double.tryParse(_amountController.text) ?? 0.0;
+    final recipient = _recipientController.text.trim();
+
+    if (recipient.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a recipient UPI ID or email.')),
+      );
+      return;
+    }
+
     if (amount <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid positive amount.')),
@@ -32,106 +69,81 @@ class _TransferScreenState extends State<TransferScreen> {
       return;
     }
 
+    // Open UPI PIN verification bottom sheet
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => UpiPinSheet(
+        amount: amount,
+        recipient: recipient,
+        bankName: 'DataCore Primary Account',
+        onPinSubmitted: (pin) async {
+          Navigator.pop(ctx);
+          _executeTransfer(amount, recipient);
+        },
       ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+    );
+  }
+
+  Future<void> _executeTransfer(double amount, String recipient) async {
+    final accountProvider = context.read<AccountProvider>();
+
+    final success = await accountProvider.executeTransfer(
+      receiverIdentifier: recipient,
+      amount: amount,
+      description: _descController.text,
+      concurrencyStrategy: _concurrencyStrategy,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      final tx = accountProvider.lastExecutedTransaction;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PaymentSuccessScreen(
+            amount: amount,
+            recipientName: recipient.contains('@') ? recipient.split('@').first.toUpperCase() : recipient,
+            recipientHandle: recipient,
+            utr: tx?.idempotencyKey?.replaceAll('-', '').substring(0, 12),
+            transactionId: tx?.id,
+            debitedAccount: accountProvider.primaryAccount?.accountNumber,
+            latencyMs: tx?.latencyMs,
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget _buildPayeeChip(String name, String email) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _recipientController.text = email;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppTheme.border),
+        ),
+        child: Row(
           children: [
-            const Text(
-              'Confirm Fund Transfer',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Recipient', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                      Text(_recipientController.text, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                    ],
-                  ),
-                  const Divider(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Amount', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                      Text('₹${amount.toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF436CF0))),
-                    ],
-                  ),
-                  if (_descController.text.isNotEmpty) ...[
-                    const Divider(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Note', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                        Text(_descController.text, style: const TextStyle(fontSize: 13)),
-                      ],
-                    ),
-                  ],
-                ],
+            CircleAvatar(
+              radius: 12,
+              backgroundColor: AppTheme.primary.withOpacity(0.12),
+              child: Text(
+                name[0].toUpperCase(),
+                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.primary),
               ),
             ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  final success = await context.read<AccountProvider>().executeTransfer(
-                    receiverIdentifier: _recipientController.text,
-                    amount: amount,
-                    description: _descController.text,
-                  );
-                  if (!mounted) return;
-                  if (success) {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        title: const Row(
-                          children: [
-                            Icon(Icons.check_circle, color: Color(0xFF10B981)),
-                            SizedBox(width: 8),
-                            Text('Transfer Successful!'),
-                          ],
-                        ),
-                        content: Text('Successfully transferred ₹${amount.toStringAsFixed(2)} with authoritative double-entry confirmation.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(ctx);
-                              context.go('/home');
-                            },
-                            child: const Text('Back to Home'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF436CF0),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-                child: const Text('Authorize & Send', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
-              ),
-            ),
+            const SizedBox(width: 8),
+            Text(name, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
           ],
         ),
       ),
@@ -143,19 +155,17 @@ class _TransferScreenState extends State<TransferScreen> {
     final accountProvider = context.watch<AccountProvider>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppTheme.background,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text('Transfer Funds', style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.bold)),
+        title: const Text('Send Money', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.textDark)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: const Icon(Icons.arrow_back_rounded, color: AppTheme.textDark),
           onPressed: () => context.go('/home'),
         ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -163,91 +173,216 @@ class _TransferScreenState extends State<TransferScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFEF2F2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFFECACA)),
+                    color: AppTheme.errorLight,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppTheme.error.withOpacity(0.3)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline, color: Color(0xFFEF4444), size: 20),
+                      const Icon(Icons.error_outline_rounded, color: AppTheme.error, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           accountProvider.errorMessage!,
-                          style: const TextStyle(color: Color(0xFFB91C1C), fontSize: 13),
+                          style: const TextStyle(color: AppTheme.error, fontSize: 12, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
               ],
 
-              // Recipient Input
-              const Text('RECIPIENT (ACCOUNT NO. OR EMAIL)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
+              // Quick Payees Carousel
+              const Text('RECENT PAYEES', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
               const SizedBox(height: 8),
-              TextField(
-                controller: _recipientController,
-                decoration: InputDecoration(
-                  hintText: 'e.g. bob@datacore.io or DC-1234-5678',
-                  prefixIcon: const Icon(Icons.person_outline, size: 20),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildPayeeChip('Bob', 'bob@datacore.io'),
+                    _buildPayeeChip('Alice', 'alice@datacore.io'),
+                    _buildPayeeChip('Charlie', 'charlie@datacore.io'),
+                    _buildPayeeChip('Merchant', 'merchant@datacore'),
+                  ],
                 ),
               ),
+
               const SizedBox(height: 20),
 
-              // Amount Input
-              const Text('AMOUNT (₹)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-                decoration: InputDecoration(
-                  prefixText: '₹ ',
-                  prefixStyle: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF436CF0)),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+              // Recipient Input Card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('RECIPIENT (UPI ID OR EMAIL)', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _recipientController,
+                      decoration: const InputDecoration(
+                        hintText: 'Enter UPI ID / Email',
+                        prefixIcon: Icon(Icons.person_pin_rounded, color: AppTheme.primary),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
 
-              // Description
-              const Text('NOTE / DESCRIPTION (OPTIONAL)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B))),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _descController,
-                decoration: InputDecoration(
-                  hintText: 'What is this for?',
-                  prefixIcon: const Icon(Icons.chat_bubble_outline, size: 20),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xFFE2E8F0))),
+              const SizedBox(height: 16),
+
+              // Amount Input Card
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('TRANSFER AMOUNT', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
+                        Text(
+                          'Bal: ₹${accountProvider.primaryAccount?.balance ?? '0.00'}',
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.primary),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _amountController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: AppTheme.textDark),
+                      decoration: const InputDecoration(
+                        prefixText: '₹ ',
+                        prefixStyle: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                        hintText: '0.00',
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Quick Chips
+                    Row(
+                      children: [
+                        _buildQuickAmountChip('+₹100', () => _addAmount(100)),
+                        const SizedBox(width: 8),
+                        _buildQuickAmountChip('+₹500', () => _addAmount(500)),
+                        const SizedBox(width: 8),
+                        _buildQuickAmountChip('+₹1,000', () => _addAmount(1000)),
+                        const SizedBox(width: 8),
+                        _buildQuickAmountChip('Max', _fillMaxAmount),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 32),
 
+              const SizedBox(height: 16),
+
+              // Note & Concurrency Strategy
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.border),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('TRANSFER NOTE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _descController,
+                      decoration: const InputDecoration(
+                        hintText: 'e.g. Lunch split, Rent, Coffee',
+                        prefixIcon: Icon(Icons.edit_note_rounded, color: AppTheme.textMuted),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('CONCURRENCY STRATEGY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<String>(
+                      value: _concurrencyStrategy,
+                      decoration: const InputDecoration(),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'PESSIMISTIC',
+                          child: Text('Pessimistic Row-Lock (Default Safe)'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'OPTIMISTIC',
+                          child: Text('Optimistic CAS (Version Check)'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'REDIS',
+                          child: Text('Redis Distributed Lock'),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) setState(() => _concurrencyStrategy = val);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Proceed to Pay Button
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: accountProvider.isLoading ? null : _confirmAndSend,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF436CF0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                  ),
+                  onPressed: accountProvider.isLoading ? null : _onProceedToPay,
                   child: accountProvider.isLoading
-                      ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Review & Transfer', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.shield_rounded, size: 18),
+                            SizedBox(width: 8),
+                            Text('Authorize & Pay with UPI PIN'),
+                          ],
+                        ),
                 ),
               ),
+              const SizedBox(height: 30),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickAmountChip(String label, VoidCallback onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: AppTheme.surfaceMuted,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppTheme.border),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+            ),
           ),
         ),
       ),

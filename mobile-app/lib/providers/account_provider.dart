@@ -9,15 +9,19 @@ class AccountProvider with ChangeNotifier {
   final ApiService _apiService;
   AccountModel? _primaryAccount;
   List<TransactionModel> _recentTransactions = [];
+  TransactionModel? _lastExecutedTransaction;
   bool _isLoading = false;
   String? _errorMessage;
+  double _upiLiteBalance = 0.0;
 
   AccountProvider(this._apiService);
 
   AccountModel? get primaryAccount => _primaryAccount;
   List<TransactionModel> get recentTransactions => _recentTransactions;
+  TransactionModel? get lastExecutedTransaction => _lastExecutedTransaction;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  double get upiLiteBalance => _upiLiteBalance;
 
   Future<void> fetchAccounts() async {
     _isLoading = true;
@@ -52,6 +56,7 @@ class AccountProvider with ChangeNotifier {
     required String receiverIdentifier,
     required double amount,
     String description = '',
+    String concurrencyStrategy = 'PESSIMISTIC',
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -67,7 +72,7 @@ class AccountProvider with ChangeNotifier {
           'receiver_identifier': receiverIdentifier.trim(),
           'amount': amount.toStringAsFixed(2),
           'description': description.trim(),
-          'concurrency_strategy': 'PESSIMISTIC',
+          'concurrency_strategy': concurrencyStrategy,
         },
         options: Options(
           headers: {
@@ -75,6 +80,12 @@ class AccountProvider with ChangeNotifier {
           },
         ),
       );
+
+      final Map<String, dynamic> data = response.data is Map<String, dynamic>
+          ? response.data
+          : {'id': idempotencyKey, 'amount': amount.toStringAsFixed(2)};
+
+      _lastExecutedTransaction = TransactionModel.fromJson(data);
 
       // Refresh accounts & transactions after successful transfer
       await fetchAccounts();
@@ -96,5 +107,27 @@ class AccountProvider with ChangeNotifier {
       notifyListeners();
       return false;
     }
+  }
+
+  void topUpUpiLite(double amount) {
+    if (_primaryAccount != null) {
+      final currentBal = double.tryParse(_primaryAccount!.balance) ?? 0.0;
+      if (amount <= currentBal) {
+        _upiLiteBalance += amount;
+        notifyListeners();
+      }
+    }
+  }
+
+  bool executeUpiLiteTransfer({
+    required String receiverIdentifier,
+    required double amount,
+  }) {
+    if (amount <= _upiLiteBalance) {
+      _upiLiteBalance -= amount;
+      notifyListeners();
+      return true;
+    }
+    return false;
   }
 }

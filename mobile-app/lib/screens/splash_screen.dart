@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../theme/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkStatus() async {
-    await Future.delayed(const Duration(milliseconds: 1200));
+    await Future.delayed(const Duration(milliseconds: 1000));
     if (!mounted) return;
     final auth = context.read<AuthProvider>();
     final isLoggedIn = await auth.checkAuthStatus();
@@ -33,54 +34,62 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppTheme.primary,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 84,
+              height: 84,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF436CF0), Color(0xFF6366F1)],
-                ),
-                borderRadius: BorderRadius.circular(24),
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(26),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF436CF0).withOpacity(0.4),
-                    blurRadius: 20,
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 24,
                     offset: const Offset(0, 8),
                   ),
                 ],
               ),
-              child: const Icon(Icons.flash_on_rounded, color: Colors.white, size: 48),
+              child: const Center(
+                child: Text(
+                  '₹',
+                  style: TextStyle(
+                    fontSize: 44,
+                    fontWeight: FontWeight.w900,
+                    color: AppTheme.primary,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 24),
             const Text(
-              'DataCore',
+              'DataCore Pay',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+                fontSize: 26,
+                fontWeight: FontWeight.w900,
                 letterSpacing: -0.5,
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Real-Time Concurrency Engine',
+            const SizedBox(height: 6),
+            const Text(
+              'High-Concurrency Double-Entry Engine',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
-                fontSize: 14,
+                color: Colors.white70,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 40),
             const SizedBox(
               width: 24,
               height: 24,
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
-                color: Color(0xFF436CF0),
+                color: Colors.white70,
               ),
             ),
           ],

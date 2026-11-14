@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/account_provider.dart';
+import '../theme/app_theme.dart';
+import '../widgets/balance_card.dart';
+import '../widgets/upi_lite_card.dart';
+import '../widgets/quick_actions_grid.dart';
+import '../widgets/receive_qr_sheet.dart';
+import '../widgets/services_hub_view.dart';
+import 'history_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,6 +20,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _currentTabIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -23,297 +32,602 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void _openReceiveModal() {
+    final auth = context.read<AuthProvider>();
+    final account = context.read<AccountProvider>().primaryAccount;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => ReceiveQrSheet(
+        userName: auth.user?.fullName ?? 'Customer',
+        userEmail: auth.user?.email ?? 'customer@datacore.io',
+        accountNumber: account?.accountNumber ?? 'DC-XXXX-XXXX',
+      ),
+    );
+  }
+
+  void _openScanModal() {
+    final upiController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          top: 20,
+          left: 20,
+          right: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Row(
+              children: [
+                Icon(Icons.qr_code_scanner_rounded, color: AppTheme.primary, size: 24),
+                SizedBox(width: 8),
+                Text(
+                  'Scan Any UPI QR Code',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Scanner Viewport Mockup
+            Container(
+              width: 200,
+              height: 160,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.04),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppTheme.primary, width: 2),
+              ),
+              child: const Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.camera_alt_outlined, size: 36, color: AppTheme.primary),
+                  SizedBox(height: 6),
+                  Text('Align QR code inside frame', style: TextStyle(fontSize: 11, color: AppTheme.textMuted)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text('OR ENTER UPI ID MANUALLY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
+            const SizedBox(height: 8),
+            TextField(
+              controller: upiController,
+              decoration: InputDecoration(
+                hintText: 'e.g. bob@datacore or merchant@upi',
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.arrow_forward_rounded, color: AppTheme.primary),
+                  onPressed: () {
+                    if (upiController.text.trim().isNotEmpty) {
+                      Navigator.pop(ctx);
+                      context.go('/transfer?recipient=${Uri.encodeComponent(upiController.text.trim())}');
+                    }
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openCheckBalanceModal() {
+    final account = context.read<AccountProvider>().primaryAccount;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.account_balance_rounded, color: AppTheme.primary, size: 28),
+            ),
+            const SizedBox(height: 14),
+            const Text(
+              'Bank Account Balance',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              account?.accountNumber ?? 'DC-XXXX-XXXX',
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 13, color: AppTheme.textMuted),
+            ),
+            const SizedBox(height: 18),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceMuted,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppTheme.border),
+              ),
+              child: Column(
+                children: [
+                  const Text('Available to Transact', style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                  const SizedBox(height: 4),
+                  Text(
+                    '₹${account?.balance ?? '0.00'}',
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      color: AppTheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Close'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _openAddUpiLiteModal() {
+    double selectedTopUp = 500.0;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModalState) {
+          final accountProvider = context.read<AccountProvider>();
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Row(
+                      children: [
+                        Text('⚡', style: TextStyle(fontSize: 22)),
+                        SizedBox(width: 8),
+                        Text('Add Money to UPI Lite', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded),
+                      onPressed: () => Navigator.pop(ctx),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'UPI Lite allows instant 1-tap payments up to ₹500 without entering your UPI PIN.',
+                  style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    _buildTopUpChip(200, selectedTopUp, (v) => setModalState(() => selectedTopUp = v)),
+                    const SizedBox(width: 10),
+                    _buildTopUpChip(500, selectedTopUp, (v) => setModalState(() => selectedTopUp = v)),
+                    const SizedBox(width: 10),
+                    _buildTopUpChip(1000, selectedTopUp, (v) => setModalState(() => selectedTopUp = v)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      accountProvider.topUpUpiLite(selectedTopUp);
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Added ₹${selectedTopUp.toInt()} to UPI Lite!')),
+                      );
+                    },
+                    child: Text('Add ₹${selectedTopUp.toInt()} to UPI Lite'),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTopUpChip(double amt, double current, ValueChanged<double> onSelect) {
+    final isSelected = amt == current;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onSelect(amt),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: isSelected ? const Color(0xFFFEF3C7) : AppTheme.surfaceMuted,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isSelected ? const Color(0xFFF59E0B) : AppTheme.border,
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: Center(
+            child: Text(
+              '+₹${amt.toInt()}',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+                color: isSelected ? const Color(0xFFB45309) : AppTheme.textDark,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHomeDashboard(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final accountProvider = context.watch<AccountProvider>();
     final account = accountProvider.primaryAccount;
     final transactions = accountProvider.recentTransactions;
+    final userInitial = auth.user?.fullName.isNotEmpty == true ? auth.user!.fullName[0].toUpperCase() : 'U';
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Row(
+    return RefreshIndicator(
+      onRefresh: () async {
+        await accountProvider.fetchAccounts();
+        await accountProvider.fetchTransactions();
+        await auth.sendHeartbeat();
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: const Color(0xFF436CF0).withOpacity(0.15),
-              child: Text(
-                auth.user?.fullName.isNotEmpty == true ? auth.user!.fullName[0].toUpperCase() : 'U',
-                style: const TextStyle(color: Color(0xFF436CF0), fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            // Top User Bar
+            Row(
               children: [
-                Text(
-                  auth.user?.fullName ?? 'Customer',
-                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                GestureDetector(
+                  onTap: () => setState(() => _currentTabIndex = 3),
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: AppTheme.primary.withOpacity(0.12),
+                    child: Text(
+                      userInitial,
+                      style: const TextStyle(
+                        color: AppTheme.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
                 ),
-                const Text(
-                  'Test Account',
-                  style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        auth.user?.fullName ?? 'Customer',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textDark,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const Text(
+                        'DataCore High-Concurrency Wallet',
+                        style: TextStyle(fontSize: 11, color: AppTheme.textMuted),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.notifications_none_rounded, color: AppTheme.textDark),
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('No unread notifications.')),
+                    );
+                  },
                 ),
               ],
             ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.person_outline, color: Color(0xFF0F172A)),
-            onPressed: () => context.go('/profile'),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await accountProvider.fetchAccounts();
-          await accountProvider.fetchTransactions();
-        },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Balance Card
+
+            const SizedBox(height: 16),
+
+            // 1. Available Balance Gradient Card
+            BalanceCard(
+              account: account,
+              isLoading: accountProvider.isLoading,
+              onRefresh: () => accountProvider.fetchAccounts(),
+            ),
+
+            const SizedBox(height: 14),
+
+            // 2. UPI Lite & Check Balance Status Strip (Soundbox removed!)
+            UpiLiteStrip(
+              upiLiteBalance: accountProvider.upiLiteBalance,
+              onAddUpiLite: _openAddUpiLiteModal,
+              onCheckBalance: _openCheckBalanceModal,
+            ),
+
+            const SizedBox(height: 14),
+
+            // 3. Quick Actions Grid (To Mobile, To Bank/UPI, Scan QR, Receive)
+            QuickActionsGrid(
+              onToMobile: () => context.go('/transfer'),
+              onToBank: () => context.go('/transfer'),
+              onScanQr: _openScanModal,
+              onReceiveMoney: _openReceiveModal,
+            ),
+
+            const SizedBox(height: 22),
+
+            // 4. Recharge & Pay Bills Section Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Recharge & Pay Bills',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                ),
+                TextButton(
+                  onPressed: () => setState(() => _currentTabIndex = 1),
+                  child: const Text('View All', style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold, fontSize: 12)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Services Quick Mini Grid
+            Row(
+              children: [
+                _buildQuickServiceTile('⚡', 'Electricity', () => setState(() => _currentTabIndex = 1)),
+                const SizedBox(width: 8),
+                _buildQuickServiceTile('📱', 'Recharge', () => setState(() => _currentTabIndex = 1)),
+                const SizedBox(width: 8),
+                _buildQuickServiceTile('📺', 'DTH', () => setState(() => _currentTabIndex = 1)),
+                const SizedBox(width: 8),
+                _buildQuickServiceTile('🚗', 'FASTag', () => setState(() => _currentTabIndex = 1)),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // 5. Recent Transactions Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Recent Transactions',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                ),
+                TextButton(
+                  onPressed: () => setState(() => _currentTabIndex = 2),
+                  child: const Text('History', style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold, fontSize: 12)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Transactions List
+            if (accountProvider.isLoading && transactions.isEmpty)
+              const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()))
+            else if (transactions.isEmpty)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF2B4FE5), Color(0xFF4F46E5)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF2B4FE5).withOpacity(0.35),
-                      blurRadius: 20,
-                      offset: const Offset(0, 10),
-                    ),
-                  ],
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.border),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: const Center(
+                  child: Text('No transactions yet. Send your first transfer!', style: TextStyle(color: AppTheme.textMuted, fontSize: 12)),
+                ),
+              )
+            else
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: transactions.take(4).length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                itemBuilder: (context, index) {
+                  final tx = transactions[index];
+                  final isDebit = tx.senderAccountNumber == account?.accountNumber;
+                  final displayAmount = '${isDebit ? '-' : '+'}₹${tx.amount}';
+
+                  return Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppTheme.border),
+                    ),
+                    child: Row(
                       children: [
-                        const Text(
-                          'Available Balance',
-                          style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
-                        ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          width: 40,
+                          height: 40,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(20),
+                            color: isDebit ? const Color(0xFFFEF2F2) : const Color(0xFFECFDF5),
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Row(
-                            children: [
-                              Icon(Icons.shield_outlined, size: 12, color: Colors.white),
-                              SizedBox(width: 4),
-                              Text('Protected', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w600)),
-                            ],
+                          child: Icon(
+                            isDebit ? Icons.arrow_outward_rounded : Icons.arrow_downward_rounded,
+                            color: isDebit ? AppTheme.error : AppTheme.success,
+                            size: 18,
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      '₹${account?.balance ?? '0.00'}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 34,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              account?.accountNumber ?? 'DC-XXXX-XXXX',
-                              style: const TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'monospace'),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.copy, size: 14, color: Colors.white70),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                if (account?.accountNumber != null) {
-                                  Clipboard.setData(ClipboardData(text: account!.accountNumber));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Account number copied to clipboard!')),
-                                  );
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                        const Text('TEST FUNDS', style: TextStyle(color: Colors.white60, fontSize: 10, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Quick Actions
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () => context.go('/transfer'),
-                      icon: const Icon(Icons.send_rounded, size: 18, color: Colors.white),
-                      label: const Text('Transfer Funds', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF436CF0),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 0,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => context.go('/history'),
-                      icon: const Icon(Icons.history_rounded, size: 18, color: Color(0xFF0F172A)),
-                      label: const Text('History', style: TextStyle(color: Color(0xFF0F172A), fontWeight: FontWeight.w600)),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        side: const BorderSide(color: Color(0xFFCBD5E1)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 32),
-
-              // Recent Transactions Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Recent Transactions',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
-                  ),
-                  TextButton(
-                    onPressed: () => context.go('/history'),
-                    child: const Text('View All', style: TextStyle(color: Color(0xFF436CF0), fontSize: 13, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Transactions List
-              if (accountProvider.isLoading && transactions.isEmpty)
-                const Center(child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()))
-              else if (transactions.isEmpty)
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(32),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: const Center(
-                    child: Text('No transactions yet. Send your first transfer!', style: TextStyle(color: Color(0xFF64748B), fontSize: 13)),
-                  ),
-                )
-              else
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: transactions.take(5).length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                  itemBuilder: (context, index) {
-                    final tx = transactions[index];
-                    final isDebit = tx.senderAccountNumber == account?.accountNumber;
-
-                    return Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: const Color(0xFFE2E8F0)),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 44,
-                            height: 44,
-                            decoration: BoxDecoration(
-                              color: isDebit ? const Color(0xFFFEF2F2) : const Color(0xFFF0FDF4),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: Icon(
-                              isDebit ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
-                              color: isDebit ? const Color(0xFFEF4444) : const Color(0xFF10B981),
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  isDebit ? 'To: ${tx.receiverAccountNumber}' : 'From: ${tx.senderAccountNumber}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0F172A)),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  tx.description.isNotEmpty ? tx.description : 'Fund Transfer',
-                                  style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${isDebit ? '-' : '+'}₹${tx.amount}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: isDebit ? const Color(0xFFEF4444) : const Color(0xFF10B981),
-                                ),
+                                isDebit ? 'Paid to ${tx.receiverEmail.isNotEmpty ? tx.receiverEmail : tx.receiverAccountNumber}' : 'Received from ${tx.senderEmail.isNotEmpty ? tx.senderEmail : tx.senderAccountNumber}',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppTheme.textDark),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                tx.status,
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                  color: tx.status == 'COMPLETED' ? const Color(0xFF10B981) : const Color(0xFFF59E0B),
-                                ),
+                                tx.description.isNotEmpty ? tx.description : 'DataCore Transfer',
+                                style: const TextStyle(fontSize: 10, color: AppTheme.textMuted),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              displayAmount,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: isDebit ? AppTheme.error : AppTheme.success,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              tx.status,
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: tx.status == 'COMPLETED' ? AppTheme.success : AppTheme.warning,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+            const SizedBox(height: 80),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickServiceTile(String emoji, String title, VoidCallback onTap) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.border),
+          ),
+          child: Column(
+            children: [
+              Text(emoji, style: const TextStyle(fontSize: 20)),
+              const SizedBox(height: 4),
+              Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      body: SafeArea(
+        child: IndexedStack(
+          index: _currentTabIndex,
+          children: [
+            _buildHomeDashboard(context),
+            ServicesHubView(onBackToHome: () => setState(() => _currentTabIndex = 0)),
+            const HistoryScreen(isEmbedded: true),
+            const ProfileScreen(isEmbedded: true),
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.grey.shade200)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentTabIndex,
+          onTap: (index) => setState(() => _currentTabIndex = index),
+          backgroundColor: Colors.white,
+          selectedItemColor: AppTheme.primary,
+          unselectedItemColor: AppTheme.textMuted,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11),
+          unselectedLabelStyle: const TextStyle(fontSize: 11),
+          type: BottomNavigationBarType.fixed,
+          elevation: 0,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded), label: 'Services'),
+            BottomNavigationBarItem(icon: Icon(Icons.history_rounded), label: 'History'),
+            BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+          ],
         ),
       ),
     );

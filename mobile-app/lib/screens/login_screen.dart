@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../theme/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -34,168 +35,194 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Widget _buildQuickFillChip(String label, String email, String pwd) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _emailController.text = email;
+          _passwordController.text = pwd;
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppTheme.primary.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppTheme.primary.withOpacity(0.2)),
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.primary,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+              // Brand Logo
               Container(
-                width: 52,
-                height: 52,
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF436CF0),
-                  borderRadius: BorderRadius.circular(16),
+                  gradient: AppTheme.primaryGradient,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primary.withOpacity(0.35),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-                child: const Icon(Icons.flash_on_rounded, color: Colors.white, size: 30),
+                child: const Center(
+                  child: Text('₹', style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900)),
+                ),
               ),
+
               const SizedBox(height: 24),
               const Text(
-                'Welcome Back',
+                'Welcome to DataCore Pay',
                 style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: AppTheme.textDark,
                   letterSpacing: -0.5,
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               const Text(
-                'Log in to your DataCore test account',
-                style: TextStyle(fontSize: 14, color: Color(0xFF64748B)),
+                'PhonePe-inspired real-time high-concurrency wallet',
+                style: TextStyle(fontSize: 13, color: AppTheme.textMuted),
               ),
-              const SizedBox(height: 36),
 
+              const SizedBox(height: 24),
+
+              // Demo quick fill chips
+              const Text('ONE-TAP DEMO ACCOUNTS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
+              const SizedBox(height: 8),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildQuickFillChip('Alice (Default)', 'alice@datacore.io', 'Password123!'),
+                    _buildQuickFillChip('Bob', 'bob@datacore.io', 'Password123!'),
+                    _buildQuickFillChip('Charlie', 'charlie@datacore.io', 'Password123!'),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Error Banner
               if (auth.errorMessage != null) ...[
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFEF2F2),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFFECACA)),
+                    color: AppTheme.errorLight,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppTheme.error.withOpacity(0.3)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline, color: Color(0xFFEF4444), size: 20),
+                      const Icon(Icons.error_outline_rounded, color: AppTheme.error, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           auth.errorMessage!,
-                          style: const TextStyle(color: Color(0xFFB91C1C), fontSize: 13),
+                          style: const TextStyle(color: AppTheme.error, fontSize: 12, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
               ],
 
-              // Email Field
-              const Text(
-                'EMAIL ADDRESS',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B), letterSpacing: 0.5),
-              ),
+              // Email / Phone Field
+              const Text('EMAIL OR MOBILE NUMBER', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
               const SizedBox(height: 8),
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  hintText: 'name@example.com',
-                  prefixIcon: const Icon(Icons.mail_outline, size: 20),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                  ),
+                decoration: const InputDecoration(
+                  hintText: 'Enter your email or mobile',
+                  prefixIcon: Icon(Icons.alternate_email_rounded, color: AppTheme.primary, size: 20),
                 ),
               ),
-              const SizedBox(height: 20),
+
+              const SizedBox(height: 18),
 
               // Password Field
-              const Text(
-                'PASSWORD',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF64748B), letterSpacing: 0.5),
-              ),
+              const Text('PASSWORD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
               const SizedBox(height: 8),
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
-                  hintText: '••••••••••••',
-                  prefixIcon: const Icon(Icons.lock_outline, size: 20),
+                  hintText: 'Enter your password',
+                  prefixIcon: const Icon(Icons.lock_outline_rounded, color: AppTheme.primary, size: 20),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, size: 20),
+                    icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined, size: 20),
                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                  ),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                   ),
                 ),
               ),
-              const SizedBox(height: 28),
 
-              // Submit Button
+              const SizedBox(height: 24),
+
+              // Login Button
               SizedBox(
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
                   onPressed: auth.isLoading ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF436CF0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    elevation: 0,
-                  ),
                   child: auth.isLoading
                       ? const SizedBox(
                           width: 22,
                           height: 22,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                         )
-                      : const Text(
-                          'Sign In',
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
+                      : const Text('Proceed Securely'),
                 ),
               ),
-              const SizedBox(height: 24),
 
-              // Register Link
+              const SizedBox(height: 20),
+
+              // Switch to Register
               Center(
-                child: TextButton(
-                  onPressed: () => context.go('/register'),
-                  child: const Text.rich(
-                    TextSpan(
-                      text: "Don't have an account? ",
-                      style: TextStyle(color: Color(0xFF64748B), fontSize: 14),
-                      children: [
-                        TextSpan(
-                          text: 'Create Account',
-                          style: TextStyle(color: Color(0xFF436CF0), fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('New to DataCore? ', style: TextStyle(color: AppTheme.textMuted, fontSize: 13)),
+                    GestureDetector(
+                      onTap: () => context.go('/register'),
+                      child: const Text(
+                        'Create Account (₹10k Bonus)',
+                        style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
+
+              const SizedBox(height: 30),
             ],
           ),
         ),

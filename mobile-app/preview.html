@@ -32,6 +32,7 @@
       flex-direction: column;
       position: relative;
       box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 0 8px #1e293b;
+      min-height: 0;
     }
     @media (max-width: 640px) {
       html, body {
@@ -45,6 +46,7 @@
         max-height: 100vh;
         border-radius: 0;
         box-shadow: none;
+        min-height: 0;
       }
       .phone-container.dark-theme, body.dark-theme {
         background-color: #0B0F19 !important;
@@ -54,9 +56,13 @@
       }
     }
     .app-screen {
-      flex: 1;
+      flex: 1 1 0%;
+      min-height: 0;
+      height: 100%;
       overflow-y: auto;
-      padding-bottom: 80px;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      padding-bottom: 96px;
       scrollbar-width: none;
     }
     .app-screen::-webkit-scrollbar {
@@ -540,18 +546,18 @@
         </span>
       </div>
 
-      <div onclick="triggerTestSoundbox()" class="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200/80 rounded-2xl p-3 flex items-center justify-between cursor-pointer active:scale-98 transition shadow-sm hover:border-purple-400">
+      <div onclick="openCheckBalanceModal()" class="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200/80 rounded-2xl p-3 flex items-center justify-between cursor-pointer active:scale-98 transition shadow-sm hover:border-purple-400">
         <div class="flex items-center space-x-2.5 overflow-hidden">
           <div class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center text-xs shadow-sm shrink-0">
-            <i class="fa-solid fa-volume-high"></i>
+            <i class="fa-solid fa-building-columns"></i>
           </div>
           <div class="truncate">
-            <span class="text-[11px] font-black text-slate-900 block leading-tight">Soundbox</span>
-            <span id="soundbox-lang-badge" class="text-[10px] font-semibold text-purple-700 block truncate">Voice Active</span>
+            <span class="text-[11px] font-black text-slate-900 block leading-tight">Check Balance</span>
+            <span class="text-[10px] font-semibold text-purple-700 block truncate">1 Linked Account</span>
           </div>
         </div>
-        <span class="text-[10px] font-bold text-purple-600 bg-white px-2 py-1 rounded-lg border border-purple-200 shrink-0">
-          Test
+        <span class="text-[10px] font-bold text-purple-700 bg-white px-2 py-1 rounded-lg border border-purple-200 shrink-0">
+          Check
         </span>
       </div>
     </div>
@@ -670,57 +676,164 @@
 
     <!-- ================= VIEW 0: MAIN DIRECTORY OF SERVICES ================= -->
     <div id="services-hub-directory">
-      <!-- Header -->
+      <!-- Header with PhonePe Royal Purple styling -->
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center">
-          <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 active:scale-95 transition">
+          <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-purple-700 active:scale-95 transition">
             <i class="fa-solid fa-arrow-left text-base"></i>
           </button>
           <div>
-            <h2 class="text-base font-bold text-slate-900 ml-2">Recharge & Pay Bills</h2>
-            <p class="text-[10px] text-slate-500 ml-2">Official Bharat BillPay (BBPS) Portal</p>
+            <h2 class="text-base font-bold text-slate-900 ml-1">Recharge & Pay Bills</h2>
+            <p class="text-[10px] text-slate-500 ml-1">Bharat BillPay (BBPS) Official Directory</p>
           </div>
         </div>
-        <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold">
-          <i class="fa-solid fa-shield-halved text-[10px]"></i>
-          <span>BBPS Assured</span>
+        <div class="flex items-center space-x-1 px-2.5 py-1 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-[10px] font-bold shadow-sm">
+          <i class="fa-solid fa-shield-halved text-[10px] text-purple-600"></i>
+          <span>NPCI Assured</span>
         </div>
       </div>
 
-      <!-- Search Bar -->
+      <!-- Bharat BillPay Hero Promotional Banner -->
+      <div class="bg-gradient-to-r from-purple-700 via-indigo-600 to-purple-800 rounded-3xl p-4 text-white shadow-lg shadow-purple-900/20 mb-4 relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-start justify-between relative z-10">
+          <div>
+            <span class="inline-block px-2 py-0.5 rounded-full bg-white/20 text-[9px] font-black uppercase tracking-wider mb-1.5 backdrop-blur-sm">⚡ BBPS Assured • 0 Convenience Fee</span>
+            <h3 class="text-sm font-black leading-tight">Pay Bills & Win Scratch Cards</h3>
+            <p class="text-[11px] text-purple-100/90 mt-1">Guaranteed cashback up to ₹100 on your first electricity or recharge bill</p>
+          </div>
+          <div class="w-10 h-10 rounded-2xl bg-white/20 flex items-center justify-center text-xl shrink-0 ml-2 shadow-inner">
+            🎁
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Search Bar -->
       <div class="relative mb-4">
         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-        <input id="services-search-input" oninput="filterServicesDirectory(this.value)" type="text" class="w-full bg-white border border-slate-200 rounded-2xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm" placeholder="Search billers, recharges (e.g. Jio, Electricity, DTH...)">
+        <input id="services-search-input" oninput="filterServicesDirectory(this.value)" type="text" class="w-full bg-white border border-slate-200 rounded-2xl pl-9 pr-8 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-purple-600 shadow-sm" placeholder="Search billers (e.g. Jio, BESCOM, Tata Play, FASTag...)">
+        <button type="button" onclick="document.getElementById('services-search-input').value=''; filterServicesDirectory('');" class="absolute right-3 top-3 text-slate-400 hover:text-slate-600 text-xs">
+          <i class="fa-solid fa-circle-xmark"></i>
+        </button>
       </div>
 
-      <!-- Quick Category Pills -->
-      <div class="flex space-x-2 overflow-x-auto pb-1 mb-4 text-xs font-semibold">
-        <button onclick="filterServicesCategory('ALL')" class="px-3 py-1.5 rounded-full bg-blue-600 text-white shrink-0 shadow-sm">All Services</button>
-        <button onclick="openServiceDetail('electricity')" class="px-3 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-blue-400">⚡ Electricity</button>
-        <button onclick="openServiceDetail('mobile')" class="px-3 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-blue-400">📱 Mobile</button>
-        <button onclick="openServiceDetail('dth')" class="px-3 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-blue-400">📺 DTH</button>
-        <button onclick="openServiceDetail('fastag')" class="px-3 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-blue-400">🚗 FASTag</button>
+      <!-- Quick Category Tabs -->
+      <div class="flex space-x-2 overflow-x-auto pb-1 mb-4 text-xs font-semibold scrollbar-none">
+        <button id="cat-btn-all" onclick="filterServicesCategory('ALL')" class="px-3.5 py-1.5 rounded-full bg-purple-700 text-white shrink-0 shadow-sm transition active:scale-95">All Services</button>
+        <button id="cat-btn-util" onclick="filterServicesCategory('UTILITIES')" class="px-3.5 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-purple-400 transition active:scale-95">⚡ Utilities</button>
+        <button id="cat-btn-rech" onclick="filterServicesCategory('RECHARGE')" class="px-3.5 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-purple-400 transition active:scale-95">📱 Recharge</button>
+        <button id="cat-btn-fin" onclick="filterServicesCategory('FINANCE')" class="px-3.5 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-purple-400 transition active:scale-95">💳 Credit & Loan</button>
+        <button id="cat-btn-tran" onclick="filterServicesCategory('TRANSIT')" class="px-3.5 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-purple-400 transition active:scale-95">🚗 FASTag</button>
       </div>
 
-      <!-- Directory Services Grid (Categorized Cards) -->
+      <!-- Quick Saved / Due Bills Section -->
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider">Due & Recent Bills</span>
+          <span class="text-[10px] font-bold text-purple-700">Auto-Fetched</span>
+        </div>
+        <div class="space-y-2">
+          <!-- Sample Bill 1: Electricity -->
+          <div class="p-3 bg-white border border-slate-200 rounded-2xl flex items-center justify-between shadow-sm hover:border-purple-300 transition">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg border border-amber-200/60 shadow-sm">
+                ⚡
+              </div>
+              <div>
+                <div class="flex items-center space-x-1.5">
+                  <span class="text-xs font-bold text-slate-900">UPCL Power</span>
+                  <span class="px-1.5 py-0.2 rounded text-[8px] font-black bg-rose-100 text-rose-700">DUE SOON</span>
+                </div>
+                <span class="text-[10px] text-slate-500 font-mono block">CA: 015520938472</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-bold text-slate-900 block font-mono">₹1,450.00</span>
+              <button onclick="openServiceDetail('electricity')" class="mt-0.5 px-3 py-1 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-[10px] font-bold shadow-sm active:scale-95 transition">
+                Pay Bill
+              </button>
+            </div>
+          </div>
+
+          <!-- Sample Bill 2: Jio Mobile -->
+          <div class="p-3 bg-white border border-slate-200 rounded-2xl flex items-center justify-between shadow-sm hover:border-purple-300 transition">
+            <div class="flex items-center space-x-3">
+              <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg border border-blue-200/60 shadow-sm">
+                📱
+              </div>
+              <div>
+                <span class="text-xs font-bold text-slate-900 block">Jio 5G Prepaid</span>
+                <span class="text-[10px] text-slate-500 font-mono block">+91 98765 43210</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-bold text-slate-900 block font-mono">₹299.00</span>
+              <button onclick="openServiceDetail('mobile')" class="mt-0.5 px-3 py-1 rounded-xl bg-purple-700 hover:bg-purple-800 text-white text-[10px] font-bold shadow-sm active:scale-95 transition">
+                Recharge
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categorized Full Directory Grid -->
       <div class="space-y-4" id="services-grid-container">
         <!-- Section: Essential Utilities -->
-        <div>
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Essential Utilities</span>
+        <div id="section-utilities">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Essential Utilities</span>
           <div class="grid grid-cols-2 gap-2.5">
             <!-- Electricity Card -->
-            <div onclick="openServiceDetail('electricity')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-amber-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+            <div onclick="openServiceDetail('electricity')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
               <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold border border-amber-200/60 shadow-sm group-hover:scale-105 transition">
                 ⚡
               </div>
               <div class="overflow-hidden">
                 <span class="text-xs font-bold text-slate-900 block truncate">Electricity Bill</span>
-                <span class="text-[10px] text-slate-400 block truncate">MSEDCL, Tata, BESCOM</span>
+                <span class="text-[10px] text-slate-400 block truncate">MSEDCL, UPCL, BSES</span>
               </div>
             </div>
 
+            <!-- Water Bill Card -->
+            <div onclick="openServiceDetail('water')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl font-bold border border-sky-200/60 shadow-sm group-hover:scale-105 transition">
+                💧
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Water Bill</span>
+                <span class="text-[10px] text-slate-400 block truncate">Delhi Jal Board, BWSSB</span>
+              </div>
+            </div>
+
+            <!-- Gas & Cylinder Card -->
+            <div onclick="openServiceDetail('gas')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl font-bold border border-orange-200/60 shadow-sm group-hover:scale-105 transition">
+                🔥
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Gas Cylinder</span>
+                <span class="text-[10px] text-slate-400 block truncate">Indane, HP, Bharat Gas</span>
+              </div>
+            </div>
+
+            <!-- Broadband Card -->
+            <div onclick="openServiceDetail('broadband')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold border border-purple-200/60 shadow-sm group-hover:scale-105 transition">
+                🌐
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Broadband / Wi-Fi</span>
+                <span class="text-[10px] text-slate-400 block truncate">JioFiber, Airtel, ACT</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Recharge & Entertainment -->
+        <div id="section-recharge">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Recharge & Entertainment</span>
+          <div class="grid grid-cols-2 gap-2.5">
             <!-- Mobile Recharge Card -->
-            <div onclick="openServiceDetail('mobile')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+            <div onclick="openServiceDetail('mobile')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
               <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold border border-blue-200/60 shadow-sm group-hover:scale-105 transition">
                 📱
               </div>
@@ -731,7 +844,7 @@
             </div>
 
             <!-- DTH Card -->
-            <div onclick="openServiceDetail('dth')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-indigo-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+            <div onclick="openServiceDetail('dth')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
               <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold border border-indigo-200/60 shadow-sm group-hover:scale-105 transition">
                 📺
               </div>
@@ -742,57 +855,74 @@
             </div>
 
             <!-- FASTag Card -->
-            <div onclick="openServiceDetail('fastag')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-cyan-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+            <div onclick="openServiceDetail('fastag')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
               <div class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-xl font-bold border border-cyan-200/60 shadow-sm group-hover:scale-105 transition">
                 🚗
               </div>
               <div class="overflow-hidden">
                 <span class="text-xs font-bold text-slate-900 block truncate">FASTag Toll</span>
-                <span class="text-[10px] text-slate-400 block truncate">NHAI & Bank FASTag</span>
+                <span class="text-[10px] text-slate-400 block truncate">NHAI, ICICI, SBI FASTag</span>
               </div>
             </div>
 
-            <!-- Water Bill Card -->
-            <div onclick="openServiceDetail('water')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-sky-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
-              <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl font-bold border border-sky-200/60 shadow-sm group-hover:scale-105 transition">
-                💧
-              </div>
-              <div class="overflow-hidden">
-                <span class="text-xs font-bold text-slate-900 block truncate">Water Bill</span>
-                <span class="text-[10px] text-slate-400 block truncate">Municipal Jal Boards</span>
-              </div>
-            </div>
-
-            <!-- Gas & Cylinder Card -->
-            <div onclick="openServiceDetail('gas')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-orange-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
-              <div class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl font-bold border border-orange-200/60 shadow-sm group-hover:scale-105 transition">
-                🔥
-              </div>
-              <div class="overflow-hidden">
-                <span class="text-xs font-bold text-slate-900 block truncate">Gas & Cylinder</span>
-                <span class="text-[10px] text-slate-400 block truncate">MGL, IGL, Indane</span>
-              </div>
-            </div>
-
-            <!-- Credit Card Bill -->
-            <div onclick="openServiceDetail('creditcard')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-emerald-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+            <!-- Google Play Card -->
+            <div onclick="openServiceDetail('googleplay')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
               <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold border border-emerald-200/60 shadow-sm group-hover:scale-105 transition">
+                🎮
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Google Play</span>
+                <span class="text-[10px] text-slate-400 block truncate">App & Game Codes</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section: Financial Services & Taxes -->
+        <div id="section-finance">
+          <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-2">Financial Services & Credit</span>
+          <div class="grid grid-cols-2 gap-2.5">
+            <!-- Credit Card Bill -->
+            <div onclick="openServiceDetail('creditcard')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl font-bold border border-rose-200/60 shadow-sm group-hover:scale-105 transition">
                 💳
               </div>
               <div class="overflow-hidden">
                 <span class="text-xs font-bold text-slate-900 block truncate">Credit Card Bill</span>
-                <span class="text-[10px] text-slate-400 block truncate">HDFC, SBI, ICICI</span>
+                <span class="text-[10px] text-slate-400 block truncate">HDFC, SBI, ICICI, Axis</span>
               </div>
             </div>
 
-            <!-- Broadband Card -->
-            <div onclick="openServiceDetail('broadband')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
-              <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold border border-purple-200/60 shadow-sm group-hover:scale-105 transition">
-                🌐
+            <!-- Loan EMI -->
+            <div onclick="openServiceDetail('loan')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center text-xl font-bold border border-violet-200/60 shadow-sm group-hover:scale-105 transition">
+                🏦
               </div>
               <div class="overflow-hidden">
-                <span class="text-xs font-bold text-slate-900 block truncate">Broadband & Landline</span>
-                <span class="text-[10px] text-slate-400 block truncate">JioFiber, Airtel, ACT</span>
+                <span class="text-xs font-bold text-slate-900 block truncate">Loan EMI Payment</span>
+                <span class="text-[10px] text-slate-400 block truncate">Bajaj, Muthoot, HDFC</span>
+              </div>
+            </div>
+
+            <!-- Insurance -->
+            <div onclick="openServiceDetail('insurance')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl font-bold border border-teal-200/60 shadow-sm group-hover:scale-105 transition">
+                🛡️
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Insurance Premium</span>
+                <span class="text-[10px] text-slate-400 block truncate">LIC, HDFC Life, Star</span>
+              </div>
+            </div>
+
+            <!-- Municipal Tax -->
+            <div onclick="openServiceDetail('tax')" class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-lime-50 text-lime-700 flex items-center justify-center text-xl font-bold border border-lime-200/60 shadow-sm group-hover:scale-105 transition">
+                🏛️
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Municipal Taxes</span>
+                <span class="text-[10px] text-slate-400 block truncate">Property Tax & Water</span>
               </div>
             </div>
           </div>
@@ -1911,31 +2041,7 @@
         <input type="checkbox" id="pref-sound" checked onchange="toggleSound(this.checked)" class="w-5 h-5 accent-blue-600 cursor-pointer">
       </div>
 
-      <!-- Smart Soundbox Voice Announcement -->
-      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
-        <div>
-          <div class="flex items-center space-x-1.5">
-            <span class="text-xs font-bold text-slate-800 block">Smart Soundbox Voice</span>
-            <span class="text-[9px] font-bold text-purple-700 bg-purple-100 px-1.5 py-0.2 rounded">VOICE</span>
-          </div>
-          <span class="text-[10px] text-slate-400">Bilingual transaction audio broadcast</span>
-        </div>
-        <input type="checkbox" id="pref-soundbox" checked onchange="toggleSoundbox(this.checked)" class="w-5 h-5 accent-purple-600 cursor-pointer">
-      </div>
 
-      <!-- Soundbox Language & Test -->
-      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
-        <div>
-          <span class="text-xs font-bold text-slate-800 block">Soundbox Voice Accent</span>
-          <button type="button" onclick="triggerTestSoundbox()" class="text-[10px] font-bold text-purple-600 hover:underline">
-            <i class="fa-solid fa-play text-[9px] mr-1"></i>Test Audio Announcement
-          </button>
-        </div>
-        <select id="pref-soundbox-lang" onchange="setSoundboxLanguage(this.value)" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 text-xs font-bold text-purple-700 focus:outline-none">
-          <option value="hi-IN">Hindi (हिंदी)</option>
-          <option value="en-IN">English (Indian)</option>
-        </select>
-      </div>
 
       <!-- Language Selector -->
       <div class="flex justify-between items-center pt-3 border-t border-slate-100">
@@ -2319,7 +2425,7 @@
       </div>
       <!-- Center User Avatar Badge -->
       <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div id="qr-center-avatar" class="w-10 h-10 rounded-full bg-blue-600 text-white font-black text-sm border-2 border-white shadow-md flex items-center justify-center">
+        <div id="qr-center-avatar" class="w-10 h-10 rounded-full bg-blue-600 text-white font-black text-sm border-2 border-white shadow-md flex items-center justify-center overflow-hidden">
           A
         </div>
       </div>
@@ -3506,67 +3612,14 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     showToast(isSoundEnabled ? 'Payment chimes enabled' : 'Payment chimes muted');
   }
 
-  // ================= SMART SOUNDBOX VOICE BROADCAST =================
-  let isSoundboxEnabled = true;
-  let soundboxLanguage = 'hi-IN'; // 'hi-IN' or 'en-IN'
-
-  function speakSoundboxAnnouncement(amount, isCredit = true) {
-    if (!isSoundboxEnabled) return;
-    try {
-      if (!window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-
-      const amtNum = parseFloat(amount) || 0;
-      let text = '';
-      if (soundboxLanguage === 'hi-IN') {
-        text = isCredit
-          ? `DataCore Pay par ${amtNum} rupaye prapt hue.`
-          : `DataCore Pay se ${amtNum} rupaye safaltapoorvak bheje gaye.`;
-      } else {
-        text = isCredit
-          ? `Received ${amtNum} rupees on DataCore Pay.`
-          : `Payment of ${amtNum} rupees successful on DataCore Pay.`;
-      }
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.95;
-      utterance.pitch = 1.05;
-
-      const voices = window.speechSynthesis.getVoices();
-      if (voices && voices.length > 0) {
-        const matching = voices.find(v =>
-          soundboxLanguage === 'hi-IN'
-            ? (v.lang.includes('hi') || v.name.toLowerCase().includes('hindi'))
-            : (v.lang.includes('en-IN') || v.name.toLowerCase().includes('india'))
-        );
-        if (matching) utterance.voice = matching;
-      }
-
-      window.speechSynthesis.speak(utterance);
-    } catch (e) {
-      console.warn('Soundbox speech failed:', e);
-    }
-  }
-
+  // ================= SMART SOUNDBOX (DISABLED PER USER SPEC) =================
+  const isSoundboxEnabled = false;
+  function speakSoundboxAnnouncement(amount, isCredit = true) {}
   function triggerTestSoundbox() {
-    triggerHaptic();
-    playSuccessChime();
-    speakSoundboxAnnouncement(500, true);
-    showToast(soundboxLanguage === 'hi-IN' ? '📢 Soundbox: ₹500 prapt hue!' : '📢 Soundbox: ₹500 received!');
+    showToast('Soundbox has been removed');
   }
-
-  function toggleSoundbox(checked) {
-    isSoundboxEnabled = checked;
-    showToast(isSoundboxEnabled ? 'Soundbox voice announcements enabled' : 'Soundbox muted');
-  }
-
-  function setSoundboxLanguage(lang) {
-    soundboxLanguage = lang;
-    const badge = document.getElementById('soundbox-lang-badge');
-    if (badge) badge.innerText = (lang === 'hi-IN') ? 'Hindi Voice' : 'English Voice';
-    showToast(`Soundbox language set to ${lang === 'hi-IN' ? 'Hindi' : 'English'}`);
-    triggerTestSoundbox();
-  }
+  function toggleSoundbox(checked) {}
+  function setSoundboxLanguage(lang) {}
 
   // ================= UPI LITE ENGINE (ON-DEVICE ZERO-PIN) =================
   function openUpiLiteModal() {
@@ -3613,7 +3666,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     playSuccessChime();
     triggerSuccessHaptic();
-    speakSoundboxAnnouncement(amt, false);
     showToast(`Added ₹${amt.toFixed(2)} to UPI Lite!`);
   }
 
@@ -3709,7 +3761,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     playSuccessChime();
     triggerSuccessHaptic();
-    speakSoundboxAnnouncement(amt, false);
     navigateTo('success');
   }
 
@@ -4553,7 +4604,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     closeAllModals();
     playSuccessChime();
     triggerSuccessHaptic();
-    speakSoundboxAnnouncement(currentBillData.amt, false);
     navigateTo('success');
   }
 
@@ -5134,17 +5184,22 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       }
     }
 
-    // 3. QR Center Avatar
-    const qrCenter = document.getElementById('profile-qr-center-avatar');
-    if (qrCenter) {
-      if (isImg) {
-        qrCenter.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full" alt="PFP">`;
-      } else if (isEmoji) {
-        qrCenter.innerHTML = `<span class="text-sm leading-none">${currentUser.avatarUrl}</span>`;
-      } else {
-        qrCenter.innerHTML = `<span class="text-xs font-bold text-blue-600">${defInit}</span>`;
+    // 3. QR Center Avatar (both Profile QR & Receive Modal QR)
+    const qrCenterTargets = [
+      document.getElementById('profile-qr-center-avatar'),
+      document.getElementById('qr-center-avatar')
+    ];
+    qrCenterTargets.forEach(qrCenter => {
+      if (qrCenter) {
+        if (isImg) {
+          qrCenter.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full" alt="PFP">`;
+        } else if (isEmoji) {
+          qrCenter.innerHTML = `<span class="text-sm leading-none">${currentUser.avatarUrl}</span>`;
+        } else {
+          qrCenter.innerHTML = `<span class="text-xs font-bold text-blue-600">${defInit}</span>`;
+        }
       }
-    }
+    });
   }
 
   function showAboutInfo() {
@@ -5843,6 +5898,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   function openReceiveModal() {
     updateUserBindings();
     renderUserDynamicQRCode();
+    renderAllAvatars();
     document.getElementById('backdrop').classList.add('active');
     document.getElementById('modal-receive').classList.add('active');
   }
@@ -5925,7 +5981,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     playSuccessChime();
     triggerSuccessHaptic();
-    speakSoundboxAnnouncement(data.amount, false);
 
     navigateTo('success');
   }
@@ -6066,7 +6121,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     playSuccessChime();
     triggerSuccessHaptic();
-    speakSoundboxAnnouncement(data.amount, false);
 
     navigateTo('success');
   }
@@ -7589,7 +7643,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   // ================= NEW USER REGISTRATION FLOW (STRICT UNIQUENESS ENFORCED) =================
   // ================= CLOUD BACKEND INTEGRATION (RENDER) =================
-  const API_BASE_URL = 'https://datacore-backend.onrender.com';
+  const API_BASE_URL = 'https://datacore-backend-wktd.onrender.com';
   let isCloudConnected = false;
 
   async function syncUserWithBackendRegister(name, email, password, confirmPassword) {

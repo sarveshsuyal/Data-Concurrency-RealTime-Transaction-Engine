@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'services/api_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/account_provider.dart';
+import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
@@ -30,13 +31,37 @@ void main() {
 final GoRouter _router = GoRouter(
   initialLocation: '/',
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const SplashScreen()),
-    GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
-    GoRoute(path: '/register', builder: (context, state) => const RegisterScreen()),
-    GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
-    GoRoute(path: '/transfer', builder: (context, state) => const TransferScreen()),
-    GoRoute(path: '/history', builder: (context, state) => const HistoryScreen()),
-    GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => const RegisterScreen(),
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/transfer',
+      builder: (context, state) {
+        final recipient = state.uri.queryParameters['recipient'];
+        return TransferScreen(initialRecipient: recipient);
+      },
+    ),
+    GoRoute(
+      path: '/history',
+      builder: (context, state) => const HistoryScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
+    ),
   ],
 );
 
@@ -46,18 +71,10 @@ class DataCoreCustomerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'DataCore Customer App',
+      title: 'DataCore Pay',
       debugShowCheckedModeBanner: false,
       routerConfig: _router,
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF436CF0),
-          primary: const Color(0xFF436CF0),
-          background: const Color(0xFFF8FAFC),
-        ),
-        fontFamily: 'Roboto',
-      ),
+      theme: AppTheme.lightTheme,
     );
   }
 }
