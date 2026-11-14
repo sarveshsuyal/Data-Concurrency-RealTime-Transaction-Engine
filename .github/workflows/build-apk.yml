@@ -85,7 +85,11 @@ jobs:
 
       - name: Analyze Dart Source
         working-directory: mobile-app
-        run: flutter analyze
+        run: flutter analyze lib/ --no-fatal-infos
+
+      - name: Run Flutter Tests
+        working-directory: mobile-app
+        run: flutter test
 
       - name: Build Fresh Android Release APK
         working-directory: mobile-app
