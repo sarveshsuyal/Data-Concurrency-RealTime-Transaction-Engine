@@ -4,7 +4,7 @@ services:
     env: python
     region: oregon
     plan: free
-    buildCommand: "pip install -r backend/requirements.txt && python backend/manage.py collectstatic --no-input && python backend/manage.py migrate"
+    buildCommand: "pip install -r backend/requirements.txt && python backend/manage.py collectstatic --no-input && python backend/manage.py migrate && python backend/manage.py setup_datacore"
     startCommand: "gunicorn config.wsgi:application --chdir backend --bind 0.0.0.0:$PORT --workers 4 --threads 2"
     envVars:
       - key: PYTHON_VERSION

@@ -51,6 +51,9 @@ class AccountProvider with ChangeNotifier {
 
   Future<void> pollIncomingEvents() async {
     try {
+      final token = await _apiService.storage.read(key: 'access_token');
+      if (token == null || token.isEmpty) return;
+
       final response = await _apiService.dio.get('/api/events/my/');
       final List list = response.data is List ? response.data : [];
       bool hasNewEvent = false;
@@ -160,9 +163,23 @@ class AccountProvider with ChangeNotifier {
       return true;
     } on DioException catch (e) {
       _isLoading = false;
-      _errorMessage = e.response?.data['detail'] ??
-          e.response?.data['non_field_errors']?[0] ??
-          'Transfer failed. Check balance or recipient.';
+      if (e.response?.data is Map) {
+        final data = e.response!.data as Map;
+        final detail = data['detail'];
+        if (detail is List && detail.isNotEmpty) {
+          _errorMessage = detail.first.toString();
+        } else if (detail is String) {
+          _errorMessage = detail;
+        } else if (data['non_field_errors'] is List && (data['non_field_errors'] as List).isNotEmpty) {
+          _errorMessage = (data['non_field_errors'] as List).first.toString();
+        } else if (data['error'] is String) {
+          _errorMessage = data['error'];
+        } else {
+          _errorMessage = 'Transfer failed. Check balance or recipient.';
+        }
+      } else {
+        _errorMessage = 'Transfer failed. Check balance or recipient.';
+      }
       notifyListeners();
       return false;
     } catch (e) {

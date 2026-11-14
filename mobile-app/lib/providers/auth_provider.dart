@@ -18,19 +18,43 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool> checkAuthStatus() async {
     final token = await _apiService.storage.read(key: 'access_token');
-    if (token == null) return false;
+    final refreshToken = await _apiService.storage.read(key: 'refresh_token');
+    if (token == null && refreshToken == null) return false;
 
-    try {
-      final response = await _apiService.dio.get('/api/auth/profile/');
-      _user = UserModel.fromJson(response.data);
-      notifyListeners();
-      return true;
-    } catch (_) {
-      await _apiService.storage.deleteAll();
-      _user = null;
-      notifyListeners();
-      return false;
+    if (token != null) {
+      try {
+        final response = await _apiService.dio.get('/api/auth/profile/');
+        _user = UserModel.fromJson(response.data);
+        notifyListeners();
+        return true;
+      } catch (_) {}
     }
+
+    // Try refreshing the token before giving up
+    if (refreshToken != null && refreshToken.isNotEmpty) {
+      try {
+        final refreshResponse = await _apiService.dio.post(
+          '/api/auth/refresh/',
+          data: {'refresh': refreshToken},
+        );
+        if (refreshResponse.statusCode == 200 && refreshResponse.data is Map) {
+          final newAccess = refreshResponse.data['access'];
+          await _apiService.storage.write(key: 'access_token', value: newAccess);
+          if (refreshResponse.data['refresh'] != null) {
+            await _apiService.storage.write(key: 'refresh_token', value: refreshResponse.data['refresh']);
+          }
+          final profileResponse = await _apiService.dio.get('/api/auth/profile/');
+          _user = UserModel.fromJson(profileResponse.data);
+          notifyListeners();
+          return true;
+        }
+      } catch (_) {}
+    }
+
+    await _apiService.storage.deleteAll();
+    _user = null;
+    notifyListeners();
+    return false;
   }
 
   Future<bool> login(String email, String password) async {
@@ -60,10 +84,20 @@ class AuthProvider with ChangeNotifier {
         _errorMessage = 'Backend is waking from sleep. Please wait a few seconds and try again.';
       } else if (e.response == null) {
         _errorMessage = 'Unable to connect to server. Check your network or server status.';
+      } else if (e.response?.data is Map) {
+        final data = e.response!.data as Map;
+        final detail = data['detail'];
+        if (detail is List && detail.isNotEmpty) {
+          _errorMessage = detail.first.toString();
+        } else if (detail is String) {
+          _errorMessage = detail;
+        } else if (data['non_field_errors'] is List && (data['non_field_errors'] as List).isNotEmpty) {
+          _errorMessage = (data['non_field_errors'] as List).first.toString();
+        } else {
+          _errorMessage = 'Invalid email or password credentials.';
+        }
       } else {
-        _errorMessage = e.response?.data['detail'] ??
-            e.response?.data['non_field_errors']?[0] ??
-            'Invalid credentials.';
+        _errorMessage = 'Invalid email or password credentials.';
       }
       notifyListeners();
       return false;

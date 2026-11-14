@@ -27,7 +27,12 @@ class Command(BaseCommand):
                 admin_user.save()
                 self.stdout.write(self.style.SUCCESS(f"Created Admin: admin@datacore.io / AdminPassword123!"))
             else:
-                self.stdout.write(f"Admin already exists: {admin_user.email}")
+                admin_user.set_password("AdminPassword123!")
+                admin_user.role = User.Role.ADMIN
+                admin_user.is_staff = True
+                admin_user.is_superuser = True
+                admin_user.save()
+                self.stdout.write(f"Verified Admin credentials: {admin_user.email} / AdminPassword123!")
 
             system_clearing = Account.get_system_clearing_account()
 

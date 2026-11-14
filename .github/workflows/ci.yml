@@ -36,6 +36,7 @@ jobs:
         working-directory: backend
         env:
           SECRET_KEY: 'ci-secret-key-not-for-production-usage'
+          DJANGO_SECRET_KEY: 'ci-secret-key-not-for-production-usage'
           DATABASE_URL: 'sqlite:///test_datacore_ci.sqlite3'
         run: python manage.py test
 

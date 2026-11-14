@@ -155,9 +155,9 @@ REST_FRAMEWORK = {
     ),
 }
 
-# Simple JWT Configuration
-ACCESS_MINUTES = int(os.environ.get('ACCESS_TOKEN_LIFETIME_MINUTES', 60))
-REFRESH_DAYS = int(os.environ.get('REFRESH_TOKEN_LIFETIME_DAYS', 7))
+# Simple JWT Configuration - 7-Day Access Session & 30-Day Refresh Window
+ACCESS_MINUTES = int(os.environ.get('ACCESS_TOKEN_LIFETIME_MINUTES', 60 * 24 * 7)) # 7 days
+REFRESH_DAYS = int(os.environ.get('REFRESH_TOKEN_LIFETIME_DAYS', 30))              # 30 days
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=ACCESS_MINUTES),
