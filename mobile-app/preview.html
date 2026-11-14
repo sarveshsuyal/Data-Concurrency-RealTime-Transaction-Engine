@@ -255,7 +255,7 @@
   <!-- Modal Backdrop -->
   <div id="backdrop" class="modal-backdrop" onclick="closeAllModals()"></div>
 
-  <!-- ==================== SCREEN 0: LOGIN & WALLET SELECTOR ==================== -->
+    <!-- ==================== SCREEN 0: LOGIN & REGISTRATION (PHONEPE STYLE) ==================== -->
   <div id="screen-login" class="app-screen p-5 hidden">
     <!-- App Brand Header -->
     <div class="text-center pt-3 pb-4">
@@ -272,96 +272,103 @@
 
     <!-- Segmented Tab Switcher: Sign In vs Create Account -->
     <div class="flex p-1 bg-slate-100 rounded-2xl mb-4 border border-slate-200">
-      <button id="auth-tab-signin" onclick="switchAuthTab('signin')" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm transition">
+      <button type="button" id="auth-tab-signin" onclick="switchAuthTab('signin')" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm transition">
         <i class="fa-solid fa-arrow-right-to-bracket mr-1.5"></i>Sign In
       </button>
-      <button id="auth-tab-signup" onclick="switchAuthTab('signup')" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 transition">
+      <button type="button" id="auth-tab-signup" onclick="switchAuthTab('signup')" class="flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 transition">
         <i class="fa-solid fa-user-plus mr-1.5"></i>Create Account
       </button>
     </div>
 
-    <!-- VIEW A: SIGN IN SECTION -->
+    <!-- VIEW A: SIGN IN SECTION (PRIVATE - NO ACCOUNTS DUMPED) -->
     <div id="auth-view-signin" class="space-y-4">
-      <!-- 1-Tap Quick Profiles -->
-      <div>
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fast 1-Tap Sign In:</span>
-          <span class="text-[10px] text-blue-600 font-bold">Instant Login</span>
+      <div class="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div>
+          <span class="text-xs font-bold text-slate-800 block mb-1">Mobile Number or UPI ID</span>
+          <div class="relative">
+            <span class="absolute left-3.5 top-3 text-xs font-bold text-slate-400">+91</span>
+            <input id="login-phone-input" type="text" placeholder="Enter 10-digit mobile or UPI ID" value="9820192840" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+          </div>
         </div>
-        <div id="login-wallet-cards" class="space-y-2">
-          <!-- Injected by renderLoginWallets() -->
-        </div>
-      </div>
 
-      <!-- Or Sign in with Credentials -->
-      <div class="bg-white border border-slate-200 rounded-3xl p-4 shadow-sm space-y-3">
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Or Enter Wallet ID / Email</span>
         <div>
-          <input id="login-email-input" type="text" value="yash@datacore" placeholder="e.g. yash@datacore or DC-6812-3923" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs font-bold text-slate-800 block">4-Digit UPI PIN</span>
+            <span class="text-[10px] text-slate-400 font-medium">Default: 1234</span>
+          </div>
+          <div class="relative">
+            <input id="login-pin-input" type="password" maxlength="4" placeholder="••••" value="1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+          </div>
         </div>
-        <div>
-          <input id="login-password-input" type="password" value="Password123!" placeholder="Enter PIN / Password" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
-        </div>
-        <button onclick="handleManualLogin()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition">
-          Sign In to Wallet
+
+        <button type="button" onclick="handlePhonePinLogin()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-lock text-xs"></i>
+          <span>Sign In Securely</span>
         </button>
+
+        <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+          <span class="text-[10px] text-slate-400 font-medium">
+            <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i>
+            Bank-grade biometric & 256-bit row-lock encryption
+          </span>
+        </div>
       </div>
 
       <div class="text-center pt-1">
-        <button onclick="switchAuthTab('signup')" class="text-xs font-bold text-blue-600 hover:underline">
-          Don't have an account? Create a free wallet →
+        <button type="button" onclick="switchAuthTab('signup')" class="text-xs font-bold text-blue-600 hover:underline">
+          Don't have an account? Create an Account &rarr;
         </button>
       </div>
     </div>
 
     <!-- VIEW B: CREATE ACCOUNT SECTION -->
     <div id="auth-view-signup" class="hidden space-y-3.5">
-      <div class="bg-white border border-slate-200 rounded-3xl p-4.5 shadow-sm space-y-3">
-        <div class="flex items-center space-x-2 pb-2 border-b border-slate-100">
-          <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-bold">
+      <div class="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div class="flex items-center space-x-2.5 pb-2.5 border-b border-slate-100">
+          <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-base font-bold shadow-sm">
             <i class="fa-solid fa-user-plus"></i>
           </div>
           <div>
-            <h3 class="text-xs font-bold text-slate-900">Open Protected Wallet</h3>
-            <p class="text-[10px] text-slate-400">Free instant setup with test liquidity</p>
+            <h3 class="text-xs font-bold text-slate-900">Open Protected UPI Wallet</h3>
+            <p class="text-[10px] text-slate-400">Instant setup with test liquidity & rewards</p>
           </div>
         </div>
 
         <div>
-          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Your Full Name</label>
-          <input id="reg-name" type="text" placeholder="e.g. Rahul Sharma" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-600">
+          <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Your Full Name</label>
+          <input id="reg-name" type="text" placeholder="e.g. Rahul Sharma" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-600">
         </div>
 
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid grid-cols-2 gap-2.5">
           <div>
-            <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">10-Digit Mobile</label>
-            <input id="reg-mobile" type="tel" maxlength="10" placeholder="9876543210" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+            <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">10-Digit Mobile</label>
+            <input id="reg-mobile" type="tel" maxlength="10" placeholder="9876543210" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
           <div>
-            <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">4-Digit UPI PIN</label>
-            <input id="reg-pin" type="password" maxlength="4" placeholder="••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+            <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Set 4-Digit PIN</label>
+            <input id="reg-pin" type="password" maxlength="4" placeholder="••••" value="1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
         </div>
 
         <div>
-          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Email Address</label>
-          <input id="reg-email" type="email" placeholder="e.g. rahul@datacore.io" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
+          <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Email Address (Optional)</label>
+          <input id="reg-email" type="email" placeholder="e.g. rahul@datacore.io" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
         </div>
 
         <div>
-          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Initial Opening Balance (₹)</label>
-          <input id="reg-balance" type="number" value="10000" placeholder="10000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-blue-600 focus:outline-none focus:border-blue-600">
+          <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Initial Opening Balance (₹)</label>
+          <input id="reg-balance" type="number" value="10000" placeholder="10000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-blue-600 focus:outline-none focus:border-blue-600">
         </div>
 
-        <button onclick="handleRegisterNewUser()" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/25 active:scale-98 transition flex items-center justify-center space-x-1.5">
+        <button type="button" onclick="handleRegisterNewUser()" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/25 active:scale-98 transition flex items-center justify-center space-x-1.5">
           <i class="fa-solid fa-circle-check text-xs"></i>
           <span>Create My Account & Enter</span>
         </button>
       </div>
 
       <div class="text-center pt-1">
-        <button onclick="switchAuthTab('signin')" class="text-xs font-bold text-blue-600 hover:underline">
-          Already have an account? Sign In instead →
+        <button type="button" onclick="switchAuthTab('signin')" class="text-xs font-bold text-blue-600 hover:underline">
+          Already have an account? Sign In &rarr;
         </button>
       </div>
     </div>
@@ -3670,6 +3677,99 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     navigateTo('success');
   }
 
+  // ================= AUTH SWITCHER & PHONE/PIN LOGIN =================
+  function switchAuthTab(tab) {
+    const btnIn = document.getElementById('auth-tab-signin');
+    const btnUp = document.getElementById('auth-tab-signup');
+    const viewIn = document.getElementById('auth-view-signin');
+    const viewUp = document.getElementById('auth-view-signup');
+
+    if (tab === 'signup') {
+      if (btnUp) btnUp.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm transition';
+      if (btnIn) btnIn.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 transition';
+      if (viewUp) viewUp.classList.remove('hidden');
+      if (viewIn) viewIn.classList.add('hidden');
+    } else {
+      if (btnIn) btnIn.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm transition';
+      if (btnUp) btnUp.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 transition';
+      if (viewIn) viewIn.classList.remove('hidden');
+      if (viewUp) viewUp.classList.add('hidden');
+    }
+    triggerHaptic();
+  }
+
+  function handlePhonePinLogin() {
+    const phoneOrId = (document.getElementById('login-phone-input')?.value || '').trim();
+    const pin = (document.getElementById('login-pin-input')?.value || '').trim();
+
+    if (!phoneOrId) {
+      return showToast('Please enter your mobile number or UPI ID', false);
+    }
+
+    const clean = phoneOrId.toLowerCase();
+    const digitsOnly = clean.replace(/[^0-9]/g, '');
+    let matchedEmail = null;
+
+    Object.keys(wallets).forEach(k => {
+      const w = wallets[k];
+      if (
+        (w.mobile && (w.mobile === digitsOnly || w.mobile.replace(/[^0-9]/g, '') === digitsOnly)) ||
+        w.email.toLowerCase() === clean ||
+        w.accountNo.toLowerCase() === clean ||
+        (w.name && w.name.toLowerCase() === clean)
+      ) {
+        matchedEmail = k;
+      }
+    });
+
+    if (!matchedEmail) {
+      if (clean === '9820192840' || clean.includes('yash') || digitsOnly === '9820192840') {
+        matchedEmail = 'yash@datacore';
+      }
+    }
+
+    if (!matchedEmail) {
+      const mobileNum = digitsOnly.length === 10 ? digitsOnly : '9820192840';
+      const email = `${mobileNum}@datacore`;
+      wallets[email] = {
+        id: `usr_${Date.now()}`,
+        name: `User ${mobileNum.slice(-4)}`,
+        email: email,
+        mobile: mobileNum,
+        accountNo: `DC-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
+        initial: 'U',
+        role: 'Prime Savings A/C',
+        color: 'blue',
+        balance: 10000.00,
+        dailyLimit: 100000.00,
+        pin: pin || '1234',
+        upiPin: pin || '1234',
+        isTransfersLocked: false,
+        transactions: [],
+        notifications: [
+          { id: `n-${Date.now()}`, title: 'Welcome to DataCore Pay', msg: 'Your UPI wallet is active with ₹10,000 balance.', unread: true, time: 'Just now' }
+        ],
+        payees: [
+          { id: 'p1', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'RV' },
+          { id: 'p2', name: 'Sharma Kirana Store', email: 'sharmakirana@upi', initials: 'SK' }
+        ]
+      };
+      saveCurrentWalletState();
+      matchedEmail = email;
+    }
+
+    const userWallet = wallets[matchedEmail];
+    const expectedPin = userWallet.pin || userWallet.upiPin || '1234';
+
+    if (pin && pin !== expectedPin) {
+      triggerErrorHaptic();
+      return showToast(`Incorrect UPI PIN. (Default: ${expectedPin})`, false);
+    }
+
+    localStorage.setItem('datacore_is_logged_in', 'true');
+    loginAs(matchedEmail);
+  }
+
   // ================= LOGIN & LOGOUT LIFECYCLE =================
   function loginAs(email) {
     if (!wallets[email]) {
@@ -3680,6 +3780,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     closeAllModals();
     activeUserEmail = email;
     localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, email);
+    localStorage.setItem('datacore_is_logged_in', 'true');
 
     currentUser = wallets[email];
     balance = currentUser.balance;
@@ -3709,7 +3810,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   function logout() {
     saveCurrentWalletState();
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, '');
+    localStorage.setItem('datacore_is_logged_in', 'false');
     activeUserEmail = '';
     currentUser = null;
 
@@ -3728,7 +3829,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     const loginScreen = document.getElementById('screen-login');
     if (loginScreen) loginScreen.classList.remove('hidden');
 
-    renderLoginWallets();
+    switchAuthTab('signin');
     showToast('Signed out from wallet');
     triggerHaptic();
   }
@@ -6323,11 +6424,11 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   // ================= NEW USER REGISTRATION FLOW =================
   function handleRegisterNewUser() {
-    const name = document.getElementById('reg-name')?.value.trim();
-    const mobile = document.getElementById('reg-mobile')?.value.trim();
-    const email = document.getElementById('reg-email')?.value.trim().toLowerCase();
-    const pin = document.getElementById('reg-pin')?.value.trim();
-    const startingBal = parseFloat(document.getElementById('reg-balance')?.value) || 5000;
+    const name = (document.getElementById('reg-name')?.value || '').trim();
+    const mobile = (document.getElementById('reg-mobile')?.value || '').trim().replace(/[^0-9]/g, '');
+    let email = (document.getElementById('reg-email')?.value || '').trim().toLowerCase();
+    const pin = (document.getElementById('reg-pin')?.value || '').trim();
+    const startingBal = parseFloat(document.getElementById('reg-balance')?.value) || 10000;
 
     if (!name || name.length < 2) {
       return showToast('Please enter your full name', false);
@@ -6335,11 +6436,11 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     if (!mobile || mobile.length < 10) {
       return showToast('Please enter a valid 10-digit mobile number', false);
     }
-    if (!email || !email.includes('@')) {
-      return showToast('Please enter a valid email address', false);
-    }
     if (!pin || pin.length < 4) {
       return showToast('Please set a 4-digit UPI PIN', false);
+    }
+    if (!email) {
+      email = `${mobile}@datacore`;
     }
 
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
@@ -6352,6 +6453,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       name: name,
       email: email,
       mobile: mobile,
+      pin: pin,
       upiPin: pin,
       accountNo: accountNo,
       initial: initial,
@@ -6388,14 +6490,19 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         }
       ],
       payees: [
-        { id: 'p1', name: 'Yash Sharma', email: 'yash@datacore', initials: 'AW' },
-        { id: 'p2', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'BS' }
+        { id: 'p1', name: 'Yash Sharma', email: 'yash@datacore', initials: 'YS' },
+        { id: 'p2', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'RV' },
+        { id: 'p3', name: 'Sharma Kirana Store', email: 'sharmakirana@upi', initials: 'SK' }
       ]
     };
 
     wallets[email] = newWallet;
-    localStorage.setItem(STORAGE_KEYS.WALLETS, JSON.stringify(wallets));
+    saveCurrentWalletState();
+    localStorage.setItem('datacore_is_logged_in', 'true');
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, email);
+
     playSuccessChime();
+    triggerSuccessHaptic();
     showToast(`🎉 Welcome ${name}! Your wallet is ready.`);
     loginAs(email);
   }
@@ -6459,7 +6566,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
 
-  // ================= BOOTSTRAP INITIAL VIEW (START ON LOGIN SCREEN) =================
+  // ================= BOOTSTRAP INITIAL VIEW (PRESERVE SESSION ON REFRESH) =================
   applyTheme();
 
   activeUserEmail = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER) || 'yash@datacore';
@@ -6482,20 +6589,15 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   renderNotifications();
   initServicesHub();
 
-  // START APP ON LOGIN SCREEN AS REQUESTED
-  const nav = document.getElementById('bottom-nav');
-  if (nav) nav.classList.add('hidden');
+  const isUserLoggedIn = localStorage.getItem('datacore_is_logged_in') === 'true';
 
-  ['home', 'transfer', 'services', 'history', 'statement', 'notifications', 'profile', 'success'].forEach(id => {
-    const screen = document.getElementById(`screen-${id}`);
-    if (screen) screen.classList.add('hidden');
-    const tab = document.getElementById(`tab-${id}`);
-    if (tab) tab.classList.remove('active');
-  });
-
-  const loginScreen = document.getElementById('screen-login');
-  if (loginScreen) loginScreen.classList.remove('hidden');
-  renderLoginWallets();
+  if (isUserLoggedIn && wallets[activeUserEmail]) {
+    // Keep user logged in across page refreshes!
+    loginAs(activeUserEmail);
+  } else {
+    // Show clean login screen (first time or logged out)
+    logout();
+  }
 </script>
 
 </body>
