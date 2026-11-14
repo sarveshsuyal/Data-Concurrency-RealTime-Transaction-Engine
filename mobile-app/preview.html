@@ -5730,7 +5730,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     triggerHaptic();
 
     const t0 = performance.now();
-    fetch(`${API_BASE_URL}/api/health/`, { method: 'GET', mode: 'no-cors' })
+    fetch(`${API_BASE_URL}/health/`, { method: 'GET', mode: 'no-cors' })
       .then(() => {
         const delta = (performance.now() - t0).toFixed(1);
         if (pingEl) pingEl.innerText = `${Math.max(4.2, parseFloat(delta))} ms`;
@@ -7103,8 +7103,26 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   function updateCloudStatus(connected) {
     const dot = document.getElementById('backend-status-dot');
     const text = document.getElementById('backend-status-text');
-    if (dot) dot.className = connected ? 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse' : 'w-2 h-2 rounded-full bg-blue-500';
-    if (text) text.innerText = connected ? 'Render Cloud Connected' : 'DataCore Invariant Active';
+    if (dot) dot.className = connected ? 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse' : 'w-1.5 h-1.5 rounded-full bg-blue-500';
+    if (text) text.innerText = connected ? 'Cloud: Connected' : 'Cloud: DataCore Active';
+
+    const homeDot = document.getElementById('home-cloud-dot');
+    const homeText = document.getElementById('home-cloud-text');
+    if (homeDot) homeDot.className = connected ? 'w-2 h-2 rounded-full bg-emerald-500 animate-pulse' : 'w-2 h-2 rounded-full bg-blue-500';
+    if (homeText) homeText.innerText = connected ? 'Protected Ledger • Render Cloud' : 'Protected Ledger • Local Engine';
+  }
+
+  async function checkBackendHealth() {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 4000);
+      const res = await fetch(`${API_BASE_URL}/health/`, { method: 'GET', signal: ctrl.signal, mode: 'no-cors' }).catch(() => null);
+      clearTimeout(t);
+      if (res) {
+        isCloudConnected = true;
+        updateCloudStatus(true);
+      }
+    } catch (_) {}
   }
 
   // ================= NEW USER REGISTRATION FLOW (STRICT UNIQUENESS & PASSWORDS) =================
@@ -7380,12 +7398,14 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   const isUserLoggedIn = localStorage.getItem('datacore_is_logged_in') === 'true';
 
+  checkBackendHealth();
+
   if (isUserLoggedIn && wallets[activeUserEmail]) {
     // Keep user logged in across page refreshes!
     loginAs(activeUserEmail);
   } else {
-    // Show clean login screen (first time or logged out)
-    logout();
+    // Show clean login screen (first time or logged out) - defaults to Sign Up first
+    logout(true);
   }
 </script>
 
