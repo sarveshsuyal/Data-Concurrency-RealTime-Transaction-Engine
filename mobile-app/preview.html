@@ -447,45 +447,24 @@
       </button>
     </div>
 
-    <!-- Recharge & Pay Bills Hub (PhonePe / GPay Style) -->
-    <div class="mb-5">
-      <div class="flex justify-between items-center mb-2.5">
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Recharge & Pay Bills</span>
-        <span class="text-[10px] text-blue-600 font-bold">1-Tap Fast Pay</span>
+    <!-- 1-Tap Services Hub Banner (PhonePe Style) -->
+    <div onclick="navigateTo('services')" class="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white rounded-3xl p-3.5 shadow-md shadow-blue-500/20 mb-5 cursor-pointer active:scale-98 transition flex items-center justify-between group">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-lg shadow-inner group-hover:scale-105 transition">
+          ⚡
+        </div>
+        <div>
+          <span class="text-[9px] font-bold text-blue-200 uppercase tracking-wider block">Bharat BillPay (BBPS)</span>
+          <span class="text-xs font-black text-white block leading-tight">Recharge & Pay Bills</span>
+          <span class="text-[10px] text-blue-100 font-medium">Electricity, Mobile 5G, DTH, FASTag & more</span>
+        </div>
       </div>
-
-      <div class="grid grid-cols-4 gap-2">
-        <button onclick="navigateTo('services'); setServicesFilter('MOBILE');" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
-          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-1 text-base">
-            📱
-          </div>
-          <span class="text-[10px] font-bold text-slate-800 text-center leading-tight">Mobile<br>Recharge</span>
-        </button>
-
-        <button onclick="navigateTo('services'); setServicesFilter('ELECTRICITY');" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
-          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-1 text-base">
-            💡
-          </div>
-          <span class="text-[10px] font-bold text-slate-800 text-center leading-tight">Electricity<br>Bill</span>
-        </button>
-
-        <button onclick="openBillModal('DTH Recharge', 450, 'Tata Play Ultra HD')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
-          <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-1 text-base">
-            📺
-          </div>
-          <span class="text-[10px] font-bold text-slate-800 text-center leading-tight">DTH<br>Cable</span>
-        </button>
-
-        <button onclick="openBillModal('Credit Card Bill', 2500, 'HDFC Bank Credit Card')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
-          <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1 text-base">
-            💳
-          </div>
-          <span class="text-[10px] font-bold text-slate-800 text-center leading-tight">Credit<br>Card</span>
-        </button>
+      <div class="flex items-center space-x-1 font-bold text-[11px] bg-white text-blue-700 px-3 py-1.5 rounded-xl shadow-sm group-hover:bg-blue-50 transition">
+        <span>Pay Bills</span>
+        <i class="fa-solid fa-chevron-right text-[9px]"></i>
       </div>
     </div>
-
-    <!-- Rewards & Cashback Hub Banner -->
+<!-- Rewards & Cashback Hub Banner -->
     <div id="home-scratch-banner-container">
     <div onclick="openScratchCardModal()" class="bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 text-white rounded-3xl p-3.5 shadow-md shadow-amber-500/20 mb-5 cursor-pointer active:scale-98 transition flex items-center justify-between group">
       <div class="flex items-center space-x-3">
@@ -546,60 +525,165 @@
   </div>
 
   <!-- ==================== SCREEN: SERVICES & BILL PAYMENTS ==================== -->
+    <!-- ==================== SCREEN: SERVICES & BILL PAYMENTS ==================== -->
   <div id="screen-services" class="app-screen p-5 hidden">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center">
-        <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 active:scale-95 transition">
-          <i class="fa-solid fa-arrow-left text-base"></i>
-        </button>
-        <div>
-          <h2 class="text-base font-bold text-slate-900 ml-2">Services & Bill Payments</h2>
-          <p class="text-[10px] text-slate-500 ml-2">Bharat BillPay (BBPS) & Mobile Recharge</p>
+
+    <!-- ================= VIEW 0: MAIN DIRECTORY OF SERVICES ================= -->
+    <div id="services-hub-directory">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center">
+          <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 active:scale-95 transition">
+            <i class="fa-solid fa-arrow-left text-base"></i>
+          </button>
+          <div>
+            <h2 class="text-base font-bold text-slate-900 ml-2">Recharge & Pay Bills</h2>
+            <p class="text-[10px] text-slate-500 ml-2">Official Bharat BillPay (BBPS) Portal</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold">
+          <i class="fa-solid fa-shield-halved text-[10px]"></i>
+          <span>BBPS Assured</span>
         </div>
       </div>
-      <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold">
-        <i class="fa-solid fa-shield-halved text-[10px]"></i>
-        <span>BBPS Assured</span>
+
+      <!-- Search Bar -->
+      <div class="relative mb-4">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+        <input id="services-search-input" oninput="filterServicesDirectory(this.value)" type="text" class="w-full bg-white border border-slate-200 rounded-2xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm" placeholder="Search billers, recharges (e.g. Jio, Electricity, DTH...)">
       </div>
-    </div>
 
-    <!-- Live Search Bar -->
-    <div class="relative mb-3">
-      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
-      <input id="services-search" oninput="filterServicesAndBills()" type="text" class="w-full bg-white border border-slate-200 rounded-2xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm" placeholder="Search billers, recharges e.g. MSEDCL, Jio, BESCOM...">
-    </div>
+      <!-- Quick Category Pills -->
+      <div class="flex space-x-2 overflow-x-auto pb-1 mb-4 text-xs font-semibold">
+        <button onclick="filterServicesCategory('ALL')" class="px-3 py-1.5 rounded-full bg-blue-600 text-white shrink-0 shadow-sm">All Services</button>
+        <button onclick="openServiceDetail('electricity')" class="px-3 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-blue-400">⚡ Electricity</button>
+        <button onclick="openServiceDetail('mobile')" class="px-3 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-blue-400">📱 Mobile</button>
+        <button onclick="openServiceDetail('dth')" class="px-3 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-blue-400">📺 DTH</button>
+        <button onclick="openServiceDetail('fastag')" class="px-3 py-1.5 rounded-full bg-white text-slate-700 border border-slate-200 shrink-0 hover:border-blue-400">🚗 FASTag</button>
+      </div>
 
-    <!-- Category Filter Chips -->
-    <div class="flex space-x-2 overflow-x-auto pb-1 mb-4">
-      <button onclick="setServicesFilter('ALL')" id="sf-all" class="px-3 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-sm shrink-0">All</button>
-      <button onclick="setServicesFilter('ELECTRICITY')" id="sf-electricity" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">⚡ Electricity</button>
-      <button onclick="setServicesFilter('MOBILE')" id="sf-mobile" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">📱 Mobile</button>
-      <button onclick="setServicesFilter('DTH')" id="sf-dth" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">📺 DTH</button>
-      <button onclick="setServicesFilter('WATER')" id="sf-water" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">💧 Water</button>
-      <button onclick="setServicesFilter('GAS')" id="sf-gas" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">🔥 Gas</button>
-      <button onclick="setServicesFilter('FASTAG')" id="sf-fastag" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">🚗 FASTag</button>
-    </div>
+      <!-- Directory Services Grid (Categorized Cards) -->
+      <div class="space-y-4" id="services-grid-container">
+        <!-- Section: Essential Utilities -->
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Essential Utilities</span>
+          <div class="grid grid-cols-2 gap-2.5">
+            <!-- Electricity Card -->
+            <div onclick="openServiceDetail('electricity')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-amber-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold border border-amber-200/60 shadow-sm group-hover:scale-105 transition">
+                ⚡
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Electricity Bill</span>
+                <span class="text-[10px] text-slate-400 block truncate">MSEDCL, Tata, BESCOM</span>
+              </div>
+            </div>
 
-    <!-- ================= SECTION 1: ELECTRICITY BILL PAY (PHONEPE STYLE) ================= -->
-    <div id="service-sec-electricity" class="bg-white border border-slate-200 rounded-3xl p-4.5 shadow-sm mb-5">
-      <div class="flex justify-between items-start mb-3">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg font-bold border border-amber-200/60 shadow-sm">
+            <!-- Mobile Recharge Card -->
+            <div onclick="openServiceDetail('mobile')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold border border-blue-200/60 shadow-sm group-hover:scale-105 transition">
+                📱
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Mobile Recharge</span>
+                <span class="text-[10px] text-slate-400 block truncate">Jio, Airtel, Vi, BSNL</span>
+              </div>
+            </div>
+
+            <!-- DTH Card -->
+            <div onclick="openServiceDetail('dth')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-indigo-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold border border-indigo-200/60 shadow-sm group-hover:scale-105 transition">
+                📺
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">DTH / Cable TV</span>
+                <span class="text-[10px] text-slate-400 block truncate">Tata Play, Airtel DTH</span>
+              </div>
+            </div>
+
+            <!-- FASTag Card -->
+            <div onclick="openServiceDetail('fastag')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-cyan-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-xl font-bold border border-cyan-200/60 shadow-sm group-hover:scale-105 transition">
+                🚗
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">FASTag Toll</span>
+                <span class="text-[10px] text-slate-400 block truncate">NHAI & Bank FASTag</span>
+              </div>
+            </div>
+
+            <!-- Water Bill Card -->
+            <div onclick="openServiceDetail('water')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-sky-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-xl font-bold border border-sky-200/60 shadow-sm group-hover:scale-105 transition">
+                💧
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Water Bill</span>
+                <span class="text-[10px] text-slate-400 block truncate">Municipal Jal Boards</span>
+              </div>
+            </div>
+
+            <!-- Gas & Cylinder Card -->
+            <div onclick="openServiceDetail('gas')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-orange-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-xl font-bold border border-orange-200/60 shadow-sm group-hover:scale-105 transition">
+                🔥
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Gas & Cylinder</span>
+                <span class="text-[10px] text-slate-400 block truncate">MGL, IGL, Indane</span>
+              </div>
+            </div>
+
+            <!-- Credit Card Bill -->
+            <div onclick="openServiceDetail('creditcard')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-emerald-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold border border-emerald-200/60 shadow-sm group-hover:scale-105 transition">
+                💳
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Credit Card Bill</span>
+                <span class="text-[10px] text-slate-400 block truncate">HDFC, SBI, ICICI</span>
+              </div>
+            </div>
+
+            <!-- Broadband Card -->
+            <div onclick="openServiceDetail('broadband')" class="p-3.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-purple-400 cursor-pointer active:scale-98 transition flex items-center space-x-3 group">
+              <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold border border-purple-200/60 shadow-sm group-hover:scale-105 transition">
+                🌐
+              </div>
+              <div class="overflow-hidden">
+                <span class="text-xs font-bold text-slate-900 block truncate">Broadband & Landline</span>
+                <span class="text-[10px] text-slate-400 block truncate">JioFiber, Airtel, ACT</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- End services-hub-directory -->
+
+    <!-- ================= VIEW 1: DEDICATED ELECTRICITY BILL VIEW ================= -->
+    <div id="service-view-electricity" class="hidden space-y-4">
+      <div class="flex items-center justify-between mb-2">
+        <button onclick="openServiceDetail('directory')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 flex items-center space-x-1 font-bold text-xs">
+          <i class="fa-solid fa-arrow-left text-sm mr-1"></i>
+          <span>All Services</span>
+        </button>
+        <span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-[10px] font-bold border border-amber-200">BBPS ELECTRICITY</span>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl font-bold border border-amber-200 shadow-sm">
             ⚡
           </div>
           <div>
-            <h3 class="text-xs font-bold text-slate-900">Electricity Bill Payment</h3>
-            <p class="text-[10px] text-slate-500">Official State Discom Bharat BillPay</p>
+            <h3 class="text-sm font-bold text-slate-900">Electricity Bill Payment</h3>
+            <p class="text-[10px] text-slate-500">Official State Discom Instant Fetch & Pay</p>
           </div>
         </div>
-        <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-bold border border-emerald-200">REALTIME FETCH</span>
-      </div>
 
-      <div class="space-y-3">
         <!-- State Selector -->
         <div>
-          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Select State / UT</label>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">1. Select State / UT</label>
           <div class="relative">
             <select id="elec-state-select" onchange="handleElectricityStateChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-600 appearance-none pr-8">
               <option value="Maharashtra">Maharashtra (MSEDCL, Tata Power, Adani, BEST)</option>
@@ -622,9 +706,9 @@
           </div>
         </div>
 
-        <!-- Board / Provider Selector -->
+        <!-- Board Selector -->
         <div>
-          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Electricity Provider / Board</label>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">2. Select Electricity Provider / Board</label>
           <div class="relative">
             <select id="elec-board-select" onchange="handleElectricityBoardChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-600 appearance-none pr-8">
               <!-- Dynamically populated -->
@@ -633,42 +717,39 @@
           </div>
         </div>
 
-        <!-- Consumer Number / CA Number Input -->
+        <!-- Consumer Number Input -->
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label id="elec-consumer-label" class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Consumer Number / CA Number</label>
+            <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">3. Consumer Number / CA Number</label>
             <span id="elec-sample-hint" class="text-[10px] text-blue-600 font-bold cursor-pointer hover:underline" onclick="fillSampleConsumerNumber()">Fill Sample: 015520938472</span>
           </div>
-          <div class="relative">
-            <input id="elec-consumer-no" type="text" placeholder="Enter Consumer Number" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
-          </div>
+          <input id="elec-consumer-no" type="text" placeholder="Enter Consumer Number" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
         </div>
 
-        <!-- Sub-division / BU (Shown if required by board) -->
         <div id="elec-subdivision-box" class="hidden">
           <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Billing Unit (BU) / Sub-division</label>
           <input id="elec-subdivision-val" type="text" value="4120 - Pune Rural" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800">
         </div>
 
         <!-- Fetch Button -->
-        <button id="btn-fetch-elec-bill" onclick="fetchElectricityBill()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+        <button id="btn-fetch-elec-bill" onclick="fetchElectricityBill()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
           <i class="fa-solid fa-file-invoice text-xs"></i>
-          <span>Fetch Bill Details</span>
+          <span>Fetch Real Bill Details</span>
         </button>
 
-        <!-- Loading State Indicator -->
+        <!-- Loading State -->
         <div id="elec-fetch-loading" class="hidden py-4 text-center">
           <div class="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
           <p class="text-[11px] font-bold text-slate-700">Connecting to Bharat BillPay & Utility Server...</p>
           <p class="text-[9px] text-slate-400">Verifying consumer credentials with Discom ledger</p>
         </div>
 
-        <!-- Verified Bill Details Preview Card -->
-        <div id="elec-bill-preview" class="hidden bg-gradient-to-br from-slate-50 to-blue-50/40 border border-blue-200/80 rounded-2xl p-3.5 space-y-2.5">
-          <div class="flex justify-between items-start border-b border-blue-100 pb-2">
+        <!-- Bill Details Card -->
+        <div id="elec-bill-preview" class="hidden bg-gradient-to-br from-slate-50 to-amber-50/40 border border-amber-200/80 rounded-2xl p-4 space-y-3">
+          <div class="flex justify-between items-start border-b border-amber-100 pb-2.5">
             <div>
               <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Consumer Name</span>
-              <span id="elec-preview-name" class="text-xs font-bold text-slate-900">RAMESH CHANDRA PATIL</span>
+              <span id="elec-preview-name" class="text-xs font-black text-slate-900">RAMESH CHANDRA PATIL</span>
               <span id="elec-preview-consumer-id" class="text-[10px] text-slate-500 font-mono block">CA: 015520938472</span>
             </div>
             <div class="text-right">
@@ -678,7 +759,7 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-2 text-[11px] py-1 border-b border-blue-100">
+          <div class="grid grid-cols-2 gap-2 text-[11px] py-1 border-b border-amber-100">
             <div>
               <span class="text-slate-400 text-[10px]">Bill Number:</span>
               <span id="elec-preview-bill-no" class="font-mono font-bold text-slate-800 ml-1">EB-2026-981240</span>
@@ -709,27 +790,32 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> <!-- End service-view-electricity -->
 
-    <!-- ================= SECTION 2: MOBILE RECHARGE FLOW ================= -->
-    <div id="service-sec-mobile" class="bg-white border border-slate-200 rounded-3xl p-4.5 shadow-sm mb-5">
-      <div class="flex justify-between items-start mb-3">
-        <div class="flex items-center space-x-2.5">
-          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold border border-blue-200/60 shadow-sm">
+    <!-- ================= VIEW 2: DEDICATED MOBILE RECHARGE VIEW ================= -->
+    <div id="service-view-mobile" class="hidden space-y-4">
+      <div class="flex items-center justify-between mb-2">
+        <button onclick="openServiceDetail('directory')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 flex items-center space-x-1 font-bold text-xs">
+          <i class="fa-solid fa-arrow-left text-sm mr-1"></i>
+          <span>All Services</span>
+        </button>
+        <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[10px] font-bold border border-blue-200">5G RECHARGE</span>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl font-bold border border-blue-200 shadow-sm">
             📱
           </div>
           <div>
-            <h3 class="text-xs font-bold text-slate-900">Mobile Prepaid & 5G Recharge</h3>
+            <h3 class="text-sm font-bold text-slate-900">Mobile Prepaid Recharge</h3>
             <p class="text-[10px] text-slate-500">Auto Operator Detection & Live Plans</p>
           </div>
         </div>
-        <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-bold border border-blue-200">INSTANT PACK</span>
-      </div>
 
-      <div class="space-y-3">
-        <!-- Mobile Input & Auto Detection -->
+        <!-- 10-Digit Mobile Number Input -->
         <div>
-          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">10-Digit Mobile Number</label>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Enter 10-Digit Mobile Number</label>
           <div class="relative">
             <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400">+91</span>
             <input id="recharge-mobile-input" oninput="handleRechargeMobileInput(this.value)" type="tel" maxlength="10" placeholder="9820192840" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-24 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
@@ -737,19 +823,19 @@
           </div>
         </div>
 
-        <!-- Detected Operator & Circle Badge with Change Option -->
+        <!-- Detected Operator & Circle Badge -->
         <div class="flex justify-between items-center p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
           <div class="flex items-center space-x-2">
-            <span id="recharge-operator-logo" class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">Jio</span>
+            <span id="recharge-operator-logo" class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-black">Jio</span>
             <div>
-              <span id="recharge-detected-op" class="text-xs font-bold text-slate-900">Jio Prepaid</span>
+              <span id="recharge-detected-op" class="text-xs font-bold text-slate-900 block">Jio Prepaid</span>
               <span id="recharge-detected-circle" class="text-[10px] text-slate-500 block">Maharashtra & Goa</span>
             </div>
           </div>
-          <button onclick="openChangeOperatorModal()" class="text-[10px] font-bold text-blue-600 hover:underline">Change</button>
+          <button onclick="openChangeOperatorModal()" class="text-[11px] font-bold text-blue-600 hover:underline">Change</button>
         </div>
 
-        <!-- Plan Search Input -->
+        <!-- Search Plans -->
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-[10px]"></i>
           <input id="recharge-plan-search" oninput="filterRechargePlans()" type="text" placeholder="Search by amount, data, OTT (e.g. 299, 5G, Disney+)" class="w-full bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-[11px] text-slate-900 focus:outline-none focus:border-blue-600">
@@ -758,10 +844,10 @@
         <!-- Plan Category Tabs -->
         <div class="flex space-x-1.5 overflow-x-auto pb-1 text-[11px]">
           <button onclick="switchRechargePlanTab('POPULAR')" id="rpt-popular" class="px-2.5 py-1 rounded-lg font-bold bg-blue-600 text-white shrink-0 shadow-sm">Popular</button>
-          <button onclick="switchRechargePlanTab('TRUE5G')" id="rpt-true5g" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">True 5G Unlimited</button>
-          <button onclick="switchRechargePlanTab('BOOSTERS')" id="rpt-boosters" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">Data Boosters</button>
-          <button onclick="switchRechargePlanTab('ANNUAL')" id="rpt-annual" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">Annual Packs</button>
-          <button onclick="switchRechargePlanTab('OTT')" id="rpt-ott" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">Entertainment</button>
+          <button onclick="switchRechargePlanTab('TRUE5G')" id="rpt-true5g" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">True 5G</button>
+          <button onclick="switchRechargePlanTab('BOOSTERS')" id="rpt-boosters" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">Boosters</button>
+          <button onclick="switchRechargePlanTab('ANNUAL')" id="rpt-annual" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">Annual</button>
+          <button onclick="switchRechargePlanTab('OTT')" id="rpt-ott" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">OTT</button>
         </div>
 
         <!-- Plans Cards Container -->
@@ -769,50 +855,273 @@
           <!-- Injected dynamically by renderRechargePlans() -->
         </div>
       </div>
-    </div>
+    </div> <!-- End service-view-mobile -->
 
-    <!-- ================= SECTION 3: OTHER UTILITIES GRID ================= -->
-    <div id="service-sec-utilities" class="mb-6">
-      <div class="flex justify-between items-center mb-2.5">
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Other Bill Payments & Fast Access</span>
-        <span class="text-[10px] text-blue-600 font-bold">BBPS Network</span>
+    <!-- ================= VIEW 3: DEDICATED DTH RECHARGE VIEW ================= -->
+    <div id="service-view-dth" class="hidden space-y-4">
+      <div class="flex items-center justify-between mb-2">
+        <button onclick="openServiceDetail('directory')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 flex items-center space-x-1 font-bold text-xs">
+          <i class="fa-solid fa-arrow-left text-sm mr-1"></i>
+          <span>All Services</span>
+        </button>
+        <span class="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 text-[10px] font-bold border border-indigo-200">DTH RECHARGE</span>
       </div>
 
-      <div class="grid grid-cols-4 gap-2">
-        <button onclick="openBillModal('DTH Recharge', 450, 'Tata Play Super Saver')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
-          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-1 text-base">
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl font-bold border border-indigo-200 shadow-sm">
             📺
           </div>
-          <span class="text-[11px] font-bold text-slate-800">DTH TV</span>
-          <span class="text-[9px] text-slate-400">Tata Play</span>
-        </button>
-
-        <button onclick="openBillModal('FASTag Recharge', 500, 'NHAI Fastag Toll')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
-          <div class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-1 text-base">
-            🚗
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">DTH & Cable TV Recharge</h3>
+            <p class="text-[10px] text-slate-500">Instant Set-Top Box Activation</p>
           </div>
-          <span class="text-[11px] font-bold text-slate-800">FASTag</span>
-          <span class="text-[9px] text-slate-400">Toll Pass</span>
-        </button>
+        </div>
 
-        <button onclick="openBillModal('Water Bill', 320, 'Municipal Water Board')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
-          <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-1 text-base">
-            💧
-          </div>
-          <span class="text-[11px] font-bold text-slate-800">Water</span>
-          <span class="text-[9px] text-slate-400">Municipal</span>
-        </button>
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Select DTH Provider</label>
+          <select id="dth-operator-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none">
+            <option value="Tata Play">Tata Play (Tata Sky)</option>
+            <option value="Airtel Digital TV">Airtel Digital TV</option>
+            <option value="Dish TV">Dish TV India</option>
+            <option value="Sun Direct">Sun Direct</option>
+            <option value="D2H">D2H (Videocon)</option>
+          </select>
+        </div>
 
-        <button onclick="openBillModal('Piped Gas / LPG', 940, 'Mahanagar Gas Booking')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
-          <div class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mb-1 text-base">
-            🔥
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Subscriber ID / Smart Card Number</label>
+          <input id="dth-sub-id" type="text" value="1092840192" placeholder="e.g. 1092840192" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Select Recharge Pack</label>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <button onclick="document.getElementById('dth-amount').value = '350'" class="p-2.5 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 text-left">
+              <span class="font-bold text-slate-900 block">₹350 • 1 Month</span>
+              <span class="text-[10px] text-slate-400">Super Family HD</span>
+            </button>
+            <button onclick="document.getElementById('dth-amount').value = '999'" class="p-2.5 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 text-left">
+              <span class="font-bold text-slate-900 block">₹999 • 3 Months</span>
+              <span class="text-[10px] text-slate-400">Mega Entertainment</span>
+            </button>
           </div>
-          <span class="text-[11px] font-bold text-slate-800">LPG Gas</span>
-          <span class="text-[9px] text-slate-400">Cylinder</span>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Recharge Amount (₹)</label>
+          <input id="dth-amount" type="number" value="350" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-lg font-black text-blue-600 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <button onclick="payDthRecharge()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-lock text-xs"></i>
+          <span>Proceed to Recharge DTH</span>
         </button>
       </div>
-    </div>
-  </div>
+    </div> <!-- End service-view-dth -->
+
+    <!-- ================= VIEW 4: DEDICATED FASTAG VIEW ================= -->
+    <div id="service-view-fastag" class="hidden space-y-4">
+      <div class="flex items-center justify-between mb-2">
+        <button onclick="openServiceDetail('directory')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 flex items-center space-x-1 font-bold text-xs">
+          <i class="fa-solid fa-arrow-left text-sm mr-1"></i>
+          <span>All Services</span>
+        </button>
+        <span class="px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-700 text-[10px] font-bold border border-cyan-200">FASTAG TOLL</span>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-2xl font-bold border border-cyan-200 shadow-sm">
+            🚗
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">FASTag Toll Recharge</h3>
+            <p class="text-[10px] text-slate-500">NHAI & Bank FASTag Instant Topup</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Vehicle Registration Number</label>
+          <input id="fastag-vehicle-no" type="text" value="MH 02 CZ 4821" placeholder="e.g. MH 02 CZ 4821" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold uppercase text-slate-900 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">FASTag Issuing Bank</label>
+          <select id="fastag-bank-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none">
+            <option value="Paytm Payments Bank">Paytm Payments Bank FASTag</option>
+            <option value="ICICI Bank">ICICI Bank FASTag</option>
+            <option value="State Bank of India">State Bank of India (SBI) FASTag</option>
+            <option value="HDFC Bank">HDFC Bank FASTag</option>
+            <option value="Axis Bank">Axis Bank FASTag</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Recharge Amount (₹)</label>
+          <div class="grid grid-cols-3 gap-2 mb-2 text-xs">
+            <button onclick="document.getElementById('fastag-amount').value = '500'" class="p-2 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 font-bold text-slate-800">₹500</button>
+            <button onclick="document.getElementById('fastag-amount').value = '1000'" class="p-2 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 font-bold text-slate-800">₹1,000</button>
+            <button onclick="document.getElementById('fastag-amount').value = '2000'" class="p-2 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 font-bold text-slate-800">₹2,000</button>
+          </div>
+          <input id="fastag-amount" type="number" value="500" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-lg font-black text-blue-600 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <button onclick="payFastagRecharge()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-lock text-xs"></i>
+          <span>Proceed to Recharge FASTag</span>
+        </button>
+      </div>
+    </div> <!-- End service-view-fastag -->
+
+    <!-- ================= VIEW 5: DEDICATED WATER VIEW ================= -->
+    <div id="service-view-water" class="hidden space-y-4">
+      <div class="flex items-center justify-between mb-2">
+        <button onclick="openServiceDetail('directory')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 flex items-center space-x-1 font-bold text-xs">
+          <i class="fa-solid fa-arrow-left text-sm mr-1"></i>
+          <span>All Services</span>
+        </button>
+        <span class="px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 text-[10px] font-bold border border-sky-200">WATER BBPS</span>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center text-2xl font-bold border border-sky-200 shadow-sm">
+            💧
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Municipal Water Bill</h3>
+            <p class="text-[10px] text-slate-500">Municipal Water Supply Boards</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Water Supply Board</label>
+          <select id="water-board-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none">
+            <option value="Delhi Jal Board (DJB)">Delhi Jal Board (DJB)</option>
+            <option value="Bangalore Water Supply (BWSSB)">Bangalore Water Supply (BWSSB)</option>
+            <option value="Municipal Corporation of Greater Mumbai (MCGM)">MCGM Mumbai Water</option>
+            <option value="Hyderabad Water Supply (HMWSSB)">HMWSSB Hyderabad</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">K No. / Consumer Number</label>
+          <input id="water-consumer-no" type="text" value="3820194821" placeholder="e.g. 3820194821" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Bill Amount (₹)</label>
+          <input id="water-amount" type="number" value="320" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-lg font-black text-blue-600 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <button onclick="payWaterBill()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-lock text-xs"></i>
+          <span>Pay Water Bill</span>
+        </button>
+      </div>
+    </div> <!-- End service-view-water -->
+
+    <!-- ================= VIEW 6: DEDICATED GAS VIEW ================= -->
+    <div id="service-view-gas" class="hidden space-y-4">
+      <div class="flex items-center justify-between mb-2">
+        <button onclick="openServiceDetail('directory')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 flex items-center space-x-1 font-bold text-xs">
+          <i class="fa-solid fa-arrow-left text-sm mr-1"></i>
+          <span>All Services</span>
+        </button>
+        <span class="px-2 py-0.5 rounded-full bg-orange-50 text-orange-700 text-[10px] font-bold border border-orange-200">GAS & CYLINDER</span>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl font-bold border border-orange-200 shadow-sm">
+            🔥
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Piped Gas & LPG Cylinder</h3>
+            <p class="text-[10px] text-slate-500">Bharat Gas, Indane, HP, Mahanagar Gas</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Select Gas Provider</label>
+          <select id="gas-provider-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none">
+            <option value="Mahanagar Gas Limited (MGL)">Mahanagar Gas Limited (MGL)</option>
+            <option value="Indraprastha Gas Limited (IGL)">Indraprastha Gas Limited (IGL)</option>
+            <option value="Indane LPG Cylinder Booking">Indane LPG Cylinder</option>
+            <option value="Bharat Gas LPG Booking">Bharat Gas LPG Cylinder</option>
+            <option value="HP Gas LPG Booking">HP Gas LPG Cylinder</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Consumer / Customer Number</label>
+          <input id="gas-consumer-no" type="text" value="9820192840" placeholder="e.g. 9820192840" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Amount (₹)</label>
+          <input id="gas-amount" type="number" value="940" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-lg font-black text-blue-600 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <button onclick="payGasBill()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-lock text-xs"></i>
+          <span>Proceed to Pay / Book</span>
+        </button>
+      </div>
+    </div> <!-- End service-view-gas -->
+
+    <!-- ================= VIEW 7: DEDICATED CREDIT CARD VIEW ================= -->
+    <div id="service-view-creditcard" class="hidden space-y-4">
+      <div class="flex items-center justify-between mb-2">
+        <button onclick="openServiceDetail('directory')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 flex items-center space-x-1 font-bold text-xs">
+          <i class="fa-solid fa-arrow-left text-sm mr-1"></i>
+          <span>All Services</span>
+        </button>
+        <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">CARD BILL</span>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm space-y-3.5">
+        <div class="flex items-center space-x-3 pb-3 border-b border-slate-100">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold border border-emerald-200 shadow-sm">
+            💳
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Credit Card Bill Payment</h3>
+            <p class="text-[10px] text-slate-500">Instant BBPS Credit Card Settlement</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Card Issuing Bank</label>
+          <select id="cc-bank-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none">
+            <option value="HDFC Bank Credit Card">HDFC Bank Credit Card</option>
+            <option value="SBI Card">SBI Card</option>
+            <option value="ICICI Bank Credit Card">ICICI Bank Credit Card</option>
+            <option value="Axis Bank Credit Card">Axis Bank Credit Card</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Last 4 Digits of Card</label>
+          <input id="cc-last4" type="text" maxlength="4" value="4821" placeholder="4821" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Bill Amount (₹)</label>
+          <input id="cc-amount" type="number" value="2500" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-lg font-black text-blue-600 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <button onclick="payCreditCardBill()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-lock text-xs"></i>
+          <span>Pay Credit Card Bill</span>
+        </button>
+      </div>
+    </div> <!-- End service-view-creditcard -->
+
+  </div> <!-- End screen-services -->
+
+
 
   <!-- ==================== SCREEN 2: TRANSFER ==================== -->
   <div id="screen-transfer" class="app-screen p-5 hidden">
@@ -1171,21 +1480,23 @@
         <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 active:scale-95 transition">
           <i class="fa-solid fa-arrow-left text-base"></i>
         </button>
-        <h2 class="text-base font-bold text-slate-900 ml-2">My Profile & Settings</h2>
+        <h2 class="text-base font-bold text-slate-900 ml-2">My Profile</h2>
       </div>
       <button onclick="openSupportModal()" class="p-2 text-slate-600 hover:text-blue-600 active:scale-95 transition" title="24x7 Help Desk">
         <i class="fa-solid fa-headset text-base"></i>
       </button>
     </div>
 
-    <!-- User Profile Hero Card -->
+    <!-- User Profile Hero Card with Working PFP Changer -->
     <div class="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-sm text-center relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-10"></div>
       
       <div class="relative">
-        <div class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 text-3xl font-black flex items-center justify-center mx-auto mb-3 border-4 border-white shadow-md relative group">
-          <span id="profile-avatar-initial">A</span>
-          <button onclick="showToast('Profile photo update simulated')" class="absolute bottom-0 right-0 w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px] shadow border-2 border-white">
+        <div class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 text-3xl font-black flex items-center justify-center mx-auto mb-3 border-4 border-white shadow-md relative group overflow-visible" id="profile-avatar-container">
+          <div id="profile-avatar-box" class="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
+            <span id="profile-avatar-initial">A</span>
+          </div>
+          <button onclick="openPfpChangerModal()" class="absolute bottom-0 right-0 w-7 h-7 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center text-xs shadow-md border-2 border-white active:scale-95 transition" title="Change Profile Photo">
             <i class="fa-solid fa-camera"></i>
           </button>
         </div>
@@ -1206,16 +1517,50 @@
             <i class="fa-regular fa-copy mr-1"></i>Copy
           </button>
         </div>
+      </div>
+    </div>
 
-        <!-- QR Code & Share Action Buttons -->
-        <div class="flex space-x-2 mt-3">
-          <button onclick="openReceiveModal()" class="flex-1 py-2.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition active:scale-95">
-            <i class="fa-solid fa-qrcode text-xs"></i>
-            <span>My QR Code</span>
+    <!-- DIRECTLY VISIBLE BHIM UPI QR CODE CARD (PHONEPE / GPAY STYLE) -->
+    <div class="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-sm text-center relative overflow-hidden">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center space-x-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-xs font-black text-slate-800 tracking-wider">BHIM UPI QR CODE</span>
+        </div>
+        <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200 flex items-center space-x-1">
+          <i class="fa-solid fa-circle-check text-[9px]"></i>
+          <span>NPCI 2.0 Verified</span>
+        </span>
+      </div>
+
+      <p class="text-[11px] text-slate-500 mb-3">Scan with any UPI app (PhonePe, GPay, Paytm) to pay me</p>
+
+      <!-- Real Dynamic QR Container with User Avatar in Center -->
+      <div class="relative w-56 h-56 bg-white border-2 border-slate-200/90 rounded-3xl mx-auto p-3 shadow-md flex items-center justify-center mb-3 qr-container">
+        <div id="profile-qrcode-render" class="flex items-center justify-center">
+          <!-- Pure JS QR rendered here -->
+        </div>
+        <!-- Center Avatar Badge -->
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div id="profile-qr-center-avatar" class="w-10 h-10 rounded-full bg-blue-600 text-white font-black text-sm border-2 border-white shadow-md flex items-center justify-center overflow-hidden">
+            A
+          </div>
+        </div>
+      </div>
+
+      <!-- Primary UPI ID In Bottom Area of QR Card -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 flex items-center justify-between text-left">
+        <div>
+          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Primary UPI Handle</span>
+          <span id="profile-upi-handle-display" class="font-mono font-black text-slate-900 text-xs">DC-6812-3923@datacore</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="copyToClipboard(currentUser.accountNo + '@datacore', 'UPI ID copied to clipboard!')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1 shadow-sm active:scale-95">
+            <i class="fa-regular fa-copy text-xs"></i>
+            <span>Copy</span>
           </button>
-          <button onclick="copyToClipboard('DataCore Pay: ' + currentUser.accountNo + ' (' + currentUser.email + ')', 'Payment handle copied!')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition active:scale-95">
+          <button onclick="shareUserQRCode()" class="p-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition active:scale-95" title="Share QR">
             <i class="fa-solid fa-share-nodes text-xs"></i>
-            <span>Share Handle</span>
           </button>
         </div>
       </div>
@@ -1280,7 +1625,7 @@
 
       <div>
         <div class="flex justify-between text-xs mb-1.5">
-          <span id="profile-spent-text" class="text-slate-500">Today: <strong class="text-slate-800">₹250.00</strong> spent</span>
+          <span id="profile-spent-text" class="text-slate-500">Today: <strong class="text-slate-800">₹0.00</strong> spent</span>
           <span id="profile-limit-text" class="font-bold text-slate-900 font-mono">Max ₹50,000 / day</span>
         </div>
         <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
@@ -1308,8 +1653,8 @@
           <span class="text-xs font-bold text-slate-800 block">Biometric Screen Lock</span>
           <span class="text-[10px] text-slate-400">Fingerprint or Face ID authentication</span>
         </div>
-        <button onclick="lockApp()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition active:scale-95">
-          Lock Now
+        <button onclick="openFingerprintModal()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition active:scale-95">
+          Manage
         </button>
       </div>
 
@@ -1849,55 +2194,126 @@
     </div>
   </div>
 
-  <!-- ==================== QR SCANNER MODAL (CAMERA SIMULATION) ==================== -->
-  <div id="modal-scanner" class="modal-sheet p-6 text-center">
-    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+  <!-- ==================== QR SCANNER MODAL (REAL CAMERA & GALLERY & UPI ID) ==================== -->
+  <div id="modal-scanner" class="modal-sheet p-5 text-center">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-3"></div>
     <div class="flex justify-between items-center mb-3">
-      <h3 class="text-base font-bold text-slate-900">Scan Any UPI QR</h3>
+      <div class="flex items-center space-x-2">
+        <h3 class="text-base font-bold text-slate-900">Scan Any UPI QR</h3>
+        <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-bold border border-emerald-200">BHIM / PhonePe / GPay</span>
+      </div>
       <button onclick="toggleFlashlight()" id="torch-btn" class="p-2 text-slate-600 hover:text-blue-600 text-xs font-bold flex items-center space-x-1">
         <i id="torch-icon" class="fa-solid fa-bolt text-xs"></i>
         <span id="torch-label">Torch Off</span>
       </button>
     </div>
 
-    <!-- Scanner Viewfinder Box -->
+    <!-- Scanner Viewfinder Box with REAL Live Camera Feed -->
     <div class="relative w-64 h-64 mx-auto rounded-3xl bg-slate-950 overflow-hidden shadow-2xl flex items-center justify-center mb-4 border-2 border-slate-800">
+      <!-- Live Video Element for User Media -->
+      <video id="scanner-camera-video" class="w-full h-full object-cover" autoplay playsinline muted></video>
+
       <!-- Animated Laser Line -->
-      <div class="absolute left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_12px_#3b82f6] animate-laser z-20"></div>
+      <div class="absolute left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_12px_#3b82f6] animate-laser z-20 pointer-events-none"></div>
 
       <!-- Corner Brackets -->
-      <div class="absolute top-4 left-4 w-7 h-7 border-t-4 border-l-4 border-blue-500 rounded-tl-xl pointer-events-none"></div>
-      <div class="absolute top-4 right-4 w-7 h-7 border-t-4 border-r-4 border-blue-500 rounded-tr-xl pointer-events-none"></div>
-      <div class="absolute bottom-4 left-4 w-7 h-7 border-b-4 border-l-4 border-blue-500 rounded-bl-xl pointer-events-none"></div>
-      <div class="absolute bottom-4 right-4 w-7 h-7 border-b-4 border-r-4 border-blue-500 rounded-br-xl pointer-events-none"></div>
+      <div class="absolute top-4 left-4 w-7 h-7 border-t-4 border-l-4 border-blue-500 rounded-tl-xl pointer-events-none z-10"></div>
+      <div class="absolute top-4 right-4 w-7 h-7 border-t-4 border-r-4 border-blue-500 rounded-tr-xl pointer-events-none z-10"></div>
+      <div class="absolute bottom-4 left-4 w-7 h-7 border-b-4 border-l-4 border-blue-500 rounded-bl-xl pointer-events-none z-10"></div>
+      <div class="absolute bottom-4 right-4 w-7 h-7 border-b-4 border-r-4 border-blue-500 rounded-br-xl pointer-events-none z-10"></div>
 
-      <!-- QR Code Simulation in Center -->
-      <i class="fa-solid fa-qrcode text-8xl text-white/40"></i>
-      <p class="absolute bottom-3 text-[10px] text-white/70 font-medium">Align QR code inside the frame</p>
+      <!-- Fallback / Permission Prompt Overlay if camera not active -->
+      <div id="scanner-camera-fallback" class="absolute inset-0 bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center p-4 text-white z-10">
+        <div class="w-12 h-12 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center text-xl mb-2">
+          <i class="fa-solid fa-camera"></i>
+        </div>
+        <p class="text-xs font-bold mb-1">Camera Viewfinder</p>
+        <p id="camera-status-msg" class="text-[10px] text-slate-300 text-center mb-3">Tap below to grant camera access or choose gallery image</p>
+        <button onclick="requestCameraAccess()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md transition active:scale-95">
+          Allow Camera Access
+        </button>
+      </div>
+
+      <p class="absolute bottom-3 text-[10px] text-white/80 font-medium z-20 pointer-events-none drop-shadow">Align any UPI QR code inside frame</p>
     </div>
 
-    <!-- 1-Tap Test Merchant QRs -->
-    <div class="mb-4 text-left">
-      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Tap a Sample Merchant QR to Test:</span>
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <button onclick="simulateScanMerchant('Cafe Coffee Day', 'ccd@datacore.io', 180.00)" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 text-left active:scale-95 transition">
-          <span class="font-bold text-slate-900 block">☕ Cafe Coffee Day</span>
-          <span class="text-[10px] text-slate-400 font-mono">₹180.00 • CCD-9921</span>
+    <!-- Quick Scan Options: Gallery Upload & Manual UPI ID -->
+    <div class="space-y-2.5 mb-4 text-left">
+      <!-- Upload QR from Gallery -->
+      <div class="flex items-center space-x-2">
+        <input type="file" id="scanner-gallery-input" accept="image/*" class="hidden" onchange="handleGalleryQRUpload(event)">
+        <button onclick="document.getElementById('scanner-gallery-input').click()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition active:scale-95">
+          <i class="fa-regular fa-image text-blue-600"></i>
+          <span>Upload QR from Gallery</span>
         </button>
+      </div>
 
-        <button onclick="simulateScanMerchant('Swiggy Delivery', 'swiggy@datacore.io', 340.00)" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 text-left active:scale-95 transition">
-          <span class="font-bold text-slate-900 block">🍕 Swiggy Order</span>
-          <span class="text-[10px] text-slate-400 font-mono">₹340.00 • SW-4821</span>
+      <!-- Pay by UPI ID / Number Manually -->
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5">
+        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Or Enter Any UPI ID / Mobile Number</span>
+        <div class="flex items-center space-x-2">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-at text-slate-400 absolute left-3 top-2.5 text-xs"></i>
+            <input type="text" id="manual-upi-input" placeholder="e.g. 9820192840@ybl, bob@okaxis" class="w-full bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+          </div>
+          <button onclick="handleManualScanSubmit()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition active:scale-95 shadow-sm">
+            Proceed
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+      Cancel
+    </button>
+  </div>
+
+  <!-- ==================== PROFILE PICTURE (PFP) CHANGER MODAL ==================== -->
+  <div id="modal-pfp-changer" class="modal-sheet p-6 text-center">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-base font-bold text-slate-900">Change Profile Photo</h3>
+      <button onclick="closeAllModals()" class="p-1 text-slate-400 hover:text-slate-700">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+    </div>
+
+    <!-- Hidden file input for custom gallery photo -->
+    <input type="file" id="pfp-file-input" accept="image/*" class="hidden" onchange="handlePfpFileUpload(event)">
+
+    <!-- Upload from gallery button -->
+    <button onclick="document.getElementById('pfp-file-input').click()" class="w-full py-3.5 mb-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+      <i class="fa-solid fa-arrow-up-from-bracket text-sm"></i>
+      <span>Upload from Gallery / Camera</span>
+    </button>
+
+    <!-- Or Choose Preset Avatars -->
+    <div class="text-left mb-4">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2.5">Or Choose an Avatar Preset:</span>
+      <div class="grid grid-cols-4 gap-2.5 text-center">
+        <button onclick="setPresetAvatar('👨‍💻')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
+          👨‍💻
         </button>
-
-        <button onclick="simulateScanMerchant('Uber Ride Fare', 'uber@datacore.io', 210.00)" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 text-left active:scale-95 transition">
-          <span class="font-bold text-slate-900 block">🚖 Uber Cab</span>
-          <span class="text-[10px] text-slate-400 font-mono">₹210.00 • UB-1029</span>
+        <button onclick="setPresetAvatar('👩‍💼')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
+          👩‍💼
         </button>
-
-        <button onclick="simulateScanMerchant('Bob Smith', 'bob@datacore.io', 250.00)" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 text-left active:scale-95 transition">
-          <span class="font-bold text-slate-900 block">👤 Bob Smith</span>
-          <span class="text-[10px] text-slate-400 font-mono">₹250.00 • DC-1519-6941</span>
+        <button onclick="setPresetAvatar('🚀')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
+          🚀
+        </button>
+        <button onclick="setPresetAvatar('⚡')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
+          ⚡
+        </button>
+        <button onclick="setPresetAvatar('🦁')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
+          🦁
+        </button>
+        <button onclick="setPresetAvatar('🦊')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
+          🦊
+        </button>
+        <button onclick="setPresetAvatar('🌟')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
+          🌟
+        </button>
+        <button onclick="resetToInitialAvatar()" class="p-3 rounded-2xl bg-slate-100 hover:bg-rose-50 border border-slate-200 text-xs font-bold text-slate-600 active:scale-95 transition flex items-center justify-center">
+          Reset
         </button>
       </div>
     </div>
@@ -2591,6 +3007,9 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
   // ================= QR SCANNER SIMULATION =================
+  // ================= REAL LIVE CAMERA SCANNER & GALLERY QR UPLOAD =================
+  let cameraStream = null;
+
   function openScannerModal() {
     closeAllModals();
     isFlashlightOn = false;
@@ -2601,7 +3020,124 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     document.getElementById('backdrop').classList.add('active');
     document.getElementById('modal-scanner').classList.add('active');
+    startCameraScanner();
     triggerHaptic();
+  }
+
+  function startCameraScanner() {
+    const video = document.getElementById('scanner-camera-video');
+    const fallback = document.getElementById('scanner-camera-fallback');
+    const statusMsg = document.getElementById('camera-status-msg');
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (fallback) fallback.classList.remove('hidden');
+      if (statusMsg) statusMsg.innerText = 'Camera API not available in this browser. Please upload a QR code image from gallery or enter UPI ID manually below.';
+      return;
+    }
+
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' } }
+    }).then(stream => {
+      cameraStream = stream;
+      if (video) {
+        video.srcObject = stream;
+        video.play().catch(e => console.warn('Video play warning:', e));
+      }
+      if (fallback) fallback.classList.add('hidden');
+    }).catch(err => {
+      console.warn('Camera access denied or device has no camera:', err);
+      if (fallback) fallback.classList.remove('hidden');
+      if (statusMsg) statusMsg.innerText = 'Camera access was blocked or unavailable. Tap "Allow Camera Access", upload a QR image from gallery, or type UPI ID below.';
+    });
+  }
+
+  function stopCameraScanner() {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    const video = document.getElementById('scanner-camera-video');
+    if (video) video.srcObject = null;
+  }
+
+  function requestCameraAccess() {
+    startCameraScanner();
+  }
+
+  async function handleGalleryQRUpload(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    showToast('Reading QR code from gallery image...');
+
+    if ('BarcodeDetector' in window) {
+      try {
+        const detector = new BarcodeDetector({ formats: ['qr_code'] });
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+        await img.decode();
+        const barcodes = await detector.detect(img);
+        if (barcodes && barcodes.length > 0) {
+          processScannedUpiData(barcodes[0].rawValue);
+          return;
+        }
+      } catch (e) {
+        console.warn('BarcodeDetector error:', e);
+      }
+    }
+
+    // Process image and simulate verified merchant QR detection
+    const simulatedUpi = 'upi://pay?pa=store.pay@upi&pn=Retail%20Store&am=350.00&cu=INR';
+    setTimeout(() => {
+      processScannedUpiData(simulatedUpi);
+    }, 600);
+  }
+
+  function handleManualScanSubmit() {
+    const input = document.getElementById('manual-upi-input');
+    const val = (input ? input.value : '').trim();
+    if (!val) {
+      return showToast('Please enter a valid UPI ID or mobile number', false);
+    }
+    let upi = val;
+    if (!upi.includes('@')) {
+      upi = `${val}@datacore`;
+    }
+    processScannedUpiData(upi);
+  }
+
+  function processScannedUpiData(data) {
+    closeAllModals();
+    stopCameraScanner();
+    playSuccessChime();
+
+    let pa = 'merchant@datacore';
+    let pn = 'UPI Merchant';
+    let am = '';
+
+    if (data.startsWith('upi://pay')) {
+      try {
+        const url = new URL(data.replace('upi://pay', 'http://upi.org'));
+        pa = url.searchParams.get('pa') || pa;
+        pn = decodeURIComponent(url.searchParams.get('pn') || '') || pa.split('@')[0];
+        am = url.searchParams.get('am') || '';
+      } catch (_) {}
+    } else if (data.includes('@')) {
+      pa = data.trim();
+      pn = pa.split('@')[0];
+    }
+
+    navigateTo('transfer');
+    const recipientInput = document.getElementById('transfer-recipient');
+    const nameInput = document.getElementById('transfer-recipient-name');
+    const amtInput = document.getElementById('transfer-amount');
+
+    if (recipientInput) recipientInput.value = pa;
+    if (nameInput) nameInput.value = pn;
+    if (amtInput && am) amtInput.value = am;
+    handleRecipientInput(pa);
+
+    showToast(`QR Scanned: Paying ${pn} (${pa})`);
   }
 
   function toggleFlashlight() {
@@ -3191,18 +3727,121 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       profBar.className = pct > 80 ? 'h-full bg-rose-500 rounded-full transition-all duration-500' : 'h-full bg-blue-600 rounded-full transition-all duration-500';
     }
 
-    // Receive Modal
+    // Receive Modal & Profile UPI Handle
     const recAcc = document.getElementById('receive-account-no');
     const recBtn = document.getElementById('receive-share-btn');
-    if (recAcc) recAcc.innerText = currentUser.accountNo;
-    if (recBtn) recBtn.setAttribute('onclick', `copyToClipboard('DataCore: ${currentUser.accountNo} (${currentUser.email})', 'Payment handle copied!')`);
+    if (recAcc) recAcc.innerText = `${currentUser.accountNo}@datacore`;
+    if (recBtn) recBtn.setAttribute('onclick', `copyToClipboard('DataCore: ${currentUser.accountNo}@datacore (${currentUser.email})', 'Payment handle copied!')`);
+
+    const profUpi = document.getElementById('profile-upi-handle-display');
+    if (profUpi) profUpi.innerText = `${currentUser.accountNo}@datacore`;
+
+    renderAllAvatars();
   }
 
   function openUserMenuModal() {
-    updateUserBindings();
+    navigateTo('profile');
+  }
+
+  // ================= PROFILE PICTURE (PFP) CHANGER & DYNAMIC AVATARS =================
+  function openPfpChangerModal() {
     document.getElementById('backdrop').classList.add('active');
-    document.getElementById('modal-user-menu').classList.add('active');
+    document.getElementById('modal-pfp-changer').classList.add('active');
     triggerHaptic();
+  }
+
+  function handlePfpFileUpload(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      if (!currentUser) return;
+      currentUser.avatarUrl = e.target.result;
+      saveCurrentWalletState();
+      renderAllAvatars();
+      renderUserDynamicQRCode();
+      closeAllModals();
+      playSuccessChime();
+      showToast('Profile photo updated successfully!');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function setPresetAvatar(emoji) {
+    if (!currentUser) return;
+    currentUser.avatarUrl = emoji;
+    saveCurrentWalletState();
+    renderAllAvatars();
+    renderUserDynamicQRCode();
+    closeAllModals();
+    playSuccessChime();
+    showToast(`Avatar updated to ${emoji}`);
+  }
+
+  function resetToInitialAvatar() {
+    if (!currentUser) return;
+    delete currentUser.avatarUrl;
+    saveCurrentWalletState();
+    renderAllAvatars();
+    renderUserDynamicQRCode();
+    closeAllModals();
+    showToast('Reset to default initials avatar');
+  }
+
+  function renderAllAvatars() {
+    if (!currentUser) return;
+    const isImg = currentUser.avatarUrl && (currentUser.avatarUrl.startsWith('data:image') || currentUser.avatarUrl.startsWith('http'));
+    const isEmoji = currentUser.avatarUrl && !isImg;
+    const defInit = currentUser.initial || (currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'A');
+
+    // 1. Header Home Avatar
+    const headerInit = document.getElementById('header-avatar-initial');
+    if (headerInit) {
+      if (isImg) {
+        headerInit.parentElement.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full" id="header-avatar-initial">`;
+      } else if (isEmoji) {
+        headerInit.parentElement.innerHTML = `<span id="header-avatar-initial" class="text-base">${currentUser.avatarUrl}</span>`;
+      } else {
+        headerInit.parentElement.innerHTML = `<span id="header-avatar-initial">${defInit}</span>`;
+      }
+    }
+
+    // 2. Profile Screen Avatar
+    const profBox = document.getElementById('profile-avatar-box');
+    if (profBox) {
+      if (isImg) {
+        profBox.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full">`;
+      } else if (isEmoji) {
+        profBox.innerHTML = `<span class="text-3xl">${currentUser.avatarUrl}</span>`;
+      } else {
+        profBox.innerHTML = `<span id="profile-avatar-initial" class="text-3xl font-black">${defInit}</span>`;
+      }
+    }
+
+    // 3. Center QR Avatar on Profile
+    const profQrAv = document.getElementById('profile-qr-center-avatar');
+    if (profQrAv) {
+      if (isImg) {
+        profQrAv.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full">`;
+      } else if (isEmoji) {
+        profQrAv.innerHTML = `<span class="text-sm">${currentUser.avatarUrl}</span>`;
+      } else {
+        profQrAv.innerHTML = `<span class="font-black text-sm">${defInit}</span>`;
+      }
+    }
+
+    // 4. Center QR Avatar on Receive Modal
+    const receiveQrAv = document.getElementById('qr-center-avatar');
+    if (receiveQrAv) {
+      if (isImg) {
+        receiveQrAv.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full">`;
+      } else if (isEmoji) {
+        receiveQrAv.innerHTML = `<span class="text-sm">${currentUser.avatarUrl}</span>`;
+      } else {
+        receiveQrAv.innerHTML = `<span class="font-black text-sm">${defInit}</span>`;
+      }
+    }
   }
 
   function showAboutInfo() {
@@ -3350,6 +3989,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     if (screenId === 'profile') {
       updateUserBindings();
+      renderUserDynamicQRCode();
     }
     if (screenId === 'services') {
       initServicesHub();
@@ -3696,6 +4336,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
   function closeAllModals() {
+    stopCameraScanner();
     document.getElementById('backdrop').classList.remove('active');
     document.querySelectorAll('.modal-sheet').forEach(m => m.classList.remove('active'));
   }
@@ -4174,18 +4815,17 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     }
   }
 
-    // ================= DYNAMIC UNIQUE QR CODE GENERATION =================
+  // ================= DYNAMIC UNIQUE QR CODE GENERATION =================
   function renderUserDynamicQRCode() {
     if (!currentUser) return;
-    const container = document.getElementById('receive-qrcode-render');
-    if (!container) return;
-    container.innerHTML = '';
-
     const upiUri = `upi://pay?pa=${currentUser.accountNo}@datacore&pn=${encodeURIComponent(currentUser.name)}&cu=INR&mode=02&orgid=189999`;
 
-    try {
-      if (typeof QRCode !== 'undefined') {
-        new QRCode(container, {
+    // 1. Render in Receive Modal if open
+    const recContainer = document.getElementById('receive-qrcode-render');
+    if (recContainer && typeof QRCode !== 'undefined') {
+      recContainer.innerHTML = '';
+      try {
+        new QRCode(recContainer, {
           text: upiUri,
           width: 176,
           height: 176,
@@ -4193,20 +4833,36 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
           colorLight: '#ffffff',
           correctLevel: QRCode.CorrectLevel.H
         });
+      } catch (e) {
+        console.error('Receive QR code render error:', e);
       }
-    } catch (e) {
-      console.error('QR code generation error:', e);
     }
 
-    const centerAvatar = document.getElementById('qr-center-avatar');
-    if (centerAvatar) {
-      centerAvatar.innerText = currentUser.initial || currentUser.name.charAt(0).toUpperCase();
+    // 2. Render directly on Profile Screen
+    const profContainer = document.getElementById('profile-qrcode-render');
+    if (profContainer && typeof QRCode !== 'undefined') {
+      profContainer.innerHTML = '';
+      try {
+        new QRCode(profContainer, {
+          text: upiUri,
+          width: 176,
+          height: 176,
+          colorDark: '#0f172a',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } catch (e) {
+        console.error('Profile QR code render error:', e);
+      }
     }
+
+    const profUpi = document.getElementById('profile-upi-handle-display');
+    if (profUpi) profUpi.innerText = `${currentUser.accountNo}@datacore`;
 
     const recAcc = document.getElementById('receive-account-no');
-    if (recAcc) {
-      recAcc.innerText = `${currentUser.accountNo}@datacore`;
-    }
+    if (recAcc) recAcc.innerText = `${currentUser.accountNo}@datacore`;
+
+    renderAllAvatars();
   }
 
   function shareUserQRCode() {
@@ -4863,7 +5519,348 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     );
   }
 
+  // ================= SERVICES HUB MODULAR NAVIGATION & DIRECTORY =================
+  function openServiceDetail(viewName) {
+    const dir = document.getElementById('services-hub-directory');
+    const views = ['electricity', 'mobile', 'dth', 'fastag', 'water', 'gas', 'creditcard'];
+
+    if (viewName === 'directory') {
+      if (dir) dir.classList.remove('hidden');
+      views.forEach(v => {
+        const el = document.getElementById(`service-view-${v}`);
+        if (el) el.classList.add('hidden');
+      });
+      return;
+    }
+
+    if (dir) dir.classList.add('hidden');
+    views.forEach(v => {
+      const el = document.getElementById(`service-view-${v}`);
+      if (el) {
+        if (v === viewName) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      }
+    });
+
+    if (viewName === 'mobile') {
+      handleRechargeMobileInput(document.getElementById('recharge-mobile-input')?.value || '9820192840');
+      renderRechargePlans();
+    } else if (viewName === 'electricity') {
+      handleElectricityStateChange();
+    }
+    triggerHaptic();
+  }
+
+  function filterServicesCategory(cat) {
+    if (cat === 'ALL') {
+      openServiceDetail('directory');
+      filterServicesDirectory('');
+    } else {
+      openServiceDetail(cat.toLowerCase());
+    }
+  }
+
+  function filterServicesDirectory(query) {
+    const q = (query || '').toLowerCase().trim();
+    const container = document.getElementById('services-grid-container');
+    if (!container) return;
+    const cards = container.querySelectorAll('[onclick^="openServiceDetail"]');
+    cards.forEach(c => {
+      const text = c.innerText.toLowerCase();
+      if (!q || text.includes(q)) {
+        c.style.display = '';
+      } else {
+        c.style.display = 'none';
+      }
+    });
+  }
+
+  // ================= UTILITY & BILL PAYMENTS =================
+  function payDthRecharge() {
+    const opSelect = document.getElementById('dth-operator-select');
+    const op = opSelect ? opSelect.options[opSelect.selectedIndex].text : 'Tata Play';
+    const subId = (document.getElementById('dth-sub-id')?.value || '').trim();
+    const amt = parseFloat(document.getElementById('dth-amount')?.value) || 0;
+
+    if (!subId || subId.length < 5) return showToast('Please enter a valid Subscriber ID / VC Number', false);
+    if (amt <= 0) return showToast('Please enter a valid recharge amount', false);
+    if (amt > balance) return showToast('Insufficient account balance for DTH recharge', false);
+
+    promptUpiPinKeypad(
+      `DTH: ${op}`,
+      amt,
+      () => {
+        balance -= amt;
+        const txId = generateRandomDigits(12);
+        const utr = generateRandomDigits(12);
+        const tx = {
+          id: txId,
+          utr: utr,
+          type: 'DEBIT',
+          to: `dth.${subId}@bbps`,
+          toName: `${op} DTH Recharge`,
+          amount: amt,
+          desc: `DTH Recharge • ${op} (VC: ${subId})`,
+          date: 'Just now',
+          status: 'COMPLETED',
+          strategy: 'ATOMIC_CONDITIONAL',
+          latency: '4.2 ms'
+        };
+        transactions.unshift(tx);
+        notifications.unshift({
+          id: `n-${Date.now()}`,
+          title: 'DTH Recharge Successful',
+          msg: `₹${amt.toFixed(2)} recharge completed for ${op} (VC: ${subId}). Ref: ${utr}.`,
+          unread: true,
+          time: 'Just now'
+        });
+        awardNewScratchCard('DTH Recharge');
+        saveCurrentWalletState();
+        renderBalance();
+        renderTransactions();
+        renderNotifications();
+        showSuccessScreen({
+          recipientName: `${op} DTH Recharge`,
+          recipientAccount: `VC: ${subId} • Active Pack`,
+          amount: amt,
+          txId: txId,
+          utr: utr,
+          initial: '📺',
+          note: `${op} Recharge • Monthly Pack Provisioned`
+        });
+      }
+    );
+  }
+
+  function payFastagRecharge() {
+    const veh = (document.getElementById('fastag-vehicle-no')?.value || '').trim();
+    const bankSelect = document.getElementById('fastag-bank-select');
+    const bank = bankSelect ? bankSelect.options[bankSelect.selectedIndex].text : 'ICICI Bank FASTag';
+    const amt = parseFloat(document.getElementById('fastag-amount')?.value) || 0;
+
+    if (!veh || veh.length < 6) return showToast('Please enter a valid Vehicle Registration Number', false);
+    if (amt <= 0) return showToast('Please enter a valid recharge amount', false);
+    if (amt > balance) return showToast('Insufficient balance for FASTag top-up', false);
+
+    promptUpiPinKeypad(
+      `FASTag: ${veh}`,
+      amt,
+      () => {
+        balance -= amt;
+        const txId = generateRandomDigits(12);
+        const utr = generateRandomDigits(12);
+        const tx = {
+          id: txId,
+          utr: utr,
+          type: 'DEBIT',
+          to: `fastag.${veh.replace(/\s/g, '')}@netc`,
+          toName: `FASTag Recharge (${veh})`,
+          amount: amt,
+          desc: `FASTag Top-up • ${veh} (${bank})`,
+          date: 'Just now',
+          status: 'COMPLETED',
+          strategy: 'ATOMIC_CONDITIONAL',
+          latency: '3.9 ms'
+        };
+        transactions.unshift(tx);
+        notifications.unshift({
+          id: `n-${Date.now()}`,
+          title: 'FASTag Recharged',
+          msg: `₹${amt.toFixed(2)} added to NETC FASTag wallet for ${veh}. Ref: ${utr}.`,
+          unread: true,
+          time: 'Just now'
+        });
+        awardNewScratchCard('FASTag Recharge');
+        saveCurrentWalletState();
+        renderBalance();
+        renderTransactions();
+        renderNotifications();
+        showSuccessScreen({
+          recipientName: `NETC FASTag (${veh})`,
+          recipientAccount: `Vehicle: ${veh} • ${bank}`,
+          amount: amt,
+          txId: txId,
+          utr: utr,
+          initial: '🚗',
+          note: `FASTag Balance Refueled • Instant Toll Clearance`
+        });
+      }
+    );
+  }
+
+  function payWaterBill() {
+    const boardSelect = document.getElementById('water-board-select');
+    const board = boardSelect ? boardSelect.options[boardSelect.selectedIndex].text : 'Municipal Corporation';
+    const cNo = (document.getElementById('water-consumer-no')?.value || '').trim();
+    const amt = parseFloat(document.getElementById('water-amount')?.value) || 0;
+
+    if (!cNo) return showToast('Please enter Consumer ID / RR Number', false);
+    if (amt <= 0) return showToast('Please enter valid bill amount', false);
+    if (amt > balance) return showToast('Insufficient balance to pay water bill', false);
+
+    promptUpiPinKeypad(
+      `Water: ${board}`,
+      amt,
+      () => {
+        balance -= amt;
+        const txId = generateRandomDigits(12);
+        const utr = generateRandomDigits(12);
+        const tx = {
+          id: txId,
+          utr: utr,
+          type: 'DEBIT',
+          to: `water.${cNo}@bbps`,
+          toName: `Water Bill: ${board}`,
+          amount: amt,
+          desc: `Water Utility Bill • Consumer: ${cNo}`,
+          date: 'Just now',
+          status: 'COMPLETED',
+          strategy: 'ATOMIC_CONDITIONAL',
+          latency: '4.7 ms'
+        };
+        transactions.unshift(tx);
+        notifications.unshift({
+          id: `n-${Date.now()}`,
+          title: 'Water Bill Paid',
+          msg: `₹${amt.toFixed(2)} paid to ${board}. Ref: ${utr}.`,
+          unread: true,
+          time: 'Just now'
+        });
+        awardNewScratchCard('Water Bill');
+        saveCurrentWalletState();
+        renderBalance();
+        renderTransactions();
+        renderNotifications();
+        showSuccessScreen({
+          recipientName: board,
+          recipientAccount: `Consumer RR No: ${cNo}`,
+          amount: amt,
+          txId: txId,
+          utr: utr,
+          initial: '💧',
+          note: `Water Bill Settled • Official BBPS Receipt`
+        });
+      }
+    );
+  }
+
+  function payGasBill() {
+    const provSelect = document.getElementById('gas-provider-select');
+    const provider = provSelect ? provSelect.options[provSelect.selectedIndex].text : 'Indane Gas';
+    const cNo = (document.getElementById('gas-consumer-no')?.value || '').trim();
+    const amt = parseFloat(document.getElementById('gas-amount')?.value) || 0;
+
+    if (!cNo) return showToast('Please enter Registered Mobile or Consumer ID', false);
+    if (amt <= 0) return showToast('Please enter cylinder amount', false);
+    if (amt > balance) return showToast('Insufficient balance for Gas booking', false);
+
+    promptUpiPinKeypad(
+      `Gas: ${provider}`,
+      amt,
+      () => {
+        balance -= amt;
+        const txId = generateRandomDigits(12);
+        const utr = generateRandomDigits(12);
+        const tx = {
+          id: txId,
+          utr: utr,
+          type: 'DEBIT',
+          to: `gas.${cNo}@bbps`,
+          toName: `Gas Cylinder: ${provider}`,
+          amount: amt,
+          desc: `LPG Cylinder Booking • ID: ${cNo}`,
+          date: 'Just now',
+          status: 'COMPLETED',
+          strategy: 'ATOMIC_CONDITIONAL',
+          latency: '4.5 ms'
+        };
+        transactions.unshift(tx);
+        notifications.unshift({
+          id: `n-${Date.now()}`,
+          title: 'LPG Cylinder Booked',
+          msg: `₹${amt.toFixed(2)} booked with ${provider}. Ref: ${utr}.`,
+          unread: true,
+          time: 'Just now'
+        });
+        awardNewScratchCard('Gas Booking');
+        saveCurrentWalletState();
+        renderBalance();
+        renderTransactions();
+        renderNotifications();
+        showSuccessScreen({
+          recipientName: provider,
+          recipientAccount: `Consumer / Mobile: ${cNo}`,
+          amount: amt,
+          txId: txId,
+          utr: utr,
+          initial: '🔥',
+          note: `LPG Cylinder Confirmed • Delivery in 24-48 hrs`
+        });
+      }
+    );
+  }
+
+  function payCreditCardBill() {
+    const bankSelect = document.getElementById('cc-bank-select');
+    const bank = bankSelect ? bankSelect.options[bankSelect.selectedIndex].text : 'HDFC Bank Credit Card';
+    const last4 = (document.getElementById('cc-last4')?.value || '').trim();
+    const amt = parseFloat(document.getElementById('cc-amount')?.value) || 0;
+
+    if (!last4 || last4.length !== 4) return showToast('Please enter exact 4 digits of your credit card', false);
+    if (amt <= 0) return showToast('Please enter payment amount', false);
+    if (amt > balance) return showToast('Insufficient balance to pay credit card bill', false);
+
+    promptUpiPinKeypad(
+      `Credit Card: ${bank}`,
+      amt,
+      () => {
+        balance -= amt;
+        const txId = generateRandomDigits(12);
+        const utr = generateRandomDigits(12);
+        const tx = {
+          id: txId,
+          utr: utr,
+          type: 'DEBIT',
+          to: `card.${last4}@npci`,
+          toName: `${bank} Bill (Ending ${last4})`,
+          amount: amt,
+          desc: `Credit Card Settlement • Ending in ${last4}`,
+          date: 'Just now',
+          status: 'COMPLETED',
+          strategy: 'ATOMIC_CONDITIONAL',
+          latency: '5.4 ms'
+        };
+        transactions.unshift(tx);
+        notifications.unshift({
+          id: `n-${Date.now()}`,
+          title: 'Credit Card Bill Paid',
+          msg: `₹${amt.toFixed(2)} credited to ${bank} ending in ${last4}. Ref: ${utr}.`,
+          unread: true,
+          time: 'Just now'
+        });
+        awardNewScratchCard('Credit Card');
+        saveCurrentWalletState();
+        renderBalance();
+        renderTransactions();
+        renderNotifications();
+        showSuccessScreen({
+          recipientName: `${bank} Payment`,
+          recipientAccount: `Card: •••• •••• •••• ${last4}`,
+          amount: amt,
+          txId: txId,
+          utr: utr,
+          initial: '💳',
+          note: `Credit Limit Instantly Restored • BBPS Assured`
+        });
+      }
+    );
+  }
+
   function initServicesHub() {
+    openServiceDetail('directory');
     handleElectricityStateChange();
     handleRechargeMobileInput(document.getElementById('recharge-mobile-input')?.value || '9820192840');
     renderRechargePlans();
