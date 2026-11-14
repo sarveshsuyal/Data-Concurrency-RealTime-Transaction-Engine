@@ -1,51 +1,35 @@
 name: Build DataCore Android APK
 
 on:
-  workflow_dispatch:
-    inputs:
-      api_base_url:
-        description: 'Backend API Base URL'
-        required: false
-        default: 'https://datacore-backend-wktd.onrender.com'
-        type: string
-      create_release:
-        description: 'Publish as a downloadable GitHub Release in addition to Workflow Artifact'
-        required: false
-        default: true
-        type: boolean
   push:
-    branches:
-      - main
-    paths:
-      - 'mobile-app/**'
-      - '.github/workflows/build-apk.yml'
-    tags:
-      - 'v*'
+    branches: [ main ]
+    tags: [ 'v*' ]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   build:
-    name: Build & Package Android APK
+    name: Build Release APK
     runs-on: ubuntu-latest
-    timeout-minutes: 30
 
     steps:
-      - name: Checkout latest commit
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Java JDK 17
+      - name: Set up Java JDK
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
 
-      - name: Install Flutter SDK
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.24.x'
+          channel: 'stable'
           cache: true
 
       - name: Cache Flutter Pub Packages
@@ -58,98 +42,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pub-
 
-      - name: Verify Flutter Installation
-        run: flutter --version
-
-      - name: Generate Android project scaffolding if missing
-        working-directory: mobile-app
-        run: |
-          if [ ! -d "android" ]; then
-            echo "android/ directory not found in mobile-app. Generating scaffolding with flutter create..."
-            flutter create --platforms=android --org com.datacore .
-          else
-            echo "android/ directory exists."
-          fi
-
-      - name: Ensure Internet Permission in AndroidManifest.xml
-        working-directory: mobile-app
-        run: |
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-          if [ -f "$MANIFEST" ]; then
-            if ! grep -q "android.permission.INTERNET" "$MANIFEST"; then
-              echo "Injecting INTERNET permission into $MANIFEST"
-              sed -i '/<manifest/a \    <uses-permission android:name="android.permission.INTERNET"/>' "$MANIFEST"
-            else
-              echo "INTERNET permission already present in $MANIFEST"
-            fi
-          fi
-
-      - name: Clean Stale Builds
-        working-directory: mobile-app
-        run: |
-          rm -rf build/
-          flutter clean
-
       - name: Install Flutter Dependencies
         working-directory: mobile-app
         run: flutter pub get
 
-      - name: Analyze Dart Source
+      - name: Build Android Release APK
         working-directory: mobile-app
-        run: flutter analyze lib/ --no-fatal-infos
+        run: flutter build apk --release --dart-define=API_BASE_URL=https://datacore-backend-wktd.onrender.com
 
-      - name: Run Flutter Tests
-        working-directory: mobile-app
-        run: flutter test
-
-      - name: Build Fresh Android Release APK
-        working-directory: mobile-app
-        env:
-          TARGET_API_URL: ${{ inputs.api_base_url || 'https://datacore-backend-wktd.onrender.com' }}
-        run: |
-          echo "Building Release APK with API_BASE_URL: $TARGET_API_URL"
-          flutter build apk --release --dart-define=API_BASE_URL="$TARGET_API_URL"
-
-      - name: Verify Fresh Release APK Output
-        run: |
-          APK_PATH="mobile-app/build/app/outputs/flutter-apk/app-release.apk"
-          if [ ! -f "$APK_PATH" ]; then
-            echo "ERROR: Release APK was not generated at $APK_PATH"
-            exit 1
-          fi
-          APK_SIZE=$(stat -c%s "$APK_PATH")
-          echo "Generated APK size: $APK_SIZE bytes"
-          if [ "$APK_SIZE" -lt 10000000 ]; then
-            echo "ERROR: APK is abnormally small ($APK_SIZE bytes)"
-            exit 1
-          fi
-          ls -lh "$APK_PATH"
-
-      - name: Upload APK as Workflow Artifact
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DataCore-Android-APK
+          name: DataCore-CustomerApp-Release-APK
           path: mobile-app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
-          retention-days: 30
 
-      - name: Create GitHub Release with APK
-        if: (github.event_name == 'workflow_dispatch' && inputs.create_release) || startsWith(github.ref, 'refs/tags/v')
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: mobile-app/build/app/outputs/flutter-apk/app-release.apk
-          name: Release ${{ github.ref_name || 'Latest APK Build' }}
-          tag_name: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || format('apk-v{0}', github.run_number) }}
-          body: |
-            ### DataCore Customer Mobile Application (Android APK)
-
-            - **Build Number:** `${{ github.run_number }}`
-            - **Commit:** `${{ github.sha }}`
-            - **Backend API URL:** `${{ inputs.api_base_url || 'https://datacore-backend-wktd.onrender.com' }}`
-            - **UI Framework:** Native Flutter (DataCore High-Concurrency Edition)
-            
-            Download `app-release.apk` below and install directly on your Android device.
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: "DataCore Customer App ${{ github.ref_name }}"
+          generate_release_notes: true
