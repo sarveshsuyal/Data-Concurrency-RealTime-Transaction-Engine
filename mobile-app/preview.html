@@ -224,7 +224,7 @@
     .animate-shake {
       animation: shake 0.35s ease-in-out;
     }
-    .line-clamp-2 {
+    . {
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
@@ -884,7 +884,7 @@
             <span id="recharge-operator-logo" class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-black">Jio</span>
             <div>
               <span id="recharge-detected-op" class="text-xs font-bold text-slate-900 block">Jio Prepaid</span>
-              <span id="recharge-detected-circle" class="text-[10px] text-slate-500 block">Maharashtra & Goa</span>
+              <span id="recharge-detected-circle" class="text-[10px] text-slate-500 block">Uttarakhand (UP West)</span>
             </div>
           </div>
           <button onclick="openChangeOperatorModal()" class="text-[11px] font-bold text-blue-600 hover:underline">Change</button>
@@ -1524,7 +1524,14 @@
         </button>
         <h2 class="text-base font-bold text-slate-900 ml-2">Notifications</h2>
       </div>
-      <button onclick="markAllNotificationsRead()" class="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold transition flex items-center space-x-1 active:scale-95"><i class="fa-solid fa-broom text-[10px]"></i><span>Clear All</span></button>
+      <div class="flex items-center space-x-2">
+        <button onclick="markAllNotificationsRead()" class="text-xs font-bold text-blue-600 hover:underline">Mark all read</button>
+        <span class="text-slate-300">|</span>
+        <button onclick="markAllNotificationsRead()" class="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold transition flex items-center space-x-1 active:scale-95">
+          <i class="fa-solid fa-broom text-[10px]"></i>
+          <span>Clear All</span>
+        </button>
+      </div>
     </div>
 
     <div id="notif-list" class="space-y-3">
@@ -2895,8 +2902,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <script>
   // ================= STORAGE KEYS =================
   const STORAGE_KEYS = {
-    WALLETS: 'datacore_multi_wallets_v4',
-    ACTIVE_USER: 'datacore_active_user_v4',
+    WALLETS: 'datacore_multi_wallets_v8',
+    ACTIVE_USER: 'datacore_active_user_v8',
     ACTIVE_USER: 'datacore_active_user_email',
     SOUND_ENABLED: 'datacore_sound_enabled',
     DARK_THEME: 'datacore_dark_theme'
@@ -2928,79 +2935,35 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       pin: '1234',
       isTransfersLocked: false,
       transactions: [
-        { id: '481920491823', utr: '431872910482', type: 'DEBIT', to: 'rahul.verma@okaxis', toName: 'Rahul Verma', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', fullDateTime: '13 Nov 2026, 08:30 PM', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '5.2 ms' },
-        { id: '719284019284', utr: '981240182941', type: 'CREDIT', to: 'pooja.patel@okhdfcbank', toName: 'Pooja Patel', amount: 1500.00, desc: 'Freelance Design Project', date: 'Nov 12', fullDateTime: '12 Nov 2026, 02:15 PM', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '6.4 ms' },
-        { id: '391029481920', utr: '102948192041', type: 'DEBIT', to: 'sharmakirana@upi', toName: 'Sharma Kirana Store', amount: 420.00, desc: 'Daily Groceries & Essentials', date: 'Nov 11', fullDateTime: '11 Nov 2026, 11:00 AM', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '4.8 ms' },
-        { id: '829104819201', utr: '591029481029', type: 'DEBIT', to: 'swiggy@icici', toName: 'Swiggy', amount: 349.00, desc: 'Gourmet Lunch Delivery', date: 'Nov 10', fullDateTime: '10 Nov 2026, 01:20 PM', status: 'COMPLETED', strategy: 'ATOMIC_CONDITIONAL', latency: '4.5 ms' },
-        { id: '192048192048', utr: '710294810293', type: 'DEBIT', to: 'airtel@bbps', toName: 'Airtel Digital TV', amount: 299.00, desc: 'Monthly HD Pack Recharge', date: 'Nov 09', fullDateTime: '09 Nov 2026, 07:15 PM', status: 'COMPLETED', strategy: 'ATOMIC_CONDITIONAL', latency: '4.1 ms' }
+        {
+          id: '100000000001',
+          utr: '900000000001',
+          type: 'CREDIT',
+          to: 'welcome@dc',
+          toName: 'Opening Balance Deposit',
+          amount: 10000.00,
+          desc: 'Initial Account Provisioning',
+          date: 'Today',
+          fullDateTime: '14 Nov 2026, 09:00 AM',
+          status: 'COMPLETED',
+          strategy: 'ATOMIC_CONDITIONAL',
+          latency: '2.1 ms'
+        }
       ],
       notifications: [
-        { id: 'n1', title: 'Protected Ledger Active', msg: 'Canonical row-locking guarantees 0 race conditions.', unread: true, time: '10m ago' },
-        { id: 'n2', title: 'Test Funds Provisioned', msg: '₹10,000 initial test balance is ready.', unread: false, time: '1d ago' }
+        {
+          id: 'n1',
+          title: 'Protected Ledger Active',
+          msg: 'Welcome Yash Sharma! Your wallet is provisioned with flat ₹10,000.00. Your primary UPI handle is yash@dc (and 9820192840@dc).',
+          unread: true,
+          time: 'Just now'
+        }
       ],
-      payees: [
-        { id: 'p1', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'RV' },
-        { id: 'p2', name: 'Pooja Patel', email: 'pooja.patel@okhdfcbank', initials: 'PP' },
-        { id: 'p3', name: 'Sharma Kirana Store', email: 'sharmakirana@upi', initials: 'SK' },
-        { id: 'p4', name: 'Swiggy', email: 'swiggy@icici', initials: 'SW' },
-        { id: 'p5', name: 'Aman Gupta', email: 'aman.gupta@paytm', initials: 'AG' }
-      ]
-    },
-    'rahul@datacore': {
-      upiId: 'rahul@dc',
-      mobileUpiId: '9876543210@dc',
-      id: 'usr_rahul',
-      name: 'Rahul Verma',
-      email: 'rahul@datacore',
-      mobile: '9876543210',
-      accountNo: 'DC-1519-6941',
-      initial: 'R',
-      role: 'Developer & Receiver',
-      color: 'emerald',
-      balance: 5250.00,
-      dailyLimit: 50000.00,
-      pin: '1234',
-      isTransfersLocked: false,
-      transactions: [
-        { id: '481920491823', utr: '431872910482', type: 'CREDIT', to: 'yash@datacore', toName: 'Yash Sharma', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', fullDateTime: '13 Nov 2026, 08:30 PM', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '5.2 ms' }
-      ],
-      notifications: [
-        { id: 'nb1', title: 'Funds Received', msg: '₹250.00 received from Yash Sharma (Dinner split)', unread: true, time: 'Yesterday' }
-      ],
-      payees: [
-        { id: 'p1', name: 'Yash Sharma', email: 'yash@datacore', initials: 'YS' },
-        { id: 'p2', name: 'Pooja Patel', email: 'pooja.patel@okhdfcbank', initials: 'PP' }
-      ]
-    },
-    'pooja@datacore': {
-      upiId: 'pooja@dc',
-      mobileUpiId: '9811223344@dc',
-      id: 'usr_pooja',
-      name: 'Pooja Patel',
-      email: 'pooja@datacore',
-      mobile: '9811223344',
-      accountNo: 'DC-4806-5873',
-      initial: 'P',
-      role: 'UX Designer',
-      color: 'purple',
-      balance: 8500.00,
-      dailyLimit: 50000.00,
-      pin: '1234',
-      isTransfersLocked: false,
-      transactions: [
-        { id: '719284019284', utr: '981240182941', type: 'DEBIT', to: 'yash@datacore', toName: 'Yash Sharma', amount: 1500.00, desc: 'Freelance Design Project', date: 'Nov 12', fullDateTime: '12 Nov 2026, 02:15 PM', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '6.4 ms' }
-      ],
-      notifications: [
-        { id: 'nc1', title: 'Transfer Settled', msg: '₹1,500.00 sent to Yash Sharma for Freelance Design Project', unread: false, time: 'Nov 12' }
-      ],
-      payees: [
-        { id: 'p1', name: 'Yash Sharma', email: 'yash@datacore', initials: 'YS' },
-        { id: 'p2', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'RV' }
-      ]
+      payees: []
     }
   };
 
-  // ================= LOAD PERSISTENT WALLETS =================
+    // ================= LOAD PERSISTENT WALLETS =================
   let wallets = {};
   try {
     const saved = localStorage.getItem(STORAGE_KEYS.WALLETS);
@@ -3008,6 +2971,43 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   } catch (_) {
     wallets = JSON.parse(JSON.stringify(DEFAULT_INITIAL_WALLETS));
   }
+
+  // Ensure ALL demo accounts (rahul@datacore, pooja@datacore) and demo payees are completely purged
+  delete wallets['rahul@datacore'];
+  delete wallets['pooja@datacore'];
+  delete wallets['usr_rahul'];
+  delete wallets['usr_pooja'];
+
+  Object.keys(wallets).forEach(k => {
+    const w = wallets[k];
+    if (w) {
+      if (w.payees) {
+        // Strip out old mock names: Bob Smith, Rahul Verma, Pooja Patel, Sharma Kirana Store, Swiggy
+        w.payees = w.payees.filter(p => p.email && !p.email.includes('okaxis') && !p.email.includes('okhdfcbank') && !p.email.includes('sharmakirana') && !p.email.includes('swiggy') && !p.email.includes('paytm'));
+      }
+      if (w.transactions) {
+        w.transactions = w.transactions.filter(t => t.to && !t.to.includes('okaxis') && !t.to.includes('okhdfcbank') && !t.to.includes('sharmakirana') && !t.to.includes('swiggy') && !t.to.includes('airtel@bbps'));
+        if (w.transactions.length === 0) {
+          w.transactions = [{
+            id: '100000000001',
+            utr: '900000000001',
+            type: 'CREDIT',
+            to: 'welcome@dc',
+            toName: 'Opening Balance Deposit',
+            amount: 10000.00,
+            desc: 'Initial Account Provisioning',
+            date: 'Today',
+            fullDateTime: '14 Nov 2026, 09:00 AM',
+            status: 'COMPLETED',
+            strategy: 'ATOMIC_CONDITIONAL',
+            latency: '2.1 ms'
+          }];
+        }
+      }
+      w.upiId = getUserUpiId(w);
+      if (w.mobile) w.mobileUpiId = `${w.mobile}@dc`;
+    }
+  });
 
   // Active Session Email (null when logged out)
   let activeUserEmail = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER);
@@ -4857,7 +4857,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
               <span class="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition truncate pr-2">${n.title}</span>
               <span class="text-[9px] text-slate-400 shrink-0 font-medium">${n.time}</span>
             </div>
-            <p class="text-[11px] text-slate-600 leading-snug line-clamp-2">${n.msg}</p>
+            <p class="text-[11px] text-slate-600 leading-snug ">${n.msg}</p>
           </div>
           <div class="flex flex-col items-center space-y-1.5 shrink-0 ml-1">
             ${n.unread ? '<span class="w-2 h-2 rounded-full bg-blue-600 mt-1"></span>' : ''}
@@ -6070,13 +6070,17 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   ];
 
   let currentSelectedOperator = 'Jio';
-  let currentSelectedCircle = 'Maharashtra & Goa';
+  let currentSelectedCircle = 'Uttarakhand';
   let currentRechargeTab = 'POPULAR';
 
   function detectOperatorAndCircle(mobile) {
-    if (!mobile || mobile.length < 4) return { operator: 'Jio', circle: 'Maharashtra & Goa' };
+    if (!mobile || mobile.length < 4) return { operator: 'Jio', circle: 'Uttarakhand' };
     const prefix2 = mobile.substring(0, 2);
     const prefix4 = mobile.substring(0, 4);
+
+    if (['9412', '9411', '9410', '8979', '7579', '7895', '9634', '9756', '8126', '8006', '7055', '9897', '9456', '9458'].includes(prefix4)) {
+      return { operator: 'Jio', circle: 'Uttarakhand' };
+    }
 
     if (['9820', '9821', '9819', '7021', '8828', '9324'].includes(prefix4)) {
       return { operator: 'Jio', circle: 'Mumbai Metro' };
