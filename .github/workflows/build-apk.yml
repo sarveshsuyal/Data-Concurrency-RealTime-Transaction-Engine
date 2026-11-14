@@ -40,12 +40,23 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: 'gradle'
 
       - name: Install Flutter SDK
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
+
+      - name: Cache Flutter Pub Packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            mobile-app/.dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('mobile-app/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
 
       - name: Verify Flutter Installation
         run: flutter --version

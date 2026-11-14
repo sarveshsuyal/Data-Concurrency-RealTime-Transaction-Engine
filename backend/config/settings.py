@@ -26,11 +26,14 @@ DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',')
+    for host in os.environ.get(
+        'ALLOWED_HOSTS',
+        'localhost,127.0.0.1,testserver,.onrender.com,datacore-backend-wktd.onrender.com'
+    ).split(',')
     if host.strip()
 ]
 if '*' not in ALLOWED_HOSTS and DEBUG:
-    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1', 'testserver'])
+    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1', 'testserver', 'datacore-backend-wktd.onrender.com'])
 
 # Application definition
 INSTALLED_APPS = [
