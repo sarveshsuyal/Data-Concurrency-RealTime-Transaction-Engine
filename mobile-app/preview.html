@@ -190,6 +190,22 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
+  
+    /* Fingerprint Sensor Pulse Animation */
+    @keyframes fp-pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+    .animate-fp-pulse {
+      animation: fp-pulse 2s infinite;
+    }
+    .qr-container canvas, .qr-container img {
+      margin: 0 auto;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
   </style>
 </head>
 <body>
@@ -274,19 +290,56 @@
     </div>
 
     <!-- Register New Custom Wallet Button -->
-    <div class="bg-slate-100/80 border border-slate-200/80 rounded-2xl p-3 text-center mb-6">
-      <span class="text-xs text-slate-600 font-medium">Need another test wallet?</span>
-      <button onclick="openRegisterWalletModal()" class="text-xs font-bold text-blue-600 hover:underline ml-1">
-        + Create Custom Wallet
-      </button>
+    
+    <!-- New User Registration / Create Wallet Card -->
+    <div class="bg-gradient-to-br from-blue-50/90 via-indigo-50/70 to-slate-50 border border-blue-200/90 rounded-3xl p-4.5 shadow-sm mb-6">
+      <div class="flex items-center space-x-2.5 mb-2">
+        <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-sm">
+          <i class="fa-solid fa-user-plus"></i>
+        </div>
+        <div>
+          <h3 class="text-xs font-bold text-slate-900">New to DataCore Pay?</h3>
+          <p class="text-[10px] text-slate-500">Create your unique wallet in 10 seconds</p>
+        </div>
+      </div>
+      
+      <div class="space-y-2.5 mt-3">
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Full Name</label>
+          <input id="reg-name" type="text" placeholder="e.g. Devendra Sharma" class="w-full mt-0.5 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Mobile Number</label>
+            <input id="reg-mobile" type="tel" maxlength="10" placeholder="9876543210" class="w-full mt-0.5 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-medium text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm">
+          </div>
+          <div>
+            <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">4-Digit UPI PIN</label>
+            <input id="reg-pin" type="password" maxlength="4" placeholder="••••" class="w-full mt-0.5 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-medium text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm">
+          </div>
+        </div>
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Email Address</label>
+          <input id="reg-email" type="email" placeholder="e.g. devendra@datacore.io" class="w-full mt-0.5 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm">
+        </div>
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Starting Balance (₹)</label>
+          <input id="reg-balance" type="number" value="5000" placeholder="5000" class="w-full mt-0.5 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-blue-600 focus:outline-none focus:border-blue-600 shadow-sm">
+        </div>
+        <button onclick="handleRegisterNewUser()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-1.5 mt-1">
+          <i class="fa-solid fa-bolt text-[11px]"></i>
+          <span>Create Wallet & Sign In</span>
+        </button>
+      </div>
     </div>
+
   </div>
 
   <!-- ==================== SCREEN 1: HOME ==================== -->
   <div id="screen-home" class="app-screen p-5">
     <!-- Header (Click Name/Avatar to open User Menu) -->
     <div class="flex justify-between items-center mb-5">
-      <div onclick="openUserMenuModal()" class="flex items-center space-x-3 cursor-pointer group active:scale-95 transition" title="Tap to view Profile & About">
+      <div onclick="navigateTo('profile')" class="flex items-center space-x-3 cursor-pointer group active:scale-95 transition" title="Tap to view Profile & Settings">
         <div class="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-200 border-2 border-blue-500/30 flex items-center justify-center font-bold text-blue-600 text-base transition">
           <span id="header-avatar-initial">A</span>
         </div>
@@ -420,6 +473,7 @@
     </div>
 
     <!-- Rewards & Cashback Hub Banner -->
+    <div id="home-scratch-banner-container">
     <div onclick="openScratchCardModal()" class="bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 text-white rounded-3xl p-3.5 shadow-md shadow-amber-500/20 mb-5 cursor-pointer active:scale-98 transition flex items-center justify-between group">
       <div class="flex items-center space-x-3">
         <div class="w-11 h-11 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-xl shadow-inner group-hover:scale-105 transition">
@@ -435,6 +489,7 @@
         <span>Scratch</span>
         <i class="fa-solid fa-chevron-right text-[9px]"></i>
       </div>
+    </div>
     </div>
 
     <!-- Inflow vs Outflow Mini Banner -->
@@ -477,6 +532,275 @@
     </div>
   </div>
 
+  <!-- ==================== SCREEN: SERVICES & BILL PAYMENTS ==================== -->
+  <div id="screen-services" class="app-screen p-5 hidden">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center">
+        <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600 active:scale-95 transition">
+          <i class="fa-solid fa-arrow-left text-base"></i>
+        </button>
+        <div>
+          <h2 class="text-base font-bold text-slate-900 ml-2">Services & Bill Payments</h2>
+          <p class="text-[10px] text-slate-500 ml-2">Bharat BillPay (BBPS) & Mobile Recharge</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold">
+        <i class="fa-solid fa-shield-halved text-[10px]"></i>
+        <span>BBPS Assured</span>
+      </div>
+    </div>
+
+    <!-- Live Search Bar -->
+    <div class="relative mb-3">
+      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+      <input id="services-search" oninput="filterServicesAndBills()" type="text" class="w-full bg-white border border-slate-200 rounded-2xl pl-9 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm" placeholder="Search billers, recharges e.g. MSEDCL, Jio, BESCOM...">
+    </div>
+
+    <!-- Category Filter Chips -->
+    <div class="flex space-x-2 overflow-x-auto pb-1 mb-4">
+      <button onclick="setServicesFilter('ALL')" id="sf-all" class="px-3 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-sm shrink-0">All</button>
+      <button onclick="setServicesFilter('ELECTRICITY')" id="sf-electricity" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">⚡ Electricity</button>
+      <button onclick="setServicesFilter('MOBILE')" id="sf-mobile" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">📱 Mobile</button>
+      <button onclick="setServicesFilter('DTH')" id="sf-dth" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">📺 DTH</button>
+      <button onclick="setServicesFilter('WATER')" id="sf-water" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">💧 Water</button>
+      <button onclick="setServicesFilter('GAS')" id="sf-gas" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">🔥 Gas</button>
+      <button onclick="setServicesFilter('FASTAG')" id="sf-fastag" class="px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0">🚗 FASTag</button>
+    </div>
+
+    <!-- ================= SECTION 1: ELECTRICITY BILL PAY (PHONEPE STYLE) ================= -->
+    <div id="service-sec-electricity" class="bg-white border border-slate-200 rounded-3xl p-4.5 shadow-sm mb-5">
+      <div class="flex justify-between items-start mb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg font-bold border border-amber-200/60 shadow-sm">
+            ⚡
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-slate-900">Electricity Bill Payment</h3>
+            <p class="text-[10px] text-slate-500">Official State Discom Bharat BillPay</p>
+          </div>
+        </div>
+        <span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-bold border border-emerald-200">REALTIME FETCH</span>
+      </div>
+
+      <div class="space-y-3">
+        <!-- State Selector -->
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Select State / UT</label>
+          <div class="relative">
+            <select id="elec-state-select" onchange="handleElectricityStateChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-600 appearance-none pr-8">
+              <option value="Maharashtra">Maharashtra (MSEDCL, Tata Power, Adani, BEST)</option>
+              <option value="Delhi">Delhi (BSES Rajdhani, Yamuna, Tata Power DDL)</option>
+              <option value="Karnataka">Karnataka (BESCOM Bangalore, MESCOM, HESCOM)</option>
+              <option value="Gujarat">Gujarat (DGVCL, MGVCL, PGVCL, UGVCL, Torrent)</option>
+              <option value="Uttar Pradesh">Uttar Pradesh (UPPCL Urban, Rural, Torrent, KESCO)</option>
+              <option value="Tamil Nadu">Tamil Nadu (TANGEDCO)</option>
+              <option value="Telangana">Telangana (TSSPDCL, TSNPDCL)</option>
+              <option value="West Bengal">West Bengal (WBSEDCL, CESC Kolkata)</option>
+              <option value="Rajasthan">Rajasthan (JVVNL, AVVNL, JdVVNL)</option>
+              <option value="Madhya Pradesh">Madhya Pradesh (MPPKVVCL Indore, Jabalpur, Bhopal)</option>
+              <option value="Andhra Pradesh">Andhra Pradesh (APEPDCL, APSPDCL)</option>
+              <option value="Kerala">Kerala (KSEB - Kerala State Electricity)</option>
+              <option value="Punjab">Punjab (PSPCL - Punjab State Power)</option>
+              <option value="Haryana">Haryana (DHBVN, UHBVN)</option>
+              <option value="Bihar">Bihar (NBPDCL, SBPDCL)</option>
+            </select>
+            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 absolute right-3 top-3.5 pointer-events-none"></i>
+          </div>
+        </div>
+
+        <!-- Board / Provider Selector -->
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Electricity Provider / Board</label>
+          <div class="relative">
+            <select id="elec-board-select" onchange="handleElectricityBoardChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-600 appearance-none pr-8">
+              <!-- Dynamically populated -->
+            </select>
+            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 absolute right-3 top-3.5 pointer-events-none"></i>
+          </div>
+        </div>
+
+        <!-- Consumer Number / CA Number Input -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label id="elec-consumer-label" class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Consumer Number / CA Number</label>
+            <span id="elec-sample-hint" class="text-[10px] text-blue-600 font-bold cursor-pointer hover:underline" onclick="fillSampleConsumerNumber()">Fill Sample: 015520938472</span>
+          </div>
+          <div class="relative">
+            <input id="elec-consumer-no" type="text" placeholder="Enter Consumer Number" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+          </div>
+        </div>
+
+        <!-- Sub-division / BU (Shown if required by board) -->
+        <div id="elec-subdivision-box" class="hidden">
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Billing Unit (BU) / Sub-division</label>
+          <input id="elec-subdivision-val" type="text" value="4120 - Pune Rural" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800">
+        </div>
+
+        <!-- Fetch Button -->
+        <button id="btn-fetch-elec-bill" onclick="fetchElectricityBill()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-file-invoice text-xs"></i>
+          <span>Fetch Bill Details</span>
+        </button>
+
+        <!-- Loading State Indicator -->
+        <div id="elec-fetch-loading" class="hidden py-4 text-center">
+          <div class="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-2"></div>
+          <p class="text-[11px] font-bold text-slate-700">Connecting to Bharat BillPay & Utility Server...</p>
+          <p class="text-[9px] text-slate-400">Verifying consumer credentials with Discom ledger</p>
+        </div>
+
+        <!-- Verified Bill Details Preview Card -->
+        <div id="elec-bill-preview" class="hidden bg-gradient-to-br from-slate-50 to-blue-50/40 border border-blue-200/80 rounded-2xl p-3.5 space-y-2.5">
+          <div class="flex justify-between items-start border-b border-blue-100 pb-2">
+            <div>
+              <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Consumer Name</span>
+              <span id="elec-preview-name" class="text-xs font-bold text-slate-900">RAMESH CHANDRA PATIL</span>
+              <span id="elec-preview-consumer-id" class="text-[10px] text-slate-500 font-mono block">CA: 015520938472</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Due Date</span>
+              <span id="elec-preview-due" class="text-xs font-bold text-rose-600">28 Nov 2026</span>
+              <span class="text-[9px] text-emerald-600 font-bold block">✓ UNPAID</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-[11px] py-1 border-b border-blue-100">
+            <div>
+              <span class="text-slate-400 text-[10px]">Bill Number:</span>
+              <span id="elec-preview-bill-no" class="font-mono font-bold text-slate-800 ml-1">EB-2026-981240</span>
+            </div>
+            <div>
+              <span class="text-slate-400 text-[10px]">Units Consumed:</span>
+              <span id="elec-preview-units" class="font-bold text-slate-800 ml-1">184 kWh</span>
+            </div>
+            <div>
+              <span class="text-slate-400 text-[10px]">Tariff Plan:</span>
+              <span class="font-bold text-slate-800 ml-1">LT-1 Domestic</span>
+            </div>
+            <div>
+              <span class="text-slate-400 text-[10px]">Convenience Fee:</span>
+              <span class="font-bold text-emerald-600 ml-1">₹0.00 (Free)</span>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-1">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase">Total Bill Amount</span>
+              <div id="elec-preview-amt" class="text-xl font-black text-slate-900">₹1,420.00</div>
+            </div>
+            <button onclick="payElectricityBill()" class="py-2.5 px-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-600/30 active:scale-95 transition flex items-center space-x-1.5">
+              <i class="fa-solid fa-lock text-[10px]"></i>
+              <span id="elec-pay-btn-label">Proceed to Pay ₹1,420</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 2: MOBILE RECHARGE FLOW ================= -->
+    <div id="service-sec-mobile" class="bg-white border border-slate-200 rounded-3xl p-4.5 shadow-sm mb-5">
+      <div class="flex justify-between items-start mb-3">
+        <div class="flex items-center space-x-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg font-bold border border-blue-200/60 shadow-sm">
+            📱
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-slate-900">Mobile Prepaid & 5G Recharge</h3>
+            <p class="text-[10px] text-slate-500">Auto Operator Detection & Live Plans</p>
+          </div>
+        </div>
+        <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[9px] font-bold border border-blue-200">INSTANT PACK</span>
+      </div>
+
+      <div class="space-y-3">
+        <!-- Mobile Input & Auto Detection -->
+        <div>
+          <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">10-Digit Mobile Number</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400">+91</span>
+            <input id="recharge-mobile-input" oninput="handleRechargeMobileInput(this.value)" type="tel" maxlength="10" placeholder="9820192840" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-24 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+            <button onclick="fillSampleMobileNumber()" class="absolute right-2.5 top-2 px-2 py-1 bg-white border border-slate-200 rounded-lg text-[9px] font-bold text-blue-600 hover:bg-blue-50">Sample</button>
+          </div>
+        </div>
+
+        <!-- Detected Operator & Circle Badge with Change Option -->
+        <div class="flex justify-between items-center p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+          <div class="flex items-center space-x-2">
+            <span id="recharge-operator-logo" class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold">Jio</span>
+            <div>
+              <span id="recharge-detected-op" class="text-xs font-bold text-slate-900">Jio Prepaid</span>
+              <span id="recharge-detected-circle" class="text-[10px] text-slate-500 block">Maharashtra & Goa</span>
+            </div>
+          </div>
+          <button onclick="openChangeOperatorModal()" class="text-[10px] font-bold text-blue-600 hover:underline">Change</button>
+        </div>
+
+        <!-- Plan Search Input -->
+        <div class="relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-[10px]"></i>
+          <input id="recharge-plan-search" oninput="filterRechargePlans()" type="text" placeholder="Search by amount, data, OTT (e.g. 299, 5G, Disney+)" class="w-full bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-[11px] text-slate-900 focus:outline-none focus:border-blue-600">
+        </div>
+
+        <!-- Plan Category Tabs -->
+        <div class="flex space-x-1.5 overflow-x-auto pb-1 text-[11px]">
+          <button onclick="switchRechargePlanTab('POPULAR')" id="rpt-popular" class="px-2.5 py-1 rounded-lg font-bold bg-blue-600 text-white shrink-0 shadow-sm">Popular</button>
+          <button onclick="switchRechargePlanTab('TRUE5G')" id="rpt-true5g" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">True 5G Unlimited</button>
+          <button onclick="switchRechargePlanTab('BOOSTERS')" id="rpt-boosters" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">Data Boosters</button>
+          <button onclick="switchRechargePlanTab('ANNUAL')" id="rpt-annual" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">Annual Packs</button>
+          <button onclick="switchRechargePlanTab('OTT')" id="rpt-ott" class="px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0">Entertainment</button>
+        </div>
+
+        <!-- Plans Cards Container -->
+        <div id="recharge-plans-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+          <!-- Injected dynamically by renderRechargePlans() -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= SECTION 3: OTHER UTILITIES GRID ================= -->
+    <div id="service-sec-utilities" class="mb-6">
+      <div class="flex justify-between items-center mb-2.5">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Other Bill Payments & Fast Access</span>
+        <span class="text-[10px] text-blue-600 font-bold">BBPS Network</span>
+      </div>
+
+      <div class="grid grid-cols-4 gap-2">
+        <button onclick="openBillModal('DTH Recharge', 450, 'Tata Play Super Saver')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
+          <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-1 text-base">
+            📺
+          </div>
+          <span class="text-[11px] font-bold text-slate-800">DTH TV</span>
+          <span class="text-[9px] text-slate-400">Tata Play</span>
+        </button>
+
+        <button onclick="openBillModal('FASTag Recharge', 500, 'NHAI Fastag Toll')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
+          <div class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center mb-1 text-base">
+            🚗
+          </div>
+          <span class="text-[11px] font-bold text-slate-800">FASTag</span>
+          <span class="text-[9px] text-slate-400">Toll Pass</span>
+        </button>
+
+        <button onclick="openBillModal('Water Bill', 320, 'Municipal Water Board')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
+          <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-1 text-base">
+            💧
+          </div>
+          <span class="text-[11px] font-bold text-slate-800">Water</span>
+          <span class="text-[9px] text-slate-400">Municipal</span>
+        </button>
+
+        <button onclick="openBillModal('Piped Gas / LPG', 940, 'Mahanagar Gas Booking')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
+          <div class="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center mb-1 text-base">
+            🔥
+          </div>
+          <span class="text-[11px] font-bold text-slate-800">LPG Gas</span>
+          <span class="text-[9px] text-slate-400">Cylinder</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== SCREEN 2: TRANSFER ==================== -->
   <div id="screen-transfer" class="app-screen p-5 hidden">
     <div class="flex items-center mb-5">
@@ -502,10 +826,20 @@
 
     <!-- Recipient Input -->
     <div class="mb-4">
-      <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Recipient (Email or Account No.)</label>
+      <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Recipient (UPI ID, PhonePe @ybl, GPay @oksbi, Paytm, Bank A/C or Mobile)</label>
       <div class="relative">
         <i class="fa-regular fa-user absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-        <input id="transfer-recipient" type="text" value="bob@datacore.io" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm" placeholder="e.g. bob@datacore.io">
+        <input id="transfer-recipient" oninput="handleRecipientInput(this.value)" type="text" value="bob@datacore.io" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm" placeholder="e.g. 9876543210@ybl, rahul@oksbi, DC-1519-6941">
+      </div>
+      <div id="transfer-provider-badge" class="mt-1.5 flex items-center space-x-1.5 hidden"></div>
+      <div class="flex flex-wrap gap-1.5 mt-2">
+        <button onclick="appendUpiHandle('@ybl')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 text-[10px] font-bold text-slate-600 hover:text-blue-600 rounded-lg border border-slate-200 transition">+ @ybl (PhonePe)</button>
+        <button onclick="appendUpiHandle('@oksbi')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 text-[10px] font-bold text-slate-600 hover:text-blue-600 rounded-lg border border-slate-200 transition">+ @oksbi (GPay)</button>
+        <button onclick="appendUpiHandle('@paytm')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 text-[10px] font-bold text-slate-600 hover:text-blue-600 rounded-lg border border-slate-200 transition">+ @paytm</button>
+        <button onclick="appendUpiHandle('@okhdfcbank')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 text-[10px] font-bold text-slate-600 hover:text-blue-600 rounded-lg border border-slate-200 transition">+ @okhdfcbank</button>
+        <button onclick="appendUpiHandle('@ibl')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 text-[10px] font-bold text-slate-600 hover:text-blue-600 rounded-lg border border-slate-200 transition">+ @ibl</button>
+        <button onclick="appendUpiHandle('@apl')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 text-[10px] font-bold text-slate-600 hover:text-blue-600 rounded-lg border border-slate-200 transition">+ @apl (Amazon)</button>
+      </div>
       </div>
     </div>
 
@@ -572,7 +906,7 @@
         <button onclick="navigateTo('home')" class="p-2 -ml-2 text-slate-700 hover:text-blue-600">
           <i class="fa-solid fa-arrow-left text-base"></i>
         </button>
-        <h2 class="text-base font-bold text-slate-900 ml-2">Transaction History</h2>
+        <h2 class="text-base font-bold text-slate-900 ml-2">History & Statement</h2>
       </div>
       <select id="history-sort" onchange="filterHistory()" class="bg-white border border-slate-200 rounded-xl px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm focus:outline-none">
         <option value="NEWEST">Newest First</option>
@@ -581,6 +915,18 @@
         <option value="LOWEST">Lowest Amount</option>
       </select>
     </div>
+
+    <!-- Segmented Sub-tab: Transactions vs Statement & Analytics -->
+    <div class="flex p-1 bg-slate-100 rounded-2xl mb-4 border border-slate-200">
+      <button id="tab-sub-tx" onclick="switchHistorySubTab('tx')" class="flex-1 py-2 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm transition">
+        <i class="fa-solid fa-list-ul mr-1.5"></i>Transactions
+      </button>
+      <button id="tab-sub-stmt" onclick="switchHistorySubTab('stmt')" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 transition">
+        <i class="fa-solid fa-chart-pie mr-1.5"></i>Statement & Analytics
+      </button>
+    </div>
+
+    <div id="history-subtab-tx">
 
     <!-- Search Bar -->
     <div class="relative mb-3">
@@ -600,6 +946,93 @@
     <div id="history-tx-list" class="space-y-2.5">
       <!-- Injected by JS -->
     </div>
+    </div> <!-- End history-subtab-tx -->
+
+    <div id="history-subtab-stmt" class="hidden">
+      <!-- Statement Card -->
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm mb-5">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Current Settled Balance</span>
+          <span id="stmt-bal" class="text-2xl font-black text-slate-900">₹10,000.00</span>
+        </div>
+        <span class="font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">DC-6812-3923</span>
+      </div>
+
+      <!-- Category Spending Analytics Card -->
+      <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 mb-4 space-y-2.5">
+        <div class="flex justify-between items-center">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Spending By Category</span>
+          <span class="text-[10px] font-bold text-blue-600">This Month</span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-700">🍔 Food & Dining</span>
+              <span id="cat-food-val" class="font-bold text-slate-900">₹250.00 (33%)</span>
+            </div>
+            <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+              <div id="cat-food-bar" class="h-full bg-amber-500 rounded-full" style="width: 33%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-700">💻 Cloud & Node Hosting</span>
+              <span id="cat-cloud-val" class="font-bold text-slate-900">₹500.00 (67%)</span>
+            </div>
+            <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+              <div id="cat-cloud-bar" class="h-full bg-blue-600 rounded-full" style="width: 67%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-700">👥 Peer-to-Peer Transfers</span>
+              <span id="cat-peer-val" class="font-bold text-slate-900">₹0.00 (0%)</span>
+            </div>
+            <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+              <div id="cat-peer-bar" class="h-full bg-purple-500 rounded-full" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Credits vs Debits -->
+      <div class="grid grid-cols-2 gap-2.5 mb-4">
+        <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-100">
+          <div class="flex items-center space-x-1.5 text-emerald-700 text-xs font-bold mb-1">
+            <i class="fa-solid fa-arrow-down text-[10px]"></i>
+            <span>Total Credits</span>
+          </div>
+          <span id="stmt-credits" class="text-base font-bold text-emerald-700">+₹0.00</span>
+        </div>
+        <div class="p-3 rounded-2xl bg-rose-50 border border-rose-100">
+          <div class="flex items-center space-x-1.5 text-rose-700 text-xs font-bold mb-1">
+            <i class="fa-solid fa-arrow-up text-[10px]"></i>
+            <span>Total Debits</span>
+          </div>
+          <span id="stmt-debits" class="text-base font-bold text-rose-700">-₹0.00</span>
+        </div>
+      </div>
+
+      <!-- Inflow Ratio Progress -->
+      <div>
+        <div class="flex justify-between text-[11px] text-slate-500 font-semibold mb-1">
+          <span id="stmt-ratio-label">Inflow Ratio: 100%</span>
+          <span id="stmt-count-label">Ledger Entries: 0</span>
+        </div>
+        <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden flex">
+          <div id="stmt-ratio-bar" class="h-full bg-emerald-500" style="width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="text-sm font-bold text-slate-900 mb-3">Itemized Ledger Journal</h3>
+    <div id="statement-entries-list" class="space-y-2.5">
+      <!-- Injected by JS -->
+    </div>
+    </div> <!-- End history-subtab-stmt -->
   </div>
 
   <!-- ==================== SCREEN 4: STATEMENT ==================== -->
@@ -1316,27 +1749,40 @@
   <!-- ==================== RECEIVE QR MODAL ==================== -->
   <div id="modal-receive" class="modal-sheet p-6 text-center">
     <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
-    <h3 class="text-base font-bold text-slate-900 mb-1">Receive Funds</h3>
-    <p class="text-xs text-slate-500 mb-5">Scan QR or share your payment handle</p>
+    <div class="flex justify-between items-center mb-1">
+      <h3 class="text-base font-bold text-slate-900">Receive Money via UPI QR</h3>
+      <button onclick="closeAllModals()" class="p-1 text-slate-400 hover:text-slate-700">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+    </div>
+    <p class="text-xs text-slate-500 mb-4">Scan with any UPI App: PhonePe, Google Pay, Paytm, BHIM</p>
 
-    <!-- QR Simulation Box -->
-    <div class="w-48 h-48 bg-white border-2 border-slate-200 rounded-3xl mx-auto p-4 shadow-sm flex flex-col items-center justify-center mb-5">
-      <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg mb-2">
-        <i class="fa-solid fa-bolt"></i>
+    <!-- Real Dynamic QR Container with User Avatar in Center -->
+    <div class="relative w-56 h-56 bg-white border-2 border-slate-200/90 rounded-3xl mx-auto p-3 shadow-md flex items-center justify-center mb-4 qr-container">
+      <div id="receive-qrcode-render" class="flex items-center justify-center">
+        <!-- Pure JS QR rendered here dynamically -->
       </div>
-      <i class="fa-solid fa-qrcode text-7xl text-slate-900"></i>
+      <!-- Center User Avatar Badge -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div id="qr-center-avatar" class="w-10 h-10 rounded-full bg-blue-600 text-white font-black text-sm border-2 border-white shadow-md flex items-center justify-center">
+          A
+        </div>
+      </div>
     </div>
 
     <!-- Account Details Box -->
     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-4 text-left">
       <div class="flex justify-between items-center mb-1">
-        <span class="text-[10px] font-bold text-slate-400 uppercase">Account Number</span>
-        <button onclick="copyToClipboard(currentUser.accountNo, 'Account number copied!')" class="text-blue-600 text-xs font-bold">Copy</button>
+        <span class="text-[10px] font-bold text-slate-400 uppercase">Primary UPI Handle</span>
+        <button onclick="copyToClipboard(currentUser.accountNo + '@datacore', 'UPI handle copied!')" class="text-blue-600 text-xs font-bold hover:underline">Copy</button>
       </div>
-      <span id="receive-account-no" class="font-mono text-xs font-bold text-slate-800">DC-6812-3923</span>
+      <div class="flex items-center space-x-2">
+        <span id="receive-account-no" class="font-mono text-xs font-bold text-slate-800">DC-6812-3923@datacore</span>
+        <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold text-[9px]">NPCI 2.0</span>
+      </div>
     </div>
 
-    <button id="receive-share-btn" onclick="copyToClipboard('DataCore: ' + currentUser.accountNo + ' (' + currentUser.email + ')', 'Payment handle copied!')" class="w-full py-3.5 bg-blue-600 text-white rounded-2xl font-bold text-xs shadow-md">
+    <button id="receive-share-btn"  onclick="copyToClipboard('DataCore: ' + currentUser.accountNo + ' (' + currentUser.email + ')', 'Payment handle copied!')" class="w-full py-3.5 bg-blue-600 text-white rounded-2xl font-bold text-xs shadow-md">
       Share Payment Handle
     </button>
   </div>
@@ -1771,31 +2217,114 @@
     </button>
   </div>
 
-  <!-- Bottom Navigation Bar -->
-  <div id="bottom-nav" class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex justify-around items-center px-4 z-30">
-    <button onclick="navigateTo('home')" id="tab-home" class="tab-btn active flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+    
+  <!-- ==================== BIOMETRIC FINGERPRINT ENROLLMENT MODAL ==================== -->
+  <div id="modal-fingerprint" class="modal-sheet p-6 text-center">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <h3 class="text-base font-bold text-slate-900 mb-1">Biometric Fingerprint Sensor</h3>
+    <p class="text-xs text-slate-500 mb-6">Touch the sensor below to verify or enroll your fingerprint</p>
+
+    <!-- Fingerprint Touch Sensor Graphic -->
+    <div onclick="simulateFingerprintScan()" class="relative w-28 h-28 mx-auto rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center cursor-pointer active:scale-95 transition mb-6 group">
+      <div class="w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl shadow-lg shadow-blue-500/40 animate-fp-pulse">
+        <i id="fp-modal-icon" class="fa-solid fa-fingerprint"></i>
+      </div>
+    </div>
+
+    <p id="fp-modal-status" class="text-xs font-bold text-slate-700 mb-4">Tap sensor to authenticate</p>
+
+    <button onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+      Done
+    </button>
+  </div>
+
+  <!-- ==================== CHANGE OPERATOR & CIRCLE MODAL ==================== -->
+  <div id="modal-change-operator" class="modal-sheet p-6">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-base font-bold text-slate-900">Select Telecom Operator</h3>
+      <button onclick="closeAllModals()" class="p-1 text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-sm"></i></button>
+    </div>
+
+    <div class="grid grid-cols-2 gap-2 mb-4">
+      <button onclick="selectOperator('Jio')" class="p-3 border border-slate-200 rounded-2xl flex items-center space-x-2.5 hover:border-blue-500 hover:bg-blue-50/50 transition text-left">
+        <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs font-black">Jio</span>
+        <div><span class="text-xs font-bold text-slate-900 block">Reliance Jio</span><span class="text-[10px] text-slate-400">Prepaid & True 5G</span></div>
+      </button>
+
+      <button onclick="selectOperator('Airtel')" class="p-3 border border-slate-200 rounded-2xl flex items-center space-x-2.5 hover:border-rose-500 hover:bg-rose-50/50 transition text-left">
+        <span class="w-8 h-8 rounded-xl bg-rose-600 text-white flex items-center justify-center text-xs font-black">Air</span>
+        <div><span class="text-xs font-bold text-slate-900 block">Bharti Airtel</span><span class="text-[10px] text-slate-400">Prepaid & 5G Plus</span></div>
+      </button>
+
+      <button onclick="selectOperator('Vi')" class="p-3 border border-slate-200 rounded-2xl flex items-center space-x-2.5 hover:border-amber-500 hover:bg-amber-50/50 transition text-left">
+        <span class="w-8 h-8 rounded-xl bg-amber-600 text-white flex items-center justify-center text-xs font-black">Vi</span>
+        <div><span class="text-xs font-bold text-slate-900 block">Vodafone Idea</span><span class="text-[10px] text-slate-400">Prepaid & Hero</span></div>
+      </button>
+
+      <button onclick="selectOperator('BSNL')" class="p-3 border border-slate-200 rounded-2xl flex items-center space-x-2.5 hover:border-emerald-500 hover:bg-emerald-50/50 transition text-left">
+        <span class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xs font-black">BSNL</span>
+        <div><span class="text-xs font-bold text-slate-900 block">BSNL Mobile</span><span class="text-[10px] text-slate-400">Prepaid 3G/4G</span></div>
+      </button>
+    </div>
+
+    <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Telecom Circle</label>
+    <select id="modal-circle-select" onchange="selectCircle(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none mb-4">
+      <option value="Maharashtra & Goa">Maharashtra & Goa</option>
+      <option value="Mumbai">Mumbai Metro</option>
+      <option value="Delhi NCR">Delhi NCR</option>
+      <option value="Karnataka">Karnataka (Bangalore)</option>
+      <option value="Gujarat">Gujarat</option>
+      <option value="Uttar Pradesh (East)">Uttar Pradesh (East)</option>
+      <option value="Uttar Pradesh (West)">Uttar Pradesh (West)</option>
+      <option value="Tamil Nadu">Tamil Nadu (Chennai)</option>
+      <option value="Kolkata">Kolkata</option>
+      <option value="West Bengal">West Bengal</option>
+      <option value="Rajasthan">Rajasthan</option>
+      <option value="Madhya Pradesh">Madhya Pradesh & CG</option>
+    </select>
+  </div>
+
+  <!-- Bottom Navigation Bar (PhonePe / GPay Style) -->
+  <div id="bottom-nav" class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex justify-around items-center px-2 z-30">
+    <!-- Tab 1: Home -->
+    <button onclick="navigateTo('home')" id="tab-home" class="tab-btn active flex flex-col items-center text-slate-400 hover:text-blue-600 transition px-2 py-1">
       <i class="fa-solid fa-house text-lg"></i>
       <span class="text-[10px] font-bold mt-1">Home</span>
     </button>
-    <button onclick="navigateTo('transfer')" id="tab-transfer" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
-      <i class="fa-solid fa-paper-plane text-lg"></i>
-      <span class="text-[10px] font-bold mt-1">Transfer</span>
+
+    <!-- Tab 2: Services / Bills (Right next to Home) -->
+    <button onclick="navigateTo('services')" id="tab-services" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition px-2 py-1">
+      <i class="fa-solid fa-layer-group text-lg"></i>
+      <span class="text-[10px] font-bold mt-1">Services</span>
     </button>
-    <button onclick="navigateTo('statement')" id="tab-statement" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
-      <i class="fa-solid fa-chart-pie text-lg"></i>
-      <span class="text-[10px] font-bold mt-1">Statement</span>
+
+    <!-- Tab 3: Center Floating Scan QR Button -->
+    <button onclick="openScannerModal()" id="tab-scan" class="flex flex-col items-center -mt-6 group">
+      <div class="w-[52px] h-[52px] rounded-full bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 text-white flex items-center justify-center text-xl shadow-lg shadow-blue-500/40 group-active:scale-95 group-hover:shadow-blue-500/60 transition border-4 border-white">
+        <i class="fa-solid fa-qrcode"></i>
+      </div>
+      <span class="text-[10px] font-bold mt-1 text-slate-600 group-hover:text-blue-600">Scan QR</span>
     </button>
-    <button onclick="navigateTo('history')" id="tab-history" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+
+    <!-- Tab 4: History (Transactions & Statement) -->
+    <button onclick="navigateTo('history')" id="tab-history" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition px-2 py-1">
       <i class="fa-solid fa-clock-rotate-left text-lg"></i>
       <span class="text-[10px] font-bold mt-1">History</span>
     </button>
-    <button onclick="navigateTo('profile')" id="tab-profile" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
-      <i class="fa-solid fa-user text-lg"></i>
+
+    <!-- Tab 5: Profile (Consolidated Full-Screen Profile) -->
+    <button onclick="navigateTo('profile')" id="tab-profile" class="tab-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition px-2 py-1">
+      <i class="fa-regular fa-user text-lg"></i>
       <span class="text-[10px] font-bold mt-1">Profile</span>
     </button>
   </div>
 </div>
 
+<script>
+/* Embedded QRCode.js (19KB Offline Standalone) */
+var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';"></td>');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();
+</script>
 <script>
   // ================= STORAGE KEYS =================
   const STORAGE_KEYS = {
@@ -2407,7 +2936,7 @@
     const nav = document.getElementById('bottom-nav');
     if (nav) nav.classList.add('hidden');
 
-    ['home', 'transfer', 'history', 'statement', 'notifications', 'profile', 'success'].forEach(id => {
+    ['home', 'transfer', 'services', 'history', 'statement', 'notifications', 'profile', 'success'].forEach(id => {
       const screen = document.getElementById(`screen-${id}`);
       if (screen) screen.classList.add('hidden');
       const tab = document.getElementById(`tab-${id}`);
@@ -2778,7 +3307,14 @@
 
   function navigateTo(screenId) {
     closeAllModals();
-    ['login', 'home', 'transfer', 'history', 'statement', 'notifications', 'profile', 'success'].forEach(id => {
+
+    if (screenId === 'statement') {
+      navigateTo('history');
+      switchHistorySubTab('stmt');
+      return;
+    }
+
+    ['login', 'home', 'transfer', 'services', 'history', 'statement', 'notifications', 'profile', 'success'].forEach(id => {
       const el = document.getElementById(`screen-${id}`);
       if (el) el.classList.add('hidden');
       const tab = document.getElementById(`tab-${id}`);
@@ -2802,6 +3338,12 @@
 
     if (screenId === 'profile') {
       updateUserBindings();
+    }
+    if (screenId === 'services') {
+      initServicesHub();
+    }
+    if (screenId === 'home') {
+      renderScratchCardBanner();
     }
   }
 
@@ -3136,6 +3678,7 @@
 
   function openReceiveModal() {
     updateUserBindings();
+    renderUserDynamicQRCode();
     document.getElementById('backdrop').classList.add('active');
     document.getElementById('modal-receive').classList.add('active');
   }
@@ -3172,6 +3715,55 @@
   }
 
   // ================= CROSS-WALLET TRANSFER EXECUTION WITH PHONEPE SUCCESS SCREEN =================
+      function showSuccessScreen(data) {
+    const formattedDateTime = formatSuccessDateTime();
+    const senderLast4 = (currentUser && currentUser.accountNo ? currentUser.accountNo : '3923').replace(/[^0-9]/g, '').slice(-4) || '3923';
+    const latencyVal = `${(Math.random() * 3 + 4.1).toFixed(1)} ms`;
+
+    lastSuccessfulTx = {
+      txId: data.txId,
+      utrNo: data.utr,
+      amount: data.amount,
+      recipientName: data.recipientName,
+      recipientId: data.recipientAccount || data.recipientName,
+      recipientInitial: data.initial || '₹',
+      dateTime: formattedDateTime,
+      latency: latencyVal,
+      senderLast4: senderLast4,
+      note: data.note || 'Payment'
+    };
+
+    const dtEl = document.getElementById('succ-datetime');
+    const initEl = document.getElementById('succ-avatar-initial');
+    const nameEl = document.getElementById('succ-recipient-name');
+    const idEl = document.getElementById('succ-recipient-id');
+    const amtEl = document.getElementById('succ-amount');
+    const txIdEl = document.getElementById('succ-tx-id');
+    const bankEl = document.getElementById('succ-debited-bank');
+    const debAmtEl = document.getElementById('succ-debited-amt');
+    const utrEl = document.getElementById('succ-utr-no');
+    const latEl = document.getElementById('succ-latency-text');
+
+    if (dtEl) dtEl.innerText = formattedDateTime;
+    if (initEl) initEl.innerText = data.initial || '✓';
+    if (nameEl) nameEl.innerText = data.recipientName;
+    if (idEl) idEl.innerText = data.recipientAccount || data.recipientName;
+    if (amtEl) amtEl.innerText = `₹${data.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (txIdEl) txIdEl.innerText = data.txId;
+    if (bankEl) bankEl.innerText = `DataCore Bank - XXXXXXXXXXXX${senderLast4}`;
+    if (debAmtEl) debAmtEl.innerText = `₹${data.amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (utrEl) utrEl.innerText = data.utr;
+    if (latEl) latEl.innerText = `Settlement confirmed in ${latencyVal} • NPCI Verified`;
+
+    splitPersonCount = 2;
+    if (typeof updateSplitCalculation === 'function') updateSplitCalculation();
+
+    playSuccessChime();
+    triggerSuccessHaptic();
+
+    navigateTo('success');
+  }
+
   function executeTransfer() {
     if (isTransfersLocked) {
       return showToast('Transfers are locked by security settings', false);
@@ -3305,6 +3897,8 @@
 
     splitPersonCount = 2;
     updateSplitCalculation();
+
+    awardNewScratchCard('UPI Transfer');
 
     playSuccessChime();
     triggerSuccessHaptic();
@@ -3567,6 +4161,958 @@
       showToast(`Transaction ${tx.id} reversed and refunded!`);
     }
   }
+
+    // ================= DYNAMIC UNIQUE QR CODE GENERATION =================
+  function renderUserDynamicQRCode() {
+    if (!currentUser) return;
+    const container = document.getElementById('receive-qrcode-render');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const upiUri = `upi://pay?pa=${currentUser.accountNo}@datacore&pn=${encodeURIComponent(currentUser.name)}&cu=INR&mode=02&orgid=189999`;
+
+    try {
+      if (typeof QRCode !== 'undefined') {
+        new QRCode(container, {
+          text: upiUri,
+          width: 176,
+          height: 176,
+          colorDark: '#0f172a',
+          colorLight: '#ffffff',
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      }
+    } catch (e) {
+      console.error('QR code generation error:', e);
+    }
+
+    const centerAvatar = document.getElementById('qr-center-avatar');
+    if (centerAvatar) {
+      centerAvatar.innerText = currentUser.initial || currentUser.name.charAt(0).toUpperCase();
+    }
+
+    const recAcc = document.getElementById('receive-account-no');
+    if (recAcc) {
+      recAcc.innerText = `${currentUser.accountNo}@datacore`;
+    }
+  }
+
+  function shareUserQRCode() {
+    if (navigator.share && currentUser) {
+      navigator.share({
+        title: `${currentUser.name}'s UPI QR`,
+        text: `Pay ${currentUser.name} via DataCore UPI: ${currentUser.accountNo}@datacore`,
+        url: `upi://pay?pa=${currentUser.accountNo}@datacore&pn=${encodeURIComponent(currentUser.name)}&cu=INR`
+      }).catch(() => {});
+    } else {
+      copyToClipboard(`${currentUser.accountNo}@datacore`, 'UPI handle copied to clipboard!');
+    }
+  }
+
+  // ================= CASHBACK SCRATCH CARD (NO INFINITE REPEAT BUG) =================
+  function initUserScratchCards(user) {
+    if (!user) return;
+    if (!user.scratchCards || !Array.isArray(user.scratchCards)) {
+      user.scratchCards = [
+        { id: `sc_welcome_${user.email}`, title: 'Welcome Cashback Reward', amount: 28.00, claimed: false, date: 'Just now' }
+      ];
+    }
+  }
+
+  function renderScratchCardBanner() {
+    const bannerContainer = document.getElementById('home-scratch-banner-container');
+    if (!bannerContainer || !currentUser) return;
+
+    initUserScratchCards(currentUser);
+    const unclaimed = currentUser.scratchCards.find(c => !c.claimed);
+
+    if (unclaimed) {
+      bannerContainer.innerHTML = `
+        <div onclick="openScratchCardModal()" class="bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 text-white rounded-3xl p-3.5 shadow-md shadow-amber-500/20 mb-5 cursor-pointer active:scale-98 transition flex items-center justify-between group">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-xl group-hover:rotate-12 transition">
+              🎁
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="text-xs font-black tracking-wide uppercase">Cashback Reward Unlocked!</span>
+                <span class="w-2 h-2 rounded-full bg-yellow-200 animate-ping"></span>
+              </div>
+              <p class="text-[10px] text-amber-100 font-medium">Tap to scratch & win up to ₹50 instant cashback</p>
+            </div>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold group-hover:bg-white group-hover:text-amber-600 transition">
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+          </div>
+        </div>
+      `;
+    } else {
+      const lastClaimed = currentUser.scratchCards.filter(c => c.claimed)[0];
+      const claimedAmt = lastClaimed ? lastClaimed.amount.toFixed(2) : '28.00';
+      bannerContainer.innerHTML = `
+        <div onclick="showToast('Recharges, bill payments & transfers unlock new scratch cards!')" class="bg-gradient-to-r from-slate-100 via-blue-50/50 to-slate-100 border border-slate-200 text-slate-700 rounded-3xl p-3.5 shadow-sm mb-5 cursor-pointer active:scale-98 transition flex items-center justify-between group">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-base font-bold">
+              ✓
+            </div>
+            <div>
+              <div class="flex items-center space-x-1.5">
+                <span class="text-xs font-bold text-slate-800">Cashback Claimed: ₹${claimedAmt}</span>
+                <span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-600 font-bold text-[9px] border border-emerald-200">Deposited</span>
+              </div>
+              <p class="text-[10px] text-slate-500 font-medium">Pay bills or recharge mobile to earn more scratch cards</p>
+            </div>
+          </div>
+          <span class="text-[10px] font-bold text-blue-600 group-hover:underline">Earn More</span>
+        </div>
+      `;
+    }
+  }
+
+  // Override scratch card modal with one-time claim protection
+  const originalOpenScratchCardModal = openScratchCardModal;
+  openScratchCardModal = function() {
+    if (!currentUser) return;
+    initUserScratchCards(currentUser);
+    const unclaimed = currentUser.scratchCards.find(c => !c.claimed);
+    if (!unclaimed) {
+      return showToast('No active scratch cards! Make a bill payment or transfer to unlock new cards.', false);
+    }
+
+    closeAllModals();
+    isCardScratched = false;
+    currentScratchWon = unclaimed.amount;
+    document.getElementById('scratch-reward-amt').innerText = `₹${currentScratchWon.toFixed(2)}`;
+
+    const cover = document.getElementById('scratch-cover');
+    const revealed = document.getElementById('scratch-revealed');
+    const claimBox = document.getElementById('scratch-claim-box');
+
+    if (cover) cover.style.opacity = '1';
+    if (revealed) revealed.classList.add('hidden');
+    if (claimBox) claimBox.classList.add('hidden');
+
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-scratch-card').classList.add('active');
+    triggerHaptic();
+  };
+
+  const originalClaimCashbackReward = claimCashbackReward;
+  claimCashbackReward = function() {
+    if (!currentUser) return;
+    initUserScratchCards(currentUser);
+    const card = currentUser.scratchCards.find(c => !c.claimed);
+    if (card) {
+      card.claimed = true;
+      card.claimedAt = new Date().toISOString();
+    }
+
+    balance += currentScratchWon;
+    const txId = generateRandomDigits(12);
+    const utrNo = generateRandomDigits(12);
+
+    transactions.unshift({
+      id: txId,
+      utr: utrNo,
+      type: 'CREDIT',
+      to: 'rewards@datacore.io',
+      toName: 'DataCore Rewards Engine',
+      amount: currentScratchWon,
+      desc: 'DataCore Cashback Reward',
+      date: 'Just now',
+      status: 'COMPLETED',
+      strategy: 'ATOMIC_CONDITIONAL',
+      latency: '3.4 ms'
+    });
+
+    notifications.unshift({
+      id: `n-rew-${Date.now()}`,
+      title: 'Cashback Deposited',
+      msg: `₹${currentScratchWon.toFixed(2)} cashback credited to your primary wallet!`,
+      unread: true,
+      time: 'Just now'
+    });
+
+    saveCurrentWalletState();
+    renderBalance();
+    renderTransactions();
+    renderNotifications();
+    renderScratchCardBanner();
+    closeAllModals();
+
+    playSuccessChime();
+    triggerSuccessHaptic();
+    showToast(`₹${currentScratchWon.toFixed(2)} cashback added to your wallet!`);
+  };
+
+  function awardNewScratchCard(unlockedBy = 'Transaction') {
+    if (!currentUser) return;
+    initUserScratchCards(currentUser);
+    const amount = Math.floor(12 + Math.random() * 38);
+    currentUser.scratchCards.unshift({
+      id: `sc_${Date.now()}`,
+      amount: amount,
+      claimed: false,
+      title: `${unlockedBy} Cashback`,
+      date: 'Just now'
+    });
+    saveCurrentWalletState();
+    renderScratchCardBanner();
+  }
+
+  // ================= MULTI-STATE ELECTRICITY BILLS (PHONEPE STYLE) =================
+  const ELECTRICITY_BOARDS = {
+    "Maharashtra": [
+      { id: "MSEDCL", name: "MSEDCL - Mahavitaran (Maharashtra State)", sample: "015520938472", digits: 12, needBu: true },
+      { id: "TATA_MUMBAI", name: "Tata Power Mumbai Distribution", sample: "900018247192", digits: 12 },
+      { id: "ADANI_MUMBAI", name: "Adani Electricity Mumbai Limited (AEML)", sample: "152098412", digits: 9 },
+      { id: "BEST", name: "BEST Undertaking Mumbai (Electric Supply)", sample: "847201948", digits: 9 },
+      { id: "TORRENT_BHIWANDI", name: "Torrent Power - Bhiwandi / Shil / Mumbra", sample: "39201948102", digits: 11 }
+    ],
+    "Delhi": [
+      { id: "BSES_RAJDHANI", name: "BSES Rajdhani Power Limited (BRPL)", sample: "102948201", digits: 9 },
+      { id: "BSES_YAMUNA", name: "BSES Yamuna Power Limited (BYPL)", sample: "103829104", digits: 9 },
+      { id: "TATA_DDL", name: "Tata Power Delhi Distribution Ltd (TPDDL)", sample: "6001928401", digits: 11 },
+      { id: "NDMC", name: "New Delhi Municipal Council (NDMC)", sample: "4920194", digits: 7 }
+    ],
+    "Karnataka": [
+      { id: "BESCOM", name: "BESCOM - Bangalore Electricity Supply Co.", sample: "4820194819", digits: 10 },
+      { id: "MESCOM", name: "MESCOM - Mangalore Electricity Supply Co.", sample: "392019481", digits: 9 },
+      { id: "HESCOM", name: "HESCOM - Hubli Electricity Supply Co.", sample: "582019481", digits: 9 },
+      { id: "GESCOM", name: "GESCOM - Gulbarga Electricity Supply Co.", sample: "282019481", digits: 9 }
+    ],
+    "Gujarat": [
+      { id: "DGVCL", name: "DGVCL - Dakshin Gujarat Vij Co.", sample: "08291048291", digits: 11 },
+      { id: "MGVCL", name: "MGVCL - Madhya Gujarat Vij Co.", sample: "05829104821", digits: 11 },
+      { id: "PGVCL", name: "PGVCL - Paschim Gujarat Vij Co.", sample: "02910482910", digits: 11 },
+      { id: "UGVCL", name: "UGVCL - Uttar Gujarat Vij Co.", sample: "01928401928", digits: 11 },
+      { id: "TORRENT_GUJ", name: "Torrent Power - Ahmedabad / Gandhinagar / Surat", sample: "49201948102", digits: 11 }
+    ],
+    "Uttar Pradesh": [
+      { id: "UPPCL_URBAN", name: "UPPCL - Uttar Pradesh Power Corp (Urban)", sample: "8472910482", digits: 10 },
+      { id: "UPPCL_RURAL", name: "UPPCL - Uttar Pradesh Power Corp (Rural)", sample: "748291048210", digits: 12 },
+      { id: "TORRENT_AGRA", name: "Torrent Power - Agra Distribution", sample: "19204918201", digits: 11 },
+      { id: "KESCO", name: "KESCO - Kanpur Electricity Supply Co.", sample: "582910482", digits: 9 }
+    ],
+    "Tamil Nadu": [
+      { id: "TANGEDCO", name: "TANGEDCO - Tamil Nadu Generation and Distribution Corp", sample: "04829104821", digits: 11 }
+    ],
+    "Telangana": [
+      { id: "TSSPDCL", name: "TSSPDCL - Southern Power Distribution of Telangana", sample: "1029482019", digits: 10 },
+      { id: "TSNPDCL", name: "TSNPDCL - Northern Power Distribution of Telangana", sample: "2019482019", digits: 10 }
+    ],
+    "West Bengal": [
+      { id: "WBSEDCL", name: "WBSEDCL - West Bengal State Electricity", sample: "302948201", digits: 9 },
+      { id: "CESC", name: "CESC Limited - Kolkata Electricity", sample: "9029482019", digits: 10 }
+    ],
+    "Rajasthan": [
+      { id: "JVVNL", name: "JVVNL - Jaipur Vidyut Vitran Nigam Ltd", sample: "210948201928", digits: 12 },
+      { id: "AVVNL", name: "AVVNL - Ajmer Vidyut Vitran Nigam Ltd", sample: "310948201928", digits: 12 },
+      { id: "JDVVNL", name: "JdVVNL - Jodhpur Vidyut Vitran Nigam Ltd", sample: "410948201928", digits: 12 }
+    ],
+    "Madhya Pradesh": [
+      { id: "MPPKVVCL_INDORE", name: "MPPKVVCL - West Discom (Indore)", sample: "58201948201", digits: 11 },
+      { id: "MPPKVVCL_JABALPUR", name: "MPPKVVCL - East Discom (Jabalpur)", sample: "68201948201", digits: 11 },
+      { id: "MPMKVVCL_BHOPAL", name: "MPMKVVCL - Central Discom (Bhopal)", sample: "78201948201", digits: 11 }
+    ],
+    "Andhra Pradesh": [
+      { id: "APEPDCL", name: "APEPDCL - Eastern Power Distribution Co.", sample: "102948201", digits: 9 },
+      { id: "APSPDCL", name: "APSPDCL - Southern Power Distribution Co.", sample: "202948201", digits: 9 }
+    ],
+    "Kerala": [
+      { id: "KSEB", name: "KSEB - Kerala State Electricity Board", sample: "13829104821", digits: 11 }
+    ],
+    "Punjab": [
+      { id: "PSPCL", name: "PSPCL - Punjab State Power Corp Ltd", sample: "3001928401", digits: 10 }
+    ],
+    "Haryana": [
+      { id: "DHBVN", name: "DHBVN - Dakshin Haryana Bijli Vitran Nigam", sample: "0829104829", digits: 10 },
+      { id: "UHBVN", name: "UHBVN - Uttar Haryana Bijli Vitran Nigam", sample: "0529104829", digits: 10 }
+    ],
+    "Bihar": [
+      { id: "NBPDCL", name: "NBPDCL - North Bihar Power Distribution", sample: "102948201", digits: 9 },
+      { id: "SBPDCL", name: "SBPDCL - South Bihar Power Distribution", sample: "202948201", digits: 9 }
+    ]
+  };
+
+  let currentFetchedBill = null;
+
+  function handleElectricityStateChange() {
+    const stateEl = document.getElementById('elec-state-select');
+    if (!stateEl) return;
+    const state = stateEl.value;
+    const boardSelect = document.getElementById('elec-board-select');
+    const boards = ELECTRICITY_BOARDS[state] || ELECTRICITY_BOARDS['Maharashtra'];
+
+    boardSelect.innerHTML = boards.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+    handleElectricityBoardChange();
+  }
+
+  function handleElectricityBoardChange() {
+    const stateEl = document.getElementById('elec-state-select');
+    const boardSelect = document.getElementById('elec-board-select');
+    if (!stateEl || !boardSelect) return;
+
+    const state = stateEl.value;
+    const boardId = boardSelect.value;
+    const boards = ELECTRICITY_BOARDS[state] || [];
+    const board = boards.find(b => b.id === boardId) || boards[0];
+
+    if (board) {
+      const hint = document.getElementById('elec-sample-hint');
+      if (hint) {
+        hint.innerText = `Fill Sample: ${board.sample}`;
+        hint.dataset.sample = board.sample;
+      }
+      const subBox = document.getElementById('elec-subdivision-box');
+      if (subBox) {
+        if (board.needBu) subBox.classList.remove('hidden');
+        else subBox.classList.add('hidden');
+      }
+    }
+  }
+
+  function fillSampleConsumerNumber() {
+    const hint = document.getElementById('elec-sample-hint');
+    const sample = (hint && hint.dataset.sample) ? hint.dataset.sample : '015520938472';
+    document.getElementById('elec-consumer-no').value = sample;
+    showToast(`Consumer number filled: ${sample}`);
+  }
+
+  function fetchElectricityBill() {
+    const consumerNo = document.getElementById('elec-consumer-no').value.trim();
+    if (!consumerNo || consumerNo.length < 5) {
+      return showToast('Please enter a valid Consumer / CA Number', false);
+    }
+
+    const state = document.getElementById('elec-state-select').value;
+    const boardSelect = document.getElementById('elec-board-select');
+    const boardName = boardSelect.options[boardSelect.selectedIndex]?.text || 'State Electricity Board';
+
+    const btn = document.getElementById('btn-fetch-elec-bill');
+    const loading = document.getElementById('elec-fetch-loading');
+    const preview = document.getElementById('elec-bill-preview');
+
+    btn.classList.add('hidden');
+    preview.classList.add('hidden');
+    loading.classList.remove('hidden');
+
+    setTimeout(() => {
+      loading.classList.add('hidden');
+      btn.classList.remove('hidden');
+      btn.innerHTML = `<i class="fa-solid fa-arrows-rotate text-xs"></i><span>Re-fetch Bill</span>`;
+
+      // Deterministic calculation based on consumer number
+      let sum = 0;
+      for (let i = 0; i < consumerNo.length; i++) sum += consumerNo.charCodeAt(i);
+      const units = 120 + (sum % 160);
+      const amount = (units * 7.5 + 40).toFixed(2);
+      const billNo = `EB-2026-${(sum * 93 + 104821) % 900000}`;
+
+      const names = [
+        'RAMESH CHANDRA PATIL',
+        'SURESH MADHAV JADHAV',
+        'SUNITA RAJESH DESHMUKH',
+        'VIKRAM ANIL SHARMA',
+        'ANITA SANJAY MEHTA',
+        'DEEPAK BABURAO KULKARNI'
+      ];
+      const consumerName = names[sum % names.length];
+
+      currentFetchedBill = {
+        consumerNo: consumerNo,
+        consumerName: consumerName,
+        boardName: boardName,
+        state: state,
+        billNo: billNo,
+        units: `${units} kWh`,
+        dueDate: '28 Nov 2026',
+        amount: parseFloat(amount)
+      };
+
+      document.getElementById('elec-preview-name').innerText = consumerName;
+      document.getElementById('elec-preview-consumer-id').innerText = `CA: ${consumerNo}`;
+      document.getElementById('elec-preview-bill-no').innerText = billNo;
+      document.getElementById('elec-preview-units').innerText = `${units} kWh`;
+      document.getElementById('elec-preview-due').innerText = '28 Nov 2026';
+      document.getElementById('elec-preview-amt').innerText = `₹${parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+      document.getElementById('elec-pay-btn-label').innerText = `Proceed to Pay ₹${parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`;
+
+      preview.classList.remove('hidden');
+      playSuccessChime();
+      showToast(`Bill fetched for ${consumerName}: ₹${amount}`);
+    }, 700);
+  }
+
+  function payElectricityBill() {
+    if (!currentFetchedBill) {
+      return showToast('Please fetch bill details first', false);
+    }
+    const amt = currentFetchedBill.amount;
+    if (amt > balance) {
+      return showToast('Insufficient account balance to pay bill', false);
+    }
+
+    promptUpiPinKeypad(
+      `Electricity Bill: ${currentFetchedBill.boardName}`,
+      amt,
+      () => {
+        balance -= amt;
+        const exact12TxId = generateRandomDigits(12);
+        const exact12UtrNo = generateRandomDigits(12);
+
+        const tx = {
+          id: exact12TxId,
+          utr: exact12UtrNo,
+          type: 'DEBIT',
+          to: 'bbps.electricity@npci',
+          toName: `${currentFetchedBill.boardName}`,
+          amount: amt,
+          desc: `Electricity Bill Payment • CA: ${currentFetchedBill.consumerNo}`,
+          date: 'Just now',
+          status: 'COMPLETED',
+          strategy: 'ATOMIC_CONDITIONAL',
+          latency: '5.1 ms',
+          meta: {
+            consumerName: currentFetchedBill.consumerName,
+            consumerNo: currentFetchedBill.consumerNo,
+            billNo: currentFetchedBill.billNo,
+            units: currentFetchedBill.units
+          }
+        };
+
+        transactions.unshift(tx);
+        notifications.unshift({
+          id: `n-${Date.now()}`,
+          title: 'Electricity Bill Paid',
+          msg: `₹${amt.toFixed(2)} paid to ${currentFetchedBill.boardName}. Bharat BillPay Ref: ${exact12UtrNo}.`,
+          unread: true,
+          time: 'Just now'
+        });
+
+        awardNewScratchCard('Electricity Bill');
+        saveCurrentWalletState();
+        renderBalance();
+        renderTransactions();
+        renderNotifications();
+
+        // Show PhonePe success screen
+        showSuccessScreen({
+          recipientName: currentFetchedBill.boardName,
+          recipientAccount: `Consumer: ${currentFetchedBill.consumerNo} • ${currentFetchedBill.consumerName}`,
+          amount: amt,
+          txId: exact12TxId,
+          utr: exact12UtrNo,
+          initial: '⚡',
+          note: `Electricity Bill • ${currentFetchedBill.units} (${currentFetchedBill.billNo})`
+        });
+      }
+    );
+  }
+
+  // ================= REAL MOBILE RECHARGE (PHONEPE STYLE) =================
+  const RECHARGE_PLANS = [
+    { id: 'p299', amount: 299, validity: '28 Days', data: '1.5 GB/Day', calls: 'Unlimited Calls', sms: '100 SMS/day', category: 'POPULAR', ott: 'JioTV, JioCinema, HelloTunes', tag: 'Most Popular' },
+    { id: 'p349', amount: 349, validity: '28 Days', data: '2.0 GB/Day', calls: 'Unlimited Calls', sms: '100 SMS/day', category: 'TRUE5G', ott: 'Unlimited True 5G Data Included', tag: 'True 5G' },
+    { id: 'p399', amount: 399, validity: '28 Days', data: '2.5 GB/Day', calls: 'Unlimited Calls', sms: '100 SMS/day', category: 'OTT', ott: 'Disney+ Hotstar 3 Months Mobile', tag: 'Disney+ Hotstar' },
+    { id: 'p666', amount: 666, validity: '70 Days', data: '1.5 GB/Day', calls: 'Unlimited Calls', sms: '100 SMS/day', category: 'POPULAR', ott: 'Unlimited 5G Data + Apps', tag: 'Best Value' },
+    { id: 'p719', amount: 719, validity: '72 Days', data: '2.0 GB/Day', calls: 'Unlimited Calls', sms: '100 SMS/day', category: 'TRUE5G', ott: 'Unlimited 5G Data + Rewards', tag: 'Hero Pack' },
+    { id: 'p899', amount: 899, validity: '90 Days', data: '2.0 GB/Day + 20GB', calls: 'Unlimited Calls', sms: '100 SMS/day', category: 'TRUE5G', ott: 'Unlimited True 5G + 20GB Extra Bonus', tag: '90 Days True 5G' },
+    { id: 'p1029', amount: 1029, validity: '84 Days', data: '2.0 GB/Day', calls: 'Unlimited Calls', sms: '100 SMS/day', category: 'OTT', ott: 'Amazon Prime Video Mobile (84 Days)', tag: 'Amazon Prime' },
+    { id: 'p3599', amount: 3599, validity: '365 Days', data: '2.5 GB/Day', calls: 'Unlimited Calls', sms: '100 SMS/day', category: 'ANNUAL', ott: 'Unlimited True 5G Data for 1 Full Year', tag: 'Annual 1 Year' },
+    { id: 'p19', amount: 19, validity: 'Active Plan', data: '1.0 GB High Speed', calls: 'Data Add-on', sms: '-', category: 'BOOSTERS', ott: 'High Speed 4G/5G Data Booster', tag: 'Data Booster' },
+    { id: 'p29', amount: 29, validity: 'Active Plan', data: '2.0 GB High Speed', calls: 'Data Add-on', sms: '-', category: 'BOOSTERS', ott: 'High Speed 4G/5G Data Booster', tag: 'Data Booster' },
+    { id: 'p61', amount: 61, validity: 'Active Plan', data: '6.0 GB 5G Booster', calls: 'Data Add-on', sms: '-', category: 'BOOSTERS', ott: '5G Upgrade Data Booster', tag: '5G Booster' },
+    { id: 'p181', amount: 181, validity: '30 Days', data: '30 GB Bulk Data', calls: 'No Daily Limit', sms: '-', category: 'BOOSTERS', ott: 'Work From Home Bulk Data', tag: 'Work From Home' }
+  ];
+
+  let currentSelectedOperator = 'Jio';
+  let currentSelectedCircle = 'Maharashtra & Goa';
+  let currentRechargeTab = 'POPULAR';
+
+  function detectOperatorAndCircle(mobile) {
+    if (!mobile || mobile.length < 4) return { operator: 'Jio', circle: 'Maharashtra & Goa' };
+    const prefix2 = mobile.substring(0, 2);
+    const prefix4 = mobile.substring(0, 4);
+
+    if (['9820', '9821', '9819', '7021', '8828', '9324'].includes(prefix4)) {
+      return { operator: 'Jio', circle: 'Mumbai Metro' };
+    } else if (['9810', '9811', '9871', '9910', '9958', '8800'].includes(prefix4)) {
+      return { operator: 'Airtel', circle: 'Delhi NCR' };
+    } else if (['9845', '9886', '9900', '9980', '8050'].includes(prefix4)) {
+      return { operator: 'Airtel', circle: 'Karnataka' };
+    } else if (['9825', '9824', '9925', '9426'].includes(prefix4)) {
+      return { operator: 'Vi', circle: 'Gujarat' };
+    } else if (['9433', '9434', '9432'].includes(prefix4)) {
+      return { operator: 'BSNL', circle: 'West Bengal' };
+    } else if (prefix2 === '98' || prefix2 === '99') {
+      return { operator: 'Airtel', circle: 'Maharashtra & Goa' };
+    } else if (prefix2 === '70' || prefix2 === '88' || prefix2 === '93') {
+      return { operator: 'Jio', circle: 'Maharashtra & Goa' };
+    } else if (prefix2 === '91' || prefix2 === '92' || prefix2 === '80') {
+      return { operator: 'Vi', circle: 'Gujarat' };
+    } else {
+      return { operator: 'BSNL', circle: 'Karnataka' };
+    }
+  }
+
+  function handleRechargeMobileInput(val) {
+    const clean = (val || '').replace(/[^0-9]/g, '');
+    const input = document.getElementById('recharge-mobile-input');
+    if (input) input.value = clean;
+    if (clean.length >= 4) {
+      const detected = detectOperatorAndCircle(clean);
+      currentSelectedOperator = detected.operator;
+      currentSelectedCircle = detected.circle;
+      updateRechargeOperatorUI();
+    }
+  }
+
+  function updateRechargeOperatorUI() {
+    const logoEl = document.getElementById('recharge-operator-logo');
+    const opEl = document.getElementById('recharge-detected-op');
+    const circleEl = document.getElementById('recharge-detected-circle');
+
+    if (opEl) opEl.innerText = `${currentSelectedOperator} Prepaid`;
+    if (circleEl) circleEl.innerText = currentSelectedCircle;
+
+    if (logoEl) {
+      logoEl.innerText = currentSelectedOperator;
+      if (currentSelectedOperator === 'Jio') {
+        logoEl.className = 'w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold';
+      } else if (currentSelectedOperator === 'Airtel') {
+        logoEl.className = 'w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center text-[10px] font-bold';
+      } else if (currentSelectedOperator === 'Vi') {
+        logoEl.className = 'w-6 h-6 rounded-full bg-amber-600 text-white flex items-center justify-center text-[10px] font-bold';
+      } else {
+        logoEl.className = 'w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold';
+      }
+    }
+  }
+
+  function fillSampleMobileNumber() {
+    const samples = ['9820192840', '9810294821', '9845102948', '9825102948'];
+    const chosen = samples[Math.floor(Math.random() * samples.length)];
+    document.getElementById('recharge-mobile-input').value = chosen;
+    handleRechargeMobileInput(chosen);
+    showToast(`Sample number filled: ${chosen}`);
+  }
+
+  function switchRechargePlanTab(tab) {
+    currentRechargeTab = tab;
+    ['popular', 'true5g', 'boosters', 'annual', 'ott'].forEach(t => {
+      const btn = document.getElementById(`rpt-${t}`);
+      if (btn) {
+        if (t === tab.toLowerCase()) {
+          btn.className = 'px-2.5 py-1 rounded-lg font-bold bg-blue-600 text-white shrink-0 shadow-sm';
+        } else {
+          btn.className = 'px-2.5 py-1 rounded-lg font-medium bg-slate-100 text-slate-600 shrink-0';
+        }
+      }
+    });
+    renderRechargePlans();
+  }
+
+  function filterRechargePlans() {
+    renderRechargePlans();
+  }
+
+  function renderRechargePlans() {
+    const container = document.getElementById('recharge-plans-list');
+    if (!container) return;
+
+    const query = (document.getElementById('recharge-plan-search')?.value || '').toLowerCase().trim();
+    let filtered = RECHARGE_PLANS.filter(p => {
+      if (currentRechargeTab === 'POPULAR') return true;
+      return p.category === currentRechargeTab;
+    });
+
+    if (query) {
+      filtered = filtered.filter(p => {
+        return p.amount.toString().includes(query) ||
+               p.validity.toLowerCase().includes(query) ||
+               p.data.toLowerCase().includes(query) ||
+               p.ott.toLowerCase().includes(query) ||
+               p.tag.toLowerCase().includes(query);
+      });
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="py-8 text-center text-slate-400">
+          <i class="fa-solid fa-magnifying-glass text-xl mb-2"></i>
+          <p class="text-xs font-semibold">No plans match your search</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    filtered.forEach(p => {
+      html += `
+        <div class="p-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:border-blue-500 transition space-y-2">
+          <div class="flex justify-between items-start">
+            <div class="flex items-center space-x-2">
+              <span class="text-base font-black text-slate-900">₹${p.amount}</span>
+              <span class="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-bold text-[9px] border border-blue-200">${p.tag}</span>
+            </div>
+            <button onclick="selectRechargePlan(${p.amount}, '${p.data}', '${p.validity}', '${p.ott}')" class="py-1 px-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-sm active:scale-95 transition">
+              Select
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 text-[11px] bg-slate-50 p-2 rounded-xl">
+            <div>
+              <span class="text-[9px] text-slate-400 block uppercase">Validity</span>
+              <span class="font-bold text-slate-800">${p.validity}</span>
+            </div>
+            <div>
+              <span class="text-[9px] text-slate-400 block uppercase">Data</span>
+              <span class="font-bold text-slate-800">${p.data}</span>
+            </div>
+            <div>
+              <span class="text-[9px] text-slate-400 block uppercase">Voice</span>
+              <span class="font-bold text-slate-800">${p.calls}</span>
+            </div>
+          </div>
+
+          <p class="text-[10px] text-slate-500 font-medium">
+            <i class="fa-solid fa-gift text-blue-500 mr-1"></i>${p.ott}
+          </p>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  function selectRechargePlan(amount, data, validity, ott) {
+    const mobile = document.getElementById('recharge-mobile-input').value.trim();
+    if (!mobile || mobile.length < 10) {
+      return showToast('Please enter a valid 10-digit mobile number first', false);
+    }
+    if (amount > balance) {
+      return showToast('Insufficient account balance for this recharge', false);
+    }
+
+    promptUpiPinKeypad(
+      `Recharge: ${currentSelectedOperator} ${mobile}`,
+      amount,
+      () => {
+        balance -= amount;
+        const exact12TxId = generateRandomDigits(12);
+        const exact12UtrNo = generateRandomDigits(12);
+
+        const tx = {
+          id: exact12TxId,
+          utr: exact12UtrNo,
+          type: 'DEBIT',
+          to: `${mobile}@${currentSelectedOperator.toLowerCase()}`,
+          toName: `${currentSelectedOperator} Mobile Recharge (+91 ${mobile})`,
+          amount: amount,
+          desc: `Mobile Recharge • ₹${amount} (${data}, ${validity})`,
+          date: 'Just now',
+          status: 'COMPLETED',
+          strategy: 'ATOMIC_CONDITIONAL',
+          latency: '4.8 ms',
+          meta: {
+            mobile: mobile,
+            operator: currentSelectedOperator,
+            circle: currentSelectedCircle,
+            plan: `${data} • ${validity}`
+          }
+        };
+
+        transactions.unshift(tx);
+        notifications.unshift({
+          id: `n-${Date.now()}`,
+          title: 'Recharge Successful',
+          msg: `₹${amount} recharge successful for +91 ${mobile} (${currentSelectedOperator}). Operator Ref: ${exact12UtrNo}.`,
+          unread: true,
+          time: 'Just now'
+        });
+
+        awardNewScratchCard('Mobile Recharge');
+        saveCurrentWalletState();
+        renderBalance();
+        renderTransactions();
+        renderNotifications();
+
+        showSuccessScreen({
+          recipientName: `${currentSelectedOperator} Mobile Recharge`,
+          recipientAccount: `+91 ${mobile} • ${currentSelectedCircle}`,
+          amount: amount,
+          txId: exact12TxId,
+          utr: exact12UtrNo,
+          initial: '📱',
+          note: `Mobile Plan: ${data} • ${validity} (${ott})`
+        });
+      }
+    );
+  }
+
+  function initServicesHub() {
+    handleElectricityStateChange();
+    handleRechargeMobileInput(document.getElementById('recharge-mobile-input')?.value || '9820192840');
+    renderRechargePlans();
+  }
+
+  function setServicesFilter(category) {
+    ['all', 'electricity', 'mobile', 'dth', 'water', 'gas', 'fastag'].forEach(cat => {
+      const btn = document.getElementById(`sf-${cat}`);
+      if (btn) {
+        if (cat === category.toLowerCase()) {
+          btn.className = 'px-3 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-sm shrink-0';
+        } else {
+          btn.className = 'px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-700 border border-slate-200 shadow-sm shrink-0';
+        }
+      }
+    });
+
+    const elecSec = document.getElementById('service-sec-electricity');
+    const mobSec = document.getElementById('service-sec-mobile');
+    const utilSec = document.getElementById('service-sec-utilities');
+
+    if (category === 'ALL') {
+      if (elecSec) elecSec.classList.remove('hidden');
+      if (mobSec) mobSec.classList.remove('hidden');
+      if (utilSec) utilSec.classList.remove('hidden');
+    } else if (category === 'ELECTRICITY') {
+      if (elecSec) elecSec.classList.remove('hidden');
+      if (mobSec) mobSec.classList.add('hidden');
+      if (utilSec) utilSec.classList.add('hidden');
+    } else if (category === 'MOBILE') {
+      if (mobSec) mobSec.classList.remove('hidden');
+      if (elecSec) elecSec.classList.add('hidden');
+      if (utilSec) utilSec.classList.add('hidden');
+    } else {
+      if (utilSec) utilSec.classList.remove('hidden');
+      if (elecSec) elecSec.classList.add('hidden');
+      if (mobSec) mobSec.classList.add('hidden');
+    }
+  }
+
+  function filterServicesAndBills() {
+    const query = (document.getElementById('services-search')?.value || '').toLowerCase().trim();
+    if (!query) {
+      setServicesFilter('ALL');
+      return;
+    }
+
+    const elecSec = document.getElementById('service-sec-electricity');
+    const mobSec = document.getElementById('service-sec-mobile');
+    const utilSec = document.getElementById('service-sec-utilities');
+
+    if (query.includes('elec') || query.includes('light') || query.includes('power') || query.includes('msedcl') || query.includes('bescom') || query.includes('tata')) {
+      setServicesFilter('ELECTRICITY');
+    } else if (query.includes('mob') || query.includes('recharge') || query.includes('jio') || query.includes('airtel') || query.includes('vi') || query.includes('bsnl') || query.includes('5g')) {
+      setServicesFilter('MOBILE');
+    } else {
+      setServicesFilter('ALL');
+    }
+  }
+
+  function openChangeOperatorModal() {
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-change-operator').classList.add('active');
+  }
+
+  function selectOperator(op) {
+    currentSelectedOperator = op;
+    updateRechargeOperatorUI();
+    closeAllModals();
+    showToast(`Operator set to ${op}`);
+  }
+
+  function selectCircle(circle) {
+    currentSelectedCircle = circle;
+    updateRechargeOperatorUI();
+    closeAllModals();
+    showToast(`Circle set to ${circle}`);
+  }
+
+  // ================= ACCEPT ANY UPI HANDLE & LIVE PROVIDER BADGE =================
+  function handleRecipientInput(val) {
+    const badge = document.getElementById('transfer-provider-badge');
+    if (!badge) return;
+    const clean = val.toLowerCase().trim();
+
+    if (clean.includes('@ybl') || clean.includes('@ibl') || clean.includes('@axl')) {
+      badge.className = 'mt-1.5 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-purple-50 border border-purple-200 text-purple-700 text-[10px] font-bold';
+      badge.innerHTML = '<i class="fa-solid fa-circle-check text-purple-600"></i><span>🟣 PhonePe UPI Verified</span>';
+    } else if (clean.includes('@oksbi') || clean.includes('@okhdfcbank') || clean.includes('@okaxis') || clean.includes('@okicici')) {
+      badge.className = 'mt-1.5 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold';
+      badge.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i><span>🟢 Google Pay Verified</span>';
+    } else if (clean.includes('@paytm')) {
+      badge.className = 'mt-1.5 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-[10px] font-bold';
+      badge.innerHTML = '<i class="fa-solid fa-circle-check text-sky-600"></i><span>🔵 Paytm Payments Bank Verified</span>';
+    } else if (clean.includes('@apl')) {
+      badge.className = 'mt-1.5 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold';
+      badge.innerHTML = '<i class="fa-solid fa-circle-check text-amber-600"></i><span>🟠 Amazon Pay UPI Verified</span>';
+    } else if (clean.includes('@datacore')) {
+      badge.className = 'mt-1.5 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold';
+      badge.innerHTML = '<i class="fa-solid fa-bolt text-blue-600"></i><span>⚡ DataCore Instant Settlement</span>';
+    } else if (clean.includes('@') && clean.length > 4) {
+      badge.className = 'mt-1.5 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-bold';
+      badge.innerHTML = '<i class="fa-solid fa-shield-halved text-slate-600"></i><span>🇮🇳 NPCI UPI 2.0 Inter-bank Verified</span>';
+    } else {
+      badge.className = 'mt-1.5 hidden';
+    }
+  }
+
+  function appendUpiHandle(handle) {
+    const input = document.getElementById('transfer-recipient');
+    let current = input.value.trim();
+    if (current.includes('@')) {
+      current = current.split('@')[0];
+    }
+    input.value = current + handle;
+    handleRecipientInput(input.value);
+    showToast(`Appended ${handle}`);
+  }
+
+  // ================= NEW USER REGISTRATION FLOW =================
+  function handleRegisterNewUser() {
+    const name = document.getElementById('reg-name')?.value.trim();
+    const mobile = document.getElementById('reg-mobile')?.value.trim();
+    const email = document.getElementById('reg-email')?.value.trim().toLowerCase();
+    const pin = document.getElementById('reg-pin')?.value.trim();
+    const startingBal = parseFloat(document.getElementById('reg-balance')?.value) || 5000;
+
+    if (!name || name.length < 2) {
+      return showToast('Please enter your full name', false);
+    }
+    if (!mobile || mobile.length < 10) {
+      return showToast('Please enter a valid 10-digit mobile number', false);
+    }
+    if (!email || !email.includes('@')) {
+      return showToast('Please enter a valid email address', false);
+    }
+    if (!pin || pin.length < 4) {
+      return showToast('Please set a 4-digit UPI PIN', false);
+    }
+
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const randomMid = Math.floor(1000 + Math.random() * 9000);
+    const accountNo = `DC-${randomMid}-${randomSuffix}`;
+    const initial = name.charAt(0).toUpperCase();
+
+    const newWallet = {
+      id: `usr_${Date.now()}`,
+      name: name,
+      email: email,
+      mobile: mobile,
+      upiPin: pin,
+      accountNo: accountNo,
+      initial: initial,
+      role: 'Prime Savings A/C',
+      color: 'blue',
+      balance: startingBal,
+      dailyLimit: 100000.00,
+      isTransfersLocked: false,
+      scratchCards: [
+        { id: `sc_reg_${Date.now()}`, title: 'Welcome Cashback Reward', amount: 35.00, claimed: false, date: 'Just now' }
+      ],
+      transactions: [
+        {
+          id: generateRandomDigits(12),
+          utr: generateRandomDigits(12),
+          type: 'CREDIT',
+          to: 'welcome@datacore.io',
+          toName: 'DataCore Initial Deposit',
+          amount: startingBal,
+          desc: 'Initial Opening Balance Provisioning',
+          date: 'Just now',
+          status: 'COMPLETED',
+          strategy: 'ATOMIC_CONDITIONAL',
+          latency: '2.1 ms'
+        }
+      ],
+      notifications: [
+        {
+          id: `n-${Date.now()}`,
+          title: 'Wallet Provisioned',
+          msg: `Welcome ${name}! Your wallet ${accountNo} is active with ₹${startingBal.toFixed(2)}.`,
+          unread: true,
+          time: 'Just now'
+        }
+      ],
+      payees: [
+        { id: 'p1', name: 'Alice Walker', email: 'alice@datacore.io', initials: 'AW' },
+        { id: 'p2', name: 'Bob Smith', email: 'bob@datacore.io', initials: 'BS' }
+      ]
+    };
+
+    wallets[email] = newWallet;
+    localStorage.setItem(STORAGE_KEYS.WALLETS, JSON.stringify(wallets));
+    playSuccessChime();
+    showToast(`🎉 Welcome ${name}! Your wallet is ready.`);
+    loginAs(email);
+  }
+
+  // ================= HISTORY SEGMENTED SUB-TABS =================
+  function switchHistorySubTab(tab) {
+    const txTab = document.getElementById('tab-sub-tx');
+    const stmtTab = document.getElementById('tab-sub-stmt');
+    const txView = document.getElementById('history-subtab-tx');
+    const stmtView = document.getElementById('history-subtab-stmt');
+
+    if (tab === 'tx') {
+      if (txTab) txTab.className = 'flex-1 py-2 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm transition';
+      if (stmtTab) stmtTab.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 transition';
+      if (txView) txView.classList.remove('hidden');
+      if (stmtView) stmtView.classList.add('hidden');
+    } else {
+      if (stmtTab) stmtTab.className = 'flex-1 py-2 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm transition';
+      if (txTab) txTab.className = 'flex-1 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 transition';
+      if (stmtView) stmtView.classList.remove('hidden');
+      if (txView) txView.classList.add('hidden');
+      renderStatement();
+    }
+  }
+
+  // ================= PIN CHANGE & BIOMETRIC SIMULATION =================
+  function openChangePinModal() {
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-change-pin').classList.add('active');
+    triggerHaptic();
+  }
+
+  function openFingerprintModal() {
+    const status = document.getElementById('fp-modal-status');
+    const icon = document.getElementById('fp-modal-icon');
+    if (status) status.innerText = 'Tap sensor to authenticate';
+    if (icon) {
+      icon.className = 'fa-solid fa-fingerprint text-white';
+      icon.parentElement.className = 'w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl shadow-lg shadow-blue-500/40 animate-fp-pulse';
+    }
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-fingerprint').classList.add('active');
+    triggerHaptic();
+  }
+
+  function simulateFingerprintScan() {
+    const status = document.getElementById('fp-modal-status');
+    const icon = document.getElementById('fp-modal-icon');
+
+    if (status) status.innerText = 'Scanning biometric fingerprint...';
+    triggerHaptic();
+
+    setTimeout(() => {
+      if (status) status.innerHTML = '<span class="text-emerald-600">✓ Fingerprint Enrolled & Verified!</span>';
+      if (icon) {
+        icon.className = 'fa-solid fa-check text-white';
+        icon.parentElement.className = 'w-20 h-20 rounded-full bg-emerald-600 text-white flex items-center justify-center text-4xl shadow-lg shadow-emerald-500/40';
+      }
+      playSuccessChime();
+      triggerSuccessHaptic();
+      showToast('Biometric authentication verified & active!');
+      setTimeout(() => {
+        closeAllModals();
+      }, 900);
+    }, 450);
+  }
+
 
   // ================= BOOTSTRAP INITIAL VIEW =================
   applyTheme();
