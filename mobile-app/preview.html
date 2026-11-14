@@ -321,7 +321,7 @@
       </div>
     </div>
 
-    <!-- VIEW B: CREATE ACCOUNT SECTION -->
+        <!-- VIEW B: CREATE ACCOUNT SECTION -->
     <div id="auth-view-signup" class="hidden space-y-3.5">
       <div class="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-sm space-y-3.5">
         <div class="flex items-center space-x-2.5 pb-2.5 border-b border-slate-100">
@@ -330,7 +330,7 @@
           </div>
           <div>
             <h3 class="text-xs font-bold text-slate-900">Open Protected UPI Wallet</h3>
-            <p class="text-[10px] text-slate-400">Instant setup with test liquidity & rewards</p>
+            <p class="text-[10px] text-slate-400">Instant registration with ₹10,000 opening liquidity</p>
           </div>
         </div>
 
@@ -339,14 +339,11 @@
           <input id="reg-name" type="text" placeholder="e.g. Rahul Sharma" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 focus:outline-none focus:border-blue-600">
         </div>
 
-        <div class="grid grid-cols-2 gap-2.5">
-          <div>
-            <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">10-Digit Mobile</label>
-            <input id="reg-mobile" type="tel" maxlength="10" placeholder="9876543210" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
-          </div>
-          <div>
-            <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Set 4-Digit PIN</label>
-            <input id="reg-pin" type="password" maxlength="4" placeholder="••••" value="1234" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+        <div>
+          <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">10-Digit Mobile Number</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-xs font-bold text-slate-400">+91</span>
+            <input id="reg-mobile" type="tel" maxlength="10" placeholder="9876543210" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-12 pr-4 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
           </div>
         </div>
 
@@ -355,10 +352,24 @@
           <input id="reg-email" type="email" placeholder="e.g. rahul@datacore.io" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
         </div>
 
-        <div>
-          <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Initial Opening Balance (₹)</label>
-          <input id="reg-balance" type="number" value="10000" placeholder="10000" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-blue-600 focus:outline-none focus:border-blue-600">
+        <!-- Flat ₹10,000 Provisioning Card (No custom money input) -->
+        <div class="p-3 bg-blue-50/70 border border-blue-200/80 rounded-2xl flex items-center justify-between">
+          <div class="flex items-center space-x-2.5">
+            <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+              ₹
+            </div>
+            <div>
+              <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Opening Test Liquidity</span>
+              <span class="text-xs font-black text-slate-900">Flat Initial Balance</span>
+            </div>
+          </div>
+          <span class="text-sm font-black font-mono text-blue-600">₹10,000.00</span>
         </div>
+
+        <p class="text-[10px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100 leading-snug">
+          <i class="fa-solid fa-circle-info text-blue-600 mr-1"></i>
+          Your UPI PIN is set to <strong>1234</strong> by default. You can change your PIN or set up Fingerprint authentication inside the app anytime.
+        </p>
 
         <button type="button" onclick="handleRegisterNewUser()" class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/25 active:scale-98 transition flex items-center justify-center space-x-1.5">
           <i class="fa-solid fa-circle-check text-xs"></i>
@@ -379,8 +390,8 @@
     <!-- Header (Click Name/Avatar to open User Menu) -->
     <div class="flex justify-between items-center mb-5">
       <div onclick="navigateTo('profile')" class="flex items-center space-x-3 cursor-pointer group active:scale-95 transition" title="Tap to view Profile & Settings">
-        <div class="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-200 border-2 border-blue-500/30 flex items-center justify-center font-bold text-blue-600 text-base transition">
-          <span id="header-avatar-initial">A</span>
+        <div id="header-avatar-container" class="w-10 h-10 rounded-full bg-blue-100 group-hover:bg-blue-200 border-2 border-blue-500/30 flex items-center justify-center font-bold text-blue-600 text-base transition overflow-hidden">
+          <span id="header-avatar-initial">Y</span>
         </div>
         <div>
           <div class="flex items-center space-x-1.5">
@@ -712,6 +723,7 @@
           <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">1. Select State / UT</label>
           <div class="relative">
             <select id="elec-state-select" onchange="handleElectricityStateChange()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-600 appearance-none pr-8">
+              <option value="Uttarakhand">Uttarakhand (UPCL - Uttarakhand Power Corp Ltd)</option>
               <option value="Maharashtra">Maharashtra (MSEDCL, Tata Power, Adani, BEST)</option>
               <option value="Delhi">Delhi (BSES Rajdhani, Yamuna, Tata Power DDL)</option>
               <option value="Karnataka">Karnataka (BESCOM Bangalore, MESCOM, HESCOM)</option>
@@ -1520,9 +1532,9 @@
       <div class="relative">
         <div class="w-20 h-20 rounded-full bg-blue-100 text-blue-600 text-3xl font-black flex items-center justify-center mx-auto mb-3 border-4 border-white shadow-md relative group overflow-visible" id="profile-avatar-container">
           <div id="profile-avatar-box" class="w-full h-full rounded-full overflow-hidden flex items-center justify-center">
-            <span id="profile-avatar-initial">A</span>
+            <span id="profile-avatar-initial">Y</span>
           </div>
-          <button onclick="openPfpChangerModal()" class="absolute bottom-0 right-0 w-7 h-7 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center text-xs shadow-md border-2 border-white active:scale-95 transition" title="Change Profile Photo">
+          <button type="button" onclick="openPfpChangerModal()" class="absolute bottom-0 right-0 w-7 h-7 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center text-xs shadow-md border-2 border-white active:scale-95 transition cursor-pointer" title="Change Profile Photo">
             <i class="fa-solid fa-camera"></i>
           </button>
         </div>
@@ -1662,26 +1674,29 @@
 
     <!-- Security & Privacy Hub -->
     <div class="bg-white border border-slate-200/90 rounded-3xl p-4 shadow-sm space-y-3.5">
-      <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Security & Privacy</h4>
+      <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Security & Biometrics</h4>
       
-      <!-- Lock Outgoing Transfers -->
+      <!-- UPI Row-Lock Protection -->
       <div class="flex justify-between items-center">
         <div>
-          <span class="text-xs font-bold text-slate-800 block">Lock Outgoing Transfers</span>
-          <span class="text-[10px] text-slate-400">Instantly freeze all debit transactions</span>
+          <span class="text-xs font-bold text-slate-800 block">UPI Debit Protection</span>
+          <span class="text-[10px] text-emerald-600 font-semibold"><i class="fa-solid fa-shield-halved text-[10px] mr-1"></i>Active &bull; Row-Locking Enforced</span>
         </div>
-        <input type="checkbox" id="lock-transfers" onchange="toggleTransferLock(this.checked)" class="w-5 h-5 accent-blue-600 cursor-pointer">
+        <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-bold border border-emerald-200">Secured</span>
       </div>
 
-      <!-- Biometric App Lock -->
+      <!-- Biometric Fingerprint & Face Lock -->
       <div class="flex justify-between items-center pt-3 border-t border-slate-100">
         <div>
-          <span class="text-xs font-bold text-slate-800 block">Biometric Screen Lock</span>
-          <span class="text-[10px] text-slate-400">Fingerprint or Face ID authentication</span>
+          <span class="text-xs font-bold text-slate-800 block">Biometric Fingerprint Auth</span>
+          <span id="profile-biometric-subtitle" class="text-[10px] text-emerald-600 font-semibold"><i class="fa-solid fa-fingerprint text-[10px] mr-1"></i>Enrolled & Ready for 1-Tap Pay</span>
         </div>
-        <button onclick="openFingerprintModal()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition active:scale-95">
-          Manage
-        </button>
+        <div class="flex items-center space-x-2">
+          <button type="button" onclick="openFingerprintModal()" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 text-[11px] font-bold rounded-lg transition active:scale-95 border border-blue-200">
+            Set Sensor
+          </button>
+          <input type="checkbox" id="profile-biometric-toggle" onchange="toggleBiometricSetting(this.checked)" checked class="w-5 h-5 accent-blue-600 cursor-pointer">
+        </div>
       </div>
 
       <!-- Change Security PIN -->
@@ -2305,12 +2320,12 @@
     </button>
   </div>
 
-  <!-- ==================== PROFILE PICTURE (PFP) CHANGER MODAL ==================== -->
+    <!-- ==================== PROFILE PICTURE (PFP) CHANGER MODAL ==================== -->
   <div id="modal-pfp-changer" class="modal-sheet p-6 text-center">
     <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-base font-bold text-slate-900">Change Profile Photo</h3>
-      <button onclick="closeAllModals()" class="p-1 text-slate-400 hover:text-slate-700">
+      <button type="button" onclick="closeAllModals()" class="p-1 text-slate-400 hover:text-slate-700">
         <i class="fa-solid fa-xmark text-sm"></i>
       </button>
     </div>
@@ -2318,98 +2333,96 @@
     <!-- Hidden file input for custom gallery photo -->
     <input type="file" id="pfp-file-input" accept="image/*" class="hidden" onchange="handlePfpFileUpload(event)">
 
-    <!-- Upload from gallery button -->
-    <button onclick="document.getElementById('pfp-file-input').click()" class="w-full py-3.5 mb-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
-      <i class="fa-solid fa-arrow-up-from-bracket text-sm"></i>
-      <span>Upload from Gallery / Camera</span>
-    </button>
+    <!-- Upload from gallery / camera button (Native label trigger for mobile) -->
+    <label for="pfp-file-input" class="w-full py-3.5 mb-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2 cursor-pointer">
+      <i class="fa-solid fa-camera text-sm"></i>
+      <span>Upload from Device / Camera</span>
+    </label>
 
-    <!-- Or Choose Preset Avatars -->
-    <div class="text-left mb-4">
-      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2.5">Or Choose an Avatar Preset:</span>
-      <div class="grid grid-cols-4 gap-2.5 text-center">
-        <button onclick="setPresetAvatar('👨‍💻')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
-          👨‍💻
-        </button>
-        <button onclick="setPresetAvatar('👩‍💼')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
-          👩‍💼
-        </button>
-        <button onclick="setPresetAvatar('🚀')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
-          🚀
-        </button>
-        <button onclick="setPresetAvatar('⚡')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
-          ⚡
-        </button>
-        <button onclick="setPresetAvatar('🦁')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
-          🦁
-        </button>
-        <button onclick="setPresetAvatar('🦊')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
-          🦊
-        </button>
-        <button onclick="setPresetAvatar('🌟')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">
-          🌟
-        </button>
-        <button onclick="resetToInitialAvatar()" class="p-3 rounded-2xl bg-slate-100 hover:bg-rose-50 border border-slate-200 text-xs font-bold text-slate-600 active:scale-95 transition flex items-center justify-center">
-          Reset
+    <!-- Paste Image URL -->
+    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 mb-4 text-left">
+      <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Or Paste Image URL</span>
+      <div class="flex items-center space-x-2">
+        <input id="pfp-url-input" type="url" placeholder="https://example.com/photo.jpg" class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600">
+        <button type="button" onclick="handlePfpUrlSubmit()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold active:scale-95 transition">
+          Apply
         </button>
       </div>
     </div>
 
-    <button onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+    <!-- Choose Preset Avatars -->
+    <div class="text-left mb-4">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2.5">Or Choose an Avatar Preset:</span>
+      <div class="grid grid-cols-4 gap-2.5 text-center">
+        <button type="button" onclick="setPresetAvatar('👨‍💻')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">👨‍💻</button>
+        <button type="button" onclick="setPresetAvatar('👩‍💼')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">👩‍💼</button>
+        <button type="button" onclick="setPresetAvatar('🚀')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">🚀</button>
+        <button type="button" onclick="setPresetAvatar('⚡')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">⚡</button>
+        <button type="button" onclick="setPresetAvatar('🦁')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">🦁</button>
+        <button type="button" onclick="setPresetAvatar('🦊')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">🦊</button>
+        <button type="button" onclick="setPresetAvatar('🌟')" class="p-3 rounded-2xl bg-slate-100 hover:bg-blue-50 border border-slate-200 text-2xl active:scale-95 transition">🌟</button>
+        <button type="button" onclick="resetToInitialAvatar()" class="p-3 rounded-2xl bg-slate-100 hover:bg-rose-50 border border-slate-200 text-xs font-bold text-slate-600 active:scale-95 transition flex items-center justify-center">Reset</button>
+      </div>
+    </div>
+
+    <button type="button" onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
       Cancel
     </button>
   </div>
 
-  <!-- ==================== AUTHENTIC 4-DIGIT UPI PIN KEYPAD MODAL ==================== -->
+  <!-- ==================== AUTHENTIC 4-DIGIT UPI PIN & BIOMETRIC MODAL ==================== -->
   <div id="modal-pin-auth" class="modal-sheet p-6 text-center">
     <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-3"></div>
     
     <!-- Paying Summary -->
-    <div class="mb-4">
+    <div class="mb-3">
       <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Authorizing Payment</span>
-      <h3 id="pin-paying-to" class="text-base font-black text-slate-900">Paying Rahul Verma</h3>
-      <div id="pin-paying-amt" class="text-2xl font-black text-blue-600 font-mono mt-1">₹250.00</div>
+      <h3 id="pin-paying-to" class="text-base font-black text-slate-900">Paying Recipient</h3>
+      <div id="pin-paying-amt" class="text-2xl font-black text-blue-600 font-mono mt-0.5">₹0.00</div>
     </div>
 
     <!-- 4 PIN Dots -->
-    <div class="flex justify-center space-x-4 mb-4">
+    <div id="pin-dots-container" class="flex justify-center space-x-4 mb-3 transition-transform">
       <div id="pin-dot-1" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
       <div id="pin-dot-2" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
       <div id="pin-dot-3" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
       <div id="pin-dot-4" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
     </div>
-    <p class="text-[10px] text-slate-400 mb-4">Enter your 4-digit UPI PIN or authenticate with Biometrics</p>
+    <p id="pin-helper-text" class="text-[11px] text-slate-500 font-medium mb-3">Enter your 4-digit UPI PIN (Default: 1234)</p>
 
-    <!-- 1-Tap Biometric Button -->
-    <button onclick="authenticatePinBiometric()" class="w-full py-2.5 mb-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition active:scale-95">
-      <i class="fa-solid fa-fingerprint text-sm text-blue-600"></i>
-      <span>Authorize with Fingerprint</span>
+    <!-- Prominent 1-Tap Biometric Bar (Both PIN & Biometric available!) -->
+    <button type="button" onclick="authenticatePinBiometric()" class="w-full py-2.5 mb-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 text-blue-800 rounded-2xl text-xs font-bold flex items-center justify-center space-x-2 transition active:scale-95 shadow-sm">
+      <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs shadow-sm">
+        <i class="fa-solid fa-fingerprint"></i>
+      </div>
+      <span>Authorize with Biometrics (Touch Sensor)</span>
     </button>
 
-    <!-- Keypad Grid (1-9, Biometric, 0, Backspace) -->
+    <!-- Keypad Grid (1-9, Biometric Key, 0, Backspace) -->
     <div class="grid grid-cols-3 gap-2.5 max-w-xs mx-auto mb-3">
-      <button onclick="pressPinDigit('1')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">1</button>
-      <button onclick="pressPinDigit('2')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">2</button>
-      <button onclick="pressPinDigit('3')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">3</button>
+      <button type="button" onclick="pressPinDigit('1')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">1</button>
+      <button type="button" onclick="pressPinDigit('2')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">2</button>
+      <button type="button" onclick="pressPinDigit('3')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">3</button>
 
-      <button onclick="pressPinDigit('4')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">4</button>
-      <button onclick="pressPinDigit('5')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">5</button>
-      <button onclick="pressPinDigit('6')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">6</button>
+      <button type="button" onclick="pressPinDigit('4')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">4</button>
+      <button type="button" onclick="pressPinDigit('5')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">5</button>
+      <button type="button" onclick="pressPinDigit('6')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">6</button>
 
-      <button onclick="pressPinDigit('7')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">7</button>
-      <button onclick="pressPinDigit('8')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">8</button>
-      <button onclick="pressPinDigit('9')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">9</button>
+      <button type="button" onclick="pressPinDigit('7')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">7</button>
+      <button type="button" onclick="pressPinDigit('8')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">8</button>
+      <button type="button" onclick="pressPinDigit('9')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">9</button>
 
-      <button onclick="authenticatePinBiometric()" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition">
+      <!-- Biometric Key right on Keypad -->
+      <button type="button" onclick="authenticatePinBiometric()" class="py-3 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 active:scale-90 transition" title="Touch Fingerprint Sensor">
         <i class="fa-solid fa-fingerprint text-base text-blue-600"></i>
       </button>
-      <button onclick="pressPinDigit('0')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">0</button>
-      <button onclick="pressPinBackspace()" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition">
+      <button type="button" onclick="pressPinDigit('0')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">0</button>
+      <button type="button" onclick="pressPinBackspace()" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition">
         <i class="fa-solid fa-delete-left text-base"></i>
       </button>
     </div>
 
-    <button onclick="closeAllModals()" class="text-xs text-slate-400 hover:text-slate-600 font-semibold py-1">
+    <button type="button" onclick="closeAllModals()" class="text-xs text-slate-400 hover:text-slate-600 font-semibold py-1">
       Cancel Payment
     </button>
   </div>
@@ -4072,6 +4085,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     if (profUpi) profUpi.innerText = `${currentUser.accountNo}@datacore`;
 
     renderAllAvatars();
+    updateBiometricUI();
   }
 
   function openUserMenuModal() {
@@ -4080,6 +4094,9 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   // ================= PROFILE PICTURE (PFP) CHANGER & DYNAMIC AVATARS =================
   function openPfpChangerModal() {
+    closeAllModals();
+    const urlInput = document.getElementById('pfp-url-input');
+    if (urlInput) urlInput.value = '';
     document.getElementById('backdrop').classList.add('active');
     document.getElementById('modal-pfp-changer').classList.add('active');
     triggerHaptic();
@@ -4089,26 +4106,72 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     const file = event.target.files && event.target.files[0];
     if (!file) return;
 
+    showToast('Processing photo...');
     const reader = new FileReader();
     reader.onload = function(e) {
-      if (!currentUser) return;
-      currentUser.avatarUrl = e.target.result;
-      saveCurrentWalletState();
-      renderAllAvatars();
-      renderUserDynamicQRCode();
-      closeAllModals();
-      playSuccessChime();
-      showToast('Profile photo updated successfully!');
+      const img = new Image();
+      img.onload = function() {
+        // Compress & crop to square 180x180 JPEG (~12KB) to stay within localStorage limits
+        const canvas = document.createElement('canvas');
+        const size = 180;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        const minDim = Math.min(img.width, img.height);
+        const sx = (img.width - minDim) / 2;
+        const sy = (img.height - minDim) / 2;
+        ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+
+        if (!currentUser) return;
+        currentUser.avatarUrl = compressedDataUrl;
+        if (wallets[currentUser.email]) {
+          wallets[currentUser.email].avatarUrl = compressedDataUrl;
+        }
+        saveCurrentWalletState();
+        renderAllAvatars();
+        if (typeof renderUserDynamicQRCode === 'function') renderUserDynamicQRCode();
+        closeAllModals();
+        playSuccessChime();
+        triggerSuccessHaptic();
+        showToast('Profile photo updated successfully!');
+      };
+      img.onerror = function() {
+        showToast('Could not load image file', false);
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
+  }
+
+  function handlePfpUrlSubmit() {
+    const url = (document.getElementById('pfp-url-input')?.value || '').trim();
+    if (!url || !url.startsWith('http')) {
+      return showToast('Please enter a valid HTTP/HTTPS image URL', false);
+    }
+    if (!currentUser) return;
+    currentUser.avatarUrl = url;
+    if (wallets[currentUser.email]) {
+      wallets[currentUser.email].avatarUrl = url;
+    }
+    saveCurrentWalletState();
+    renderAllAvatars();
+    if (typeof renderUserDynamicQRCode === 'function') renderUserDynamicQRCode();
+    closeAllModals();
+    playSuccessChime();
+    triggerSuccessHaptic();
+    showToast('Profile photo updated successfully!');
   }
 
   function setPresetAvatar(emoji) {
     if (!currentUser) return;
     currentUser.avatarUrl = emoji;
+    if (wallets[currentUser.email]) {
+      wallets[currentUser.email].avatarUrl = emoji;
+    }
     saveCurrentWalletState();
     renderAllAvatars();
-    renderUserDynamicQRCode();
+    if (typeof renderUserDynamicQRCode === 'function') renderUserDynamicQRCode();
     closeAllModals();
     playSuccessChime();
     showToast(`Avatar updated to ${emoji}`);
@@ -4117,9 +4180,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   function resetToInitialAvatar() {
     if (!currentUser) return;
     delete currentUser.avatarUrl;
+    if (wallets[currentUser.email]) {
+      delete wallets[currentUser.email].avatarUrl;
+    }
     saveCurrentWalletState();
     renderAllAvatars();
-    renderUserDynamicQRCode();
+    if (typeof renderUserDynamicQRCode === 'function') renderUserDynamicQRCode();
     closeAllModals();
     showToast('Reset to default initials avatar');
   }
@@ -4128,53 +4194,41 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     if (!currentUser) return;
     const isImg = currentUser.avatarUrl && (currentUser.avatarUrl.startsWith('data:image') || currentUser.avatarUrl.startsWith('http'));
     const isEmoji = currentUser.avatarUrl && !isImg;
-    const defInit = currentUser.initial || (currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'A');
+    const defInit = currentUser.initial || (currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'Y');
 
-    // 1. Header Home Avatar
-    const headerInit = document.getElementById('header-avatar-initial');
-    if (headerInit) {
+    // 1. Header Home
+    const headerBox = document.getElementById('header-avatar-container');
+    if (headerBox) {
       if (isImg) {
-        headerInit.parentElement.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full" id="header-avatar-initial">`;
+        headerBox.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full" alt="PFP">`;
       } else if (isEmoji) {
-        headerInit.parentElement.innerHTML = `<span id="header-avatar-initial" class="text-base">${currentUser.avatarUrl}</span>`;
+        headerBox.innerHTML = `<span class="text-lg leading-none">${currentUser.avatarUrl}</span>`;
       } else {
-        headerInit.parentElement.innerHTML = `<span id="header-avatar-initial">${defInit}</span>`;
+        headerBox.innerHTML = `<span class="font-bold text-blue-600 text-base">${defInit}</span>`;
       }
     }
 
-    // 2. Profile Screen Avatar
+    // 2. Profile Page Hero Avatar
     const profBox = document.getElementById('profile-avatar-box');
     if (profBox) {
       if (isImg) {
-        profBox.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full">`;
+        profBox.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full shadow-inner" alt="PFP">`;
       } else if (isEmoji) {
-        profBox.innerHTML = `<span class="text-3xl">${currentUser.avatarUrl}</span>`;
+        profBox.innerHTML = `<span class="text-4xl leading-none">${currentUser.avatarUrl}</span>`;
       } else {
-        profBox.innerHTML = `<span id="profile-avatar-initial" class="text-3xl font-black">${defInit}</span>`;
+        profBox.innerHTML = `<span class="text-3xl font-black text-blue-600">${defInit}</span>`;
       }
     }
 
-    // 3. Center QR Avatar on Profile
-    const profQrAv = document.getElementById('profile-qr-center-avatar');
-    if (profQrAv) {
+    // 3. QR Center Avatar
+    const qrCenter = document.getElementById('profile-qr-center-avatar');
+    if (qrCenter) {
       if (isImg) {
-        profQrAv.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full">`;
+        qrCenter.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full" alt="PFP">`;
       } else if (isEmoji) {
-        profQrAv.innerHTML = `<span class="text-sm">${currentUser.avatarUrl}</span>`;
+        qrCenter.innerHTML = `<span class="text-sm leading-none">${currentUser.avatarUrl}</span>`;
       } else {
-        profQrAv.innerHTML = `<span class="font-black text-sm">${defInit}</span>`;
-      }
-    }
-
-    // 4. Center QR Avatar on Receive Modal
-    const receiveQrAv = document.getElementById('qr-center-avatar');
-    if (receiveQrAv) {
-      if (isImg) {
-        receiveQrAv.innerHTML = `<img src="${currentUser.avatarUrl}" class="w-full h-full object-cover rounded-full">`;
-      } else if (isEmoji) {
-        receiveQrAv.innerHTML = `<span class="text-sm">${currentUser.avatarUrl}</span>`;
-      } else {
-        receiveQrAv.innerHTML = `<span class="font-black text-sm">${defInit}</span>`;
+        qrCenter.innerHTML = `<span class="text-xs font-bold text-blue-600">${defInit}</span>`;
       }
     }
   }
@@ -5295,6 +5349,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     if (recAcc) recAcc.innerText = `${currentUser.accountNo}@datacore`;
 
     renderAllAvatars();
+    updateBiometricUI();
   }
 
   function shareUserQRCode() {
@@ -5462,6 +5517,9 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   // ================= MULTI-STATE ELECTRICITY BILLS (PHONEPE STYLE) =================
   const ELECTRICITY_BOARDS = {
+    "Uttarakhand": [
+      { id: "UPCL", name: "UPCL - Uttarakhand Power Corporation Limited", sample: "1019284012", digits: 10 }
+    ],
     "Maharashtra": [
       { id: "MSEDCL", name: "MSEDCL - Mahavitaran (Maharashtra State)", sample: "015520938472", digits: 12, needBu: true },
       { id: "TATA_MUMBAI", name: "Tata Power Mumbai Distribution", sample: "900018247192", digits: 12 },
@@ -6422,13 +6480,11 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     showToast(`Appended ${handle}`);
   }
 
-  // ================= NEW USER REGISTRATION FLOW =================
+  // ================= NEW USER REGISTRATION FLOW (FLAT 10K, DEFAULT PIN 1234) =================
   function handleRegisterNewUser() {
     const name = (document.getElementById('reg-name')?.value || '').trim();
     const mobile = (document.getElementById('reg-mobile')?.value || '').trim().replace(/[^0-9]/g, '');
     let email = (document.getElementById('reg-email')?.value || '').trim().toLowerCase();
-    const pin = (document.getElementById('reg-pin')?.value || '').trim();
-    const startingBal = parseFloat(document.getElementById('reg-balance')?.value) || 10000;
 
     if (!name || name.length < 2) {
       return showToast('Please enter your full name', false);
@@ -6436,13 +6492,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     if (!mobile || mobile.length < 10) {
       return showToast('Please enter a valid 10-digit mobile number', false);
     }
-    if (!pin || pin.length < 4) {
-      return showToast('Please set a 4-digit UPI PIN', false);
-    }
     if (!email) {
       email = `${mobile}@datacore`;
     }
 
+    const startingBal = 10000.00; // Flat ₹10,000 for everyone, not more, not less
+    const pin = '1234';           // Default PIN, chosen/customized inside app
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
     const randomMid = Math.floor(1000 + Math.random() * 9000);
     const accountNo = `DC-${randomMid}-${randomSuffix}`;
@@ -6455,6 +6510,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       mobile: mobile,
       pin: pin,
       upiPin: pin,
+      biometricEnabled: true,
       accountNo: accountNo,
       initial: initial,
       role: 'Prime Savings A/C',
@@ -6484,7 +6540,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         {
           id: `n-${Date.now()}`,
           title: 'Wallet Provisioned',
-          msg: `Welcome ${name}! Your wallet ${accountNo} is active with ₹${startingBal.toFixed(2)}.`,
+          msg: `Welcome ${name}! Your wallet ${accountNo} is active with ₹10,000.00. Default UPI PIN is 1234.`,
           unread: true,
           time: 'Just now'
         }
@@ -6503,7 +6559,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     playSuccessChime();
     triggerSuccessHaptic();
-    showToast(`🎉 Welcome ${name}! Your wallet is ready.`);
+    showToast(`🎉 Welcome ${name}! Account provisioned with ₹10,000.`);
     loginAs(email);
   }
 
@@ -6528,12 +6584,36 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     }
   }
 
-  // ================= BIOMETRIC SIMULATION =================
+  // ================= BIOMETRIC ENROLLMENT & MANAGEMENT =================
+  function toggleBiometricSetting(checked) {
+    if (currentUser) {
+      currentUser.biometricEnabled = checked;
+      if (wallets[currentUser.email]) {
+        wallets[currentUser.email].biometricEnabled = checked;
+      }
+      saveCurrentWalletState();
+    }
+    updateBiometricUI();
+    showToast(checked ? 'Biometric fingerprint authentication enabled' : 'Biometric fingerprint authentication disabled');
+  }
+
+  function updateBiometricUI() {
+    const isEnrolled = !currentUser || currentUser.biometricEnabled !== false;
+    const sub = document.getElementById('profile-biometric-subtitle');
+    const toggle = document.getElementById('profile-biometric-toggle');
+    if (sub) {
+      sub.innerHTML = isEnrolled
+        ? '<i class="fa-solid fa-fingerprint text-[10px] mr-1"></i>Enrolled & Ready for 1-Tap Pay'
+        : '<i class="fa-solid fa-circle-xmark text-[10px] mr-1"></i>Disabled in Settings';
+      sub.className = isEnrolled ? 'text-[10px] text-emerald-600 font-semibold' : 'text-[10px] text-slate-400 font-medium';
+    }
+    if (toggle) toggle.checked = isEnrolled;
+  }
 
   function openFingerprintModal() {
     const status = document.getElementById('fp-modal-status');
     const icon = document.getElementById('fp-modal-icon');
-    if (status) status.innerText = 'Tap sensor to authenticate';
+    if (status) status.innerText = 'Tap sensor to authenticate & enroll';
     if (icon) {
       icon.className = 'fa-solid fa-fingerprint text-white';
       icon.parentElement.className = 'w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl shadow-lg shadow-blue-500/40 animate-fp-pulse';
@@ -6551,18 +6631,24 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     triggerHaptic();
 
     setTimeout(() => {
-      if (status) status.innerHTML = '<span class="text-emerald-600">✓ Fingerprint Enrolled & Verified!</span>';
+      if (status) status.innerHTML = '<span class="text-emerald-600">✓ Fingerprint Enrolled & Active!</span>';
       if (icon) {
         icon.className = 'fa-solid fa-check text-white';
         icon.parentElement.className = 'w-20 h-20 rounded-full bg-emerald-600 text-white flex items-center justify-center text-4xl shadow-lg shadow-emerald-500/40';
       }
+      if (currentUser) {
+        currentUser.biometricEnabled = true;
+        if (wallets[currentUser.email]) wallets[currentUser.email].biometricEnabled = true;
+        saveCurrentWalletState();
+      }
+      updateBiometricUI();
       playSuccessChime();
       triggerSuccessHaptic();
-      showToast('Biometric authentication verified & active!');
+      showToast('Biometric fingerprint enrolled & active!');
       setTimeout(() => {
         closeAllModals();
-      }, 900);
-    }, 450);
+      }, 750);
+    }, 400);
   }
 
 
