@@ -429,6 +429,13 @@
           <span>Sign In Securely</span>
         </button>
 
+        <div class="flex justify-between items-center px-1">
+          <button type="button" onclick="openForgotCredentialsModal()" class="text-[11px] font-bold text-blue-600 hover:underline">
+            Forgot Password / PIN?
+          </button>
+          <span class="text-[10px] text-slate-400 font-medium">Default: 1234</span>
+        </div>
+
         <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
           <span class="text-[10px] text-slate-400 font-medium">
             <i class="fa-solid fa-shield-halved text-emerald-600 mr-1"></i>
@@ -509,6 +516,42 @@
         </div>
         <span class="text-[10px] font-bold tracking-wider text-white/70 bg-white/10 px-2 py-0.5 rounded">
           INR • PERSISTENT
+        </span>
+      </div>
+    </div>
+
+    <!-- UPI Lite & Smart Soundbox Status Strip -->
+    <div class="grid grid-cols-2 gap-2.5 mb-5">
+      <div onclick="openUpiLiteModal()" class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl p-3 flex items-center justify-between cursor-pointer active:scale-98 transition shadow-sm hover:border-amber-400">
+        <div class="flex items-center space-x-2.5 overflow-hidden">
+          <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black text-xs shadow-sm shrink-0">
+            ⚡
+          </div>
+          <div class="truncate">
+            <div class="flex items-center space-x-1">
+              <span class="text-[11px] font-black text-slate-900">UPI Lite</span>
+              <span class="text-[8px] font-bold text-amber-700 bg-amber-100/90 px-1 rounded">ZERO PIN</span>
+            </div>
+            <span id="upi-lite-bal-text" class="text-xs font-mono font-bold text-amber-900 block truncate">₹0.00</span>
+          </div>
+        </div>
+        <span class="px-2 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold shadow-sm shrink-0">
+          Add
+        </span>
+      </div>
+
+      <div onclick="triggerTestSoundbox()" class="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200/80 rounded-2xl p-3 flex items-center justify-between cursor-pointer active:scale-98 transition shadow-sm hover:border-purple-400">
+        <div class="flex items-center space-x-2.5 overflow-hidden">
+          <div class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center text-xs shadow-sm shrink-0">
+            <i class="fa-solid fa-volume-high"></i>
+          </div>
+          <div class="truncate">
+            <span class="text-[11px] font-black text-slate-900 block leading-tight">Soundbox</span>
+            <span id="soundbox-lang-badge" class="text-[10px] font-semibold text-purple-700 block truncate">Voice Active</span>
+          </div>
+        </div>
+        <span class="text-[10px] font-bold text-purple-600 bg-white px-2 py-1 rounded-lg border border-purple-200 shrink-0">
+          Test
         </span>
       </div>
     </div>
@@ -1324,7 +1367,7 @@
       </div>
       <div class="relative">
         <span class="absolute left-4 top-2.5 text-xl font-bold text-blue-600">₹</span>
-        <input id="transfer-amount" type="number" step="0.01" value="250.00" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-2xl font-bold text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm" placeholder="0.00">
+        <input id="transfer-amount" oninput="checkUpiLiteEligibility()" type="number" step="0.01" value="250.00" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-2xl font-bold text-slate-900 focus:outline-none focus:border-blue-600 shadow-sm" placeholder="0.00">
       </div>
     </div>
 
@@ -1363,6 +1406,20 @@
         <i class="fa-regular fa-comment-dots absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
         <input id="transfer-note" type="text" value="Dinner split" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm" placeholder="What is this for?">
       </div>
+    </div>
+
+    <!-- UPI Lite Instant 1-Tap Strip (appears when amt <= 500 & upiLite balance >= amt) -->
+    <div id="transfer-upi-lite-strip" class="hidden mb-3 p-3.5 rounded-2xl bg-amber-50 border-2 border-amber-300 flex items-center justify-between shadow-sm">
+      <div class="flex items-center space-x-2.5">
+        <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm font-bold shadow-sm">⚡</span>
+        <div>
+          <span class="text-xs font-black text-amber-950 block leading-tight">Pay with UPI Lite</span>
+          <span class="text-[10px] font-semibold text-amber-700">Instant 1-Tap • Zero PIN Required</span>
+        </div>
+      </div>
+      <button type="button" onclick="executeUpiLiteTransfer()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-xs shadow-md shadow-amber-500/25 active:scale-95 transition">
+        Pay Instant
+      </button>
     </div>
 
     <!-- Submit Button with UPI PIN Flow -->
@@ -1852,6 +1909,32 @@
           <span class="text-[10px] text-slate-400">Play PhonePe audio chime on success</span>
         </div>
         <input type="checkbox" id="pref-sound" checked onchange="toggleSound(this.checked)" class="w-5 h-5 accent-blue-600 cursor-pointer">
+      </div>
+
+      <!-- Smart Soundbox Voice Announcement -->
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <span class="text-xs font-bold text-slate-800 block">Smart Soundbox Voice</span>
+            <span class="text-[9px] font-bold text-purple-700 bg-purple-100 px-1.5 py-0.2 rounded">VOICE</span>
+          </div>
+          <span class="text-[10px] text-slate-400">Bilingual transaction audio broadcast</span>
+        </div>
+        <input type="checkbox" id="pref-soundbox" checked onchange="toggleSoundbox(this.checked)" class="w-5 h-5 accent-purple-600 cursor-pointer">
+      </div>
+
+      <!-- Soundbox Language & Test -->
+      <div class="flex justify-between items-center pt-3 border-t border-slate-100">
+        <div>
+          <span class="text-xs font-bold text-slate-800 block">Soundbox Voice Accent</span>
+          <button type="button" onclick="triggerTestSoundbox()" class="text-[10px] font-bold text-purple-600 hover:underline">
+            <i class="fa-solid fa-play text-[9px] mr-1"></i>Test Audio Announcement
+          </button>
+        </div>
+        <select id="pref-soundbox-lang" onchange="setSoundboxLanguage(this.value)" class="bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1 text-xs font-bold text-purple-700 focus:outline-none">
+          <option value="hi-IN">Hindi (हिंदी)</option>
+          <option value="en-IN">English (Indian)</option>
+        </select>
       </div>
 
       <!-- Language Selector -->
@@ -2362,6 +2445,17 @@
       </button>
     </div>
 
+    <div class="grid grid-cols-2 gap-2 mb-2">
+      <button onclick="shareReceiptWhatsApp()" class="py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-xs rounded-xl transition flex items-center justify-center space-x-1.5">
+        <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
+        <span>WhatsApp Share</span>
+      </button>
+      <button onclick="downloadReceipt()" class="py-2.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold text-xs rounded-xl transition flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-file-invoice text-blue-600 text-sm"></i>
+        <span>Download Slip</span>
+      </button>
+    </div>
+
     <button onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
       Done
     </button>
@@ -2837,6 +2931,17 @@
 
     <p id="fp-modal-status" class="text-xs font-bold text-slate-700 mb-4">Tap sensor to authenticate</p>
 
+    <div class="grid grid-cols-2 gap-2 mb-2">
+      <button onclick="shareReceiptWhatsApp()" class="py-2.5 px-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold text-xs rounded-xl transition flex items-center justify-center space-x-1.5">
+        <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
+        <span>WhatsApp Share</span>
+      </button>
+      <button onclick="downloadReceipt()" class="py-2.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold text-xs rounded-xl transition flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-file-invoice text-blue-600 text-sm"></i>
+        <span>Download Slip</span>
+      </button>
+    </div>
+
     <button onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
       Done
     </button>
@@ -2951,6 +3056,130 @@
     </select>
   </div>
 
+  <!-- ==================== MODAL: UPI LITE ==================== -->
+  <div id="modal-upi-lite" class="modal-sheet p-6">
+    <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black text-sm shadow-sm">
+          ⚡
+        </div>
+        <div>
+          <h3 class="text-sm font-black text-slate-900">UPI Lite Wallet</h3>
+          <p class="text-[10px] text-slate-400">Zero-PIN 1-tap instant payments up to ₹500</p>
+        </div>
+      </div>
+      <button onclick="closeAllModals()" class="p-1 text-slate-400 hover:text-slate-700">
+        <i class="fa-solid fa-xmark text-base"></i>
+      </button>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="p-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white mb-4 shadow-md shadow-amber-500/20">
+      <div class="flex justify-between items-center mb-1">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-100">UPI Lite Balance</span>
+        <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-white/20">On-Device Ledger</span>
+      </div>
+      <div id="modal-upi-lite-current" class="text-2xl font-black font-mono">₹0.00</div>
+      <span class="text-[10px] text-amber-100 mt-1 block">Maximum permissible balance: ₹2,000.00</span>
+    </div>
+
+    <!-- Quick Top-up Amount Chips -->
+    <div class="mb-4">
+      <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Select Top-Up Amount</span>
+      <div class="grid grid-cols-3 gap-2">
+        <button type="button" onclick="setUpiLiteTopupInput(200)" class="py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-400 text-xs font-bold text-slate-800 transition">
+          + ₹200
+        </button>
+        <button type="button" onclick="setUpiLiteTopupInput(500)" class="py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-400 text-xs font-bold text-slate-800 transition">
+          + ₹500
+        </button>
+        <button type="button" onclick="setUpiLiteTopupInput(1000)" class="py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-amber-50 hover:border-amber-400 text-xs font-bold text-slate-800 transition">
+          + ₹1,000
+        </button>
+      </div>
+    </div>
+
+    <!-- Custom Top-up Input -->
+    <div class="mb-4">
+      <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Amount to Add from Bank</label>
+      <div class="relative">
+        <span class="absolute left-3.5 top-3 text-sm font-black text-slate-400">₹</span>
+        <input id="upi-lite-topup-amt" type="number" value="500" placeholder="Enter amount" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-4 py-2.5 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:border-amber-500">
+      </div>
+    </div>
+
+    <div class="space-y-2">
+      <button type="button" onclick="topupUpiLiteFromInput()" class="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl font-bold text-xs shadow-md shadow-amber-500/25 active:scale-98 transition flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-bolt text-xs"></i>
+        <span>Add Money to UPI Lite</span>
+      </button>
+
+      <button type="button" onclick="refundUpiLiteToMain()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs active:scale-98 transition">
+        Transfer Back to Main Wallet
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: FORGOT PASSWORD / PIN ==================== -->
+  <div id="modal-forgot-credentials" class="modal-sheet p-6">
+    <div class="flex justify-between items-center pb-3 border-b border-slate-100 mb-4">
+      <div class="flex items-center space-x-2.5">
+        <div class="w-9 h-9 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-base shadow-sm">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-black text-slate-900">Reset Password or PIN</h3>
+          <p class="text-[10px] text-slate-400">Secure 2-factor OTP verification</p>
+        </div>
+      </div>
+      <button onclick="closeAllModals()" class="p-1 text-slate-400 hover:text-slate-700">
+        <i class="fa-solid fa-xmark text-base"></i>
+      </button>
+    </div>
+
+    <div id="reset-error-box" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold mb-3">
+    </div>
+
+    <!-- Step 1: Mobile verification -->
+    <div id="reset-step-1" class="space-y-3.5">
+      <div>
+        <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Registered Mobile Number or Email</label>
+        <input id="reset-phone-input" type="text" placeholder="10-digit mobile or email" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+      </div>
+      <button type="button" onclick="submitForgotPhone()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+        <span>Send Verification Code &rarr;</span>
+      </button>
+    </div>
+
+    <!-- Step 2: Set New Password & PIN -->
+    <div id="reset-step-2" class="hidden space-y-3.5">
+      <div class="p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-[11px] text-blue-800 font-medium">
+        <i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>
+        Verification OTP sent to your registered number. (Demo OTP: <strong>4821</strong>)
+      </div>
+
+      <div>
+        <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Enter 4-Digit OTP</label>
+        <input id="reset-otp-input" type="text" maxlength="4" value="4821" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600 text-center tracking-widest text-base">
+      </div>
+
+      <div>
+        <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Create New Password</label>
+        <input id="reset-new-password" type="password" placeholder="At least 6 characters" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
+      </div>
+
+      <div>
+        <label class="text-[10px] font-bold text-slate-600 uppercase tracking-wider block mb-1">Set New 4-Digit UPI PIN</label>
+        <input id="reset-new-pin" type="password" maxlength="4" placeholder="••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-600">
+      </div>
+
+      <button type="button" onclick="completePasswordReset()" class="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl font-bold text-xs shadow-md shadow-emerald-500/25 active:scale-98 transition flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-circle-check text-xs"></i>
+        <span>Update Password & Save</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Bottom Navigation Bar (PhonePe / GPay Style) -->
   <div id="bottom-nav" class="absolute bottom-0 left-0 right-0 h-16 bg-white border-t border-slate-200 flex justify-around items-center px-2 z-30">
     <!-- Tab 1: Home -->
@@ -3035,7 +3264,10 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       color: 'blue',
       balance: 10000.00,
       dailyLimit: 100000.00,
+      password: 'yash1234',
       pin: '1234',
+      upiPin: '1234',
+      upiLiteBalance: 0.00,
       isTransfersLocked: false,
       transactions: [
         {
@@ -3274,6 +3506,315 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     showToast(isSoundEnabled ? 'Payment chimes enabled' : 'Payment chimes muted');
   }
 
+  // ================= SMART SOUNDBOX VOICE BROADCAST =================
+  let isSoundboxEnabled = true;
+  let soundboxLanguage = 'hi-IN'; // 'hi-IN' or 'en-IN'
+
+  function speakSoundboxAnnouncement(amount, isCredit = true) {
+    if (!isSoundboxEnabled) return;
+    try {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+
+      const amtNum = parseFloat(amount) || 0;
+      let text = '';
+      if (soundboxLanguage === 'hi-IN') {
+        text = isCredit
+          ? `DataCore Pay par ${amtNum} rupaye prapt hue.`
+          : `DataCore Pay se ${amtNum} rupaye safaltapoorvak bheje gaye.`;
+      } else {
+        text = isCredit
+          ? `Received ${amtNum} rupees on DataCore Pay.`
+          : `Payment of ${amtNum} rupees successful on DataCore Pay.`;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95;
+      utterance.pitch = 1.05;
+
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        const matching = voices.find(v =>
+          soundboxLanguage === 'hi-IN'
+            ? (v.lang.includes('hi') || v.name.toLowerCase().includes('hindi'))
+            : (v.lang.includes('en-IN') || v.name.toLowerCase().includes('india'))
+        );
+        if (matching) utterance.voice = matching;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.warn('Soundbox speech failed:', e);
+    }
+  }
+
+  function triggerTestSoundbox() {
+    triggerHaptic();
+    playSuccessChime();
+    speakSoundboxAnnouncement(500, true);
+    showToast(soundboxLanguage === 'hi-IN' ? '📢 Soundbox: ₹500 prapt hue!' : '📢 Soundbox: ₹500 received!');
+  }
+
+  function toggleSoundbox(checked) {
+    isSoundboxEnabled = checked;
+    showToast(isSoundboxEnabled ? 'Soundbox voice announcements enabled' : 'Soundbox muted');
+  }
+
+  function setSoundboxLanguage(lang) {
+    soundboxLanguage = lang;
+    const badge = document.getElementById('soundbox-lang-badge');
+    if (badge) badge.innerText = (lang === 'hi-IN') ? 'Hindi Voice' : 'English Voice';
+    showToast(`Soundbox language set to ${lang === 'hi-IN' ? 'Hindi' : 'English'}`);
+    triggerTestSoundbox();
+  }
+
+  // ================= UPI LITE ENGINE (ON-DEVICE ZERO-PIN) =================
+  function openUpiLiteModal() {
+    closeAllModals();
+    const curLite = currentUser?.upiLiteBalance || 0;
+    const liteDisp = document.getElementById('modal-upi-lite-current');
+    if (liteDisp) liteDisp.innerText = `₹${curLite.toFixed(2)}`;
+    const amtInput = document.getElementById('upi-lite-topup-amt');
+    if (amtInput) amtInput.value = '500';
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-upi-lite').classList.add('active');
+    triggerHaptic();
+  }
+
+  function setUpiLiteTopupInput(amt) {
+    const el = document.getElementById('upi-lite-topup-amt');
+    if (el) el.value = amt;
+    triggerHaptic();
+  }
+
+  function topupUpiLiteFromInput() {
+    const amt = parseFloat(document.getElementById('upi-lite-topup-amt')?.value) || 0;
+    topupUpiLite(amt);
+  }
+
+  function topupUpiLite(amt) {
+    if (amt <= 0 || isNaN(amt)) return showToast('Please enter a valid amount', false);
+    if (amt > balance) {
+      triggerErrorHaptic();
+      return showToast(`Insufficient balance! Available: ₹${balance.toFixed(2)}`, false);
+    }
+    const currentLite = currentUser.upiLiteBalance || 0;
+    if (currentLite + amt > 2000) {
+      triggerErrorHaptic();
+      return showToast('UPI Lite maximum permissible wallet limit is ₹2,000.00', false);
+    }
+
+    balance -= amt;
+    currentUser.balance = balance;
+    currentUser.upiLiteBalance = currentLite + amt;
+    saveCurrentWalletState();
+    renderBalance();
+    closeAllModals();
+
+    playSuccessChime();
+    triggerSuccessHaptic();
+    speakSoundboxAnnouncement(amt, false);
+    showToast(`Added ₹${amt.toFixed(2)} to UPI Lite!`);
+  }
+
+  function refundUpiLiteToMain() {
+    const curLite = currentUser?.upiLiteBalance || 0;
+    if (curLite <= 0) return showToast('UPI Lite balance is already ₹0.00', false);
+    balance += curLite;
+    currentUser.balance = balance;
+    currentUser.upiLiteBalance = 0.00;
+    saveCurrentWalletState();
+    renderBalance();
+    closeAllModals();
+
+    playSuccessChime();
+    triggerSuccessHaptic();
+    showToast(`Transferred ₹${curLite.toFixed(2)} back to primary wallet!`);
+  }
+
+  function checkUpiLiteEligibility() {
+    const amt = parseFloat(document.getElementById('transfer-amount')?.value) || 0;
+    const strip = document.getElementById('transfer-upi-lite-strip');
+    const curLite = currentUser?.upiLiteBalance || 0;
+    if (strip) {
+      if (amt > 0 && amt <= 500 && curLite >= amt) {
+        strip.classList.remove('hidden');
+      } else {
+        strip.classList.add('hidden');
+      }
+    }
+  }
+
+  function executeUpiLiteTransfer() {
+    const amt = parseFloat(document.getElementById('transfer-amount')?.value) || 0;
+    const recipient = (document.getElementById('transfer-recipient')?.value || '').trim() || 'merchant@datacore';
+    const note = (document.getElementById('transfer-note')?.value || '').trim() || 'UPI Lite Instant Transfer';
+
+    if (amt <= 0 || isNaN(amt)) return showToast('Enter valid amount', false);
+    if (amt > 500) return showToast('UPI Lite maximum per-transaction limit is ₹500', false);
+    const curLite = currentUser?.upiLiteBalance || 0;
+    if (amt > curLite) return showToast('Insufficient UPI Lite balance! Please add funds.', false);
+
+    currentUser.upiLiteBalance = curLite - amt;
+    balance = Math.max(0, balance - amt);
+    currentUser.balance = balance;
+
+    const exact12TxId = generateRandomDigits(12);
+    const exact12UtrNo = generateRandomDigits(12);
+    const formattedDateTime = formatSuccessDateTime();
+
+    let recName = recipient;
+    if (recName.includes('@')) recName = recName.split('@')[0];
+
+    const debitTx = {
+      id: exact12TxId,
+      utr: exact12UtrNo,
+      type: 'DEBIT',
+      to: recipient,
+      toName: recName,
+      amount: amt,
+      desc: `${note} (UPI Lite Instant)`,
+      date: 'Just now',
+      fullDateTime: formattedDateTime,
+      status: 'COMPLETED',
+      strategy: 'UPI_LITE_ZERO_PIN',
+      latency: '0.8 ms'
+    };
+
+    transactions.unshift(debitTx);
+    saveCurrentWalletState();
+    renderBalance();
+    renderTransactions();
+
+    lastSuccessfulTx = {
+      amount: amt,
+      recipientName: recName,
+      recipientId: recipient,
+      txId: exact12TxId,
+      utrNo: exact12UtrNo,
+      dateTime: formattedDateTime,
+      note: note
+    };
+
+    document.getElementById('succ-datetime').innerText = formattedDateTime;
+    document.getElementById('succ-avatar-initial').innerText = recName.charAt(0).toUpperCase();
+    document.getElementById('succ-recipient-name').innerText = recName;
+    document.getElementById('succ-recipient-id').innerText = recipient;
+    document.getElementById('succ-amount').innerText = `₹${amt.toFixed(2)}`;
+    document.getElementById('succ-tx-id').innerText = exact12TxId;
+    document.getElementById('succ-debited-bank').innerText = 'DataCore UPI Lite (On-Device)';
+    document.getElementById('succ-debited-amt').innerText = `₹${amt.toFixed(2)}`;
+    document.getElementById('succ-utr-no').innerText = exact12UtrNo;
+    document.getElementById('succ-latency-text').innerText = 'Instant Settlement • 0.8 ms (Zero PIN)';
+
+    playSuccessChime();
+    triggerSuccessHaptic();
+    speakSoundboxAnnouncement(amt, false);
+    navigateTo('success');
+  }
+
+  // ================= FORGOT CREDENTIALS / PIN RESET =================
+  function openForgotCredentialsModal() {
+    closeAllModals();
+    const phoneInput = document.getElementById('login-phone-input');
+    const resetPhone = document.getElementById('reset-phone-input');
+    if (resetPhone && phoneInput) resetPhone.value = phoneInput.value;
+    document.getElementById('reset-step-1')?.classList.remove('hidden');
+    document.getElementById('reset-step-2')?.classList.add('hidden');
+    document.getElementById('reset-error-box')?.classList.add('hidden');
+    document.getElementById('backdrop')?.classList.add('active');
+    document.getElementById('modal-forgot-credentials')?.classList.add('active');
+    triggerHaptic();
+  }
+
+  function submitForgotPhone() {
+    const raw = (document.getElementById('reset-phone-input')?.value || '').trim();
+    const clean = raw.toLowerCase();
+    const digitsOnly = clean.replace(/[^0-9]/g, '');
+
+    let foundKey = null;
+    Object.keys(wallets).forEach(k => {
+      const w = wallets[k];
+      if (
+        (digitsOnly && w.mobile && (w.mobile === digitsOnly || w.mobile.replace(/[^0-9]/g, '') === digitsOnly)) ||
+        w.email.toLowerCase() === clean
+      ) {
+        foundKey = k;
+      }
+    });
+
+    if (!foundKey) {
+      triggerErrorHaptic();
+      const err = document.getElementById('reset-error-box');
+      if (err) {
+        err.innerText = `No account found for "${raw}". Please create an account.`;
+        err.classList.remove('hidden');
+      }
+      return;
+    }
+
+    window._resetAccountKey = foundKey;
+    document.getElementById('reset-step-1')?.classList.add('hidden');
+    document.getElementById('reset-step-2')?.classList.remove('hidden');
+    const otpIn = document.getElementById('reset-otp-input');
+    if (otpIn) otpIn.value = '4821';
+    showToast('Demo OTP 4821 verified! Enter new password.');
+  }
+
+  function completePasswordReset() {
+    const otp = (document.getElementById('reset-otp-input')?.value || '').trim();
+    const newPass = (document.getElementById('reset-new-password')?.value || '').trim();
+    const newPin = (document.getElementById('reset-new-pin')?.value || '').trim();
+
+    if (otp !== '4821' && otp.length < 4) {
+      triggerErrorHaptic();
+      return showToast('Invalid OTP entered', false);
+    }
+    if (!newPass || newPass.length < 6) {
+      triggerErrorHaptic();
+      return showToast('New password must be at least 6 characters', false);
+    }
+    if (!newPin || newPin.length !== 4 || isNaN(newPin)) {
+      triggerErrorHaptic();
+      return showToast('New UPI PIN must be 4 numeric digits', false);
+    }
+
+    const key = window._resetAccountKey;
+    if (key && wallets[key]) {
+      wallets[key].password = newPass;
+      wallets[key].pin = newPin;
+      wallets[key].upiPin = newPin;
+      saveCurrentWalletState();
+      closeAllModals();
+      playSuccessChime();
+      triggerSuccessHaptic();
+      showToast('Password & UPI PIN reset successfully! Please sign in.');
+      const passIn = document.getElementById('login-pin-input');
+      if (passIn) passIn.value = newPass;
+      const phoneIn = document.getElementById('login-phone-input');
+      if (phoneIn) phoneIn.value = wallets[key].mobile || wallets[key].email;
+      switchAuthTab('signin');
+    }
+  }
+
+  function shareReceiptWhatsApp() {
+    const tx = lastSuccessfulTx || (transactions && transactions[0]);
+    if (!tx) return showToast('No receipt available to share', false);
+    const msg = `🧾 *DataCore Pay Transfer Receipt*\n` +
+      `━━━━━━━━━━━━━━━━━━━━━\n` +
+      `✅ *Status:* SUCCESSFUL\n` +
+      `💰 *Amount:* ₹${(tx.amount || 0).toFixed(2)}\n` +
+      `👤 *Paid To:* ${tx.recipientName || tx.toName || tx.to}\n` +
+      `🏦 *UTR Number:* ${tx.utrNo || tx.utr || 'N/A'}\n` +
+      `🕒 *Timestamp:* ${tx.dateTime || tx.fullDateTime || 'Just now'}\n` +
+      `🔒 *NPCI Ref:* DC-INV-${Date.now().toString().slice(-6)}\n` +
+      `━━━━━━━━━━━━━━━━━━━━━\n` +
+      `_Powered by DataCore Real-Time Transaction Engine_`;
+
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  }
+
   function saveCurrentWalletState() {
     if (!currentUser || !currentUser.email) return;
     currentUser.balance = balance;
@@ -3282,6 +3823,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     currentUser.notifications = notifications;
     currentUser.payees = payees;
     currentUser.isTransfersLocked = isTransfersLocked;
+    currentUser.upiLiteBalance = (typeof currentUser.upiLiteBalance === 'number') ? currentUser.upiLiteBalance : 0.00;
 
     wallets[currentUser.email] = {
       ...currentUser,
@@ -3290,7 +3832,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       transactions: transactions,
       notifications: notifications,
       payees: payees,
-      isTransfersLocked: isTransfersLocked
+      isTransfersLocked: isTransfersLocked,
+      upiLiteBalance: currentUser.upiLiteBalance
     };
     try {
       localStorage.setItem(STORAGE_KEYS.WALLETS, JSON.stringify(wallets));
@@ -4010,6 +4553,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     closeAllModals();
     playSuccessChime();
     triggerSuccessHaptic();
+    speakSoundboxAnnouncement(currentBillData.amt, false);
     navigateTo('success');
   }
 
@@ -4677,6 +5221,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       if (avail) avail.innerText = `₹${formatted}`;
       if (stmtBal) stmtBal.innerText = `₹${formatted}`;
       if (profBankBal) profBankBal.innerText = `₹${formatted}`;
+    }
+
+    const liteEl = document.getElementById('upi-lite-bal-text');
+    const curLite = currentUser?.upiLiteBalance || 0;
+    if (liteEl) {
+      liteEl.innerText = isBalanceHidden ? '••••' : `₹${curLite.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     }
   }
 
@@ -5375,6 +5925,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     playSuccessChime();
     triggerSuccessHaptic();
+    speakSoundboxAnnouncement(data.amount, false);
 
     navigateTo('success');
   }
@@ -5515,6 +6066,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     playSuccessChime();
     triggerSuccessHaptic();
+    speakSoundboxAnnouncement(data.amount, false);
 
     navigateTo('success');
   }
@@ -7224,6 +7776,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       color: 'blue',
       balance: startingBal,
       dailyLimit: 100000.00,
+      upiLiteBalance: 0.00,
       isTransfersLocked: false,
       scratchCards: [
         { id: `sc_reg_${Date.now()}`, title: 'Welcome Cashback Reward', amount: 35.00, claimed: false, date: 'Just now' }
