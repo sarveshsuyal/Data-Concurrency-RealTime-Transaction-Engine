@@ -6,7 +6,8 @@ import {
   TransactionEvent,
   AuditLog,
   IdempotencyKeyRecord,
-  User
+  User,
+  UserDetail
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://datacore-backend-wktd.onrender.com';
@@ -99,8 +100,60 @@ export const api = {
     return response.data;
   },
 
-  getUsers: async (): Promise<User[]> => {
-    const response = await apiClient.get('/api/admin/users/');
+  getUsers: async (params?: {
+    search?: string;
+    role?: string;
+    is_active?: boolean | string;
+    min_balance?: string;
+    max_balance?: string;
+    page?: number;
+    page_size?: number;
+  }): Promise<any> => {
+    const response = await apiClient.get('/api/admin/users/', { params });
+    return response.data;
+  },
+
+  getUserDetail: async (userId: string): Promise<UserDetail> => {
+    const response = await apiClient.get<UserDetail>(`/api/admin/users/${userId}/`);
+    return response.data;
+  },
+
+  suspendUser: async (userId: string, reason: string): Promise<any> => {
+    const response = await apiClient.post(`/api/admin/users/${userId}/suspend/`, { reason });
+    return response.data;
+  },
+
+  reactivateUser: async (userId: string, reason: string): Promise<any> => {
+    const response = await apiClient.post(`/api/admin/users/${userId}/reactivate/`, { reason });
+    return response.data;
+  },
+
+  deactivateUser: async (userId: string, reason: string): Promise<any> => {
+    const response = await apiClient.post(`/api/admin/users/${userId}/deactivate/`, { reason, confirm: true });
+    return response.data;
+  },
+
+  adjustAccountBalance: async (
+    accountId: string,
+    payload: {
+      operation: 'credit' | 'debit';
+      amount: string;
+      currency: string;
+      reason_code: string;
+      admin_note: string;
+    },
+    idempotencyKey?: string
+  ): Promise<any> => {
+    const headers: Record<string, string> = {};
+    if (idempotencyKey) {
+      headers['Idempotency-Key'] = idempotencyKey;
+    }
+    const response = await apiClient.post(`/api/admin/accounts/${accountId}/adjustments/`, payload, { headers });
+    return response.data;
+  },
+
+  getReconciliation: async (): Promise<any> => {
+    const response = await apiClient.get('/api/admin/reconciliation/');
     return response.data;
   },
 

@@ -202,14 +202,15 @@ class ConcurrencyStrategyHandler:
             })
 
         # Artificial delay to widen race window in concurrent laboratory experiments
-        time.sleep(0.04)
+        # Allows all concurrent threads to read initial balance before any write commits
+        time.sleep(0.08)
 
         if sender.balance < amount:
-            # Under concurrency, multiple threads can pass this check before any writes happen!
+            # Under concurrency, multiple threads pass this check before any writes happen
             raise InsufficientFundsException("Unsafe check: insufficient funds")
 
         # Artificial delay between check and write
-        time.sleep(0.04)
+        time.sleep(0.08)
 
         # Unsafe check-then-act: applies the withdrawal without row lock or conditional guard
         Account.objects.filter(id=sender_id).update(balance=models.F('balance') - amount)

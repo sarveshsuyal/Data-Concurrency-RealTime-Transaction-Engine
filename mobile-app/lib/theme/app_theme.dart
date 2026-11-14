@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // PhonePe Royal Purple Brand Palette
+  // DataCore Master Brand Palette
   static const Color primary = Color(0xFF5F259E);
   static const Color primaryDark = Color(0xFF4A148C);
   static const Color primaryLight = Color(0xFF7B39D1);

@@ -62,7 +62,7 @@ class ReceiveQrSheet extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Scan & Pay via any UPI App (GPay, PhonePe, Paytm)',
+                    'Scan & Pay via any UPI App (DataCore, BHIM, GPay)',
                     style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
                   ),
                 ],

@@ -1,15 +1,17 @@
 import json
 import time
+import csv
 from decimal import Decimal
 from datetime import timedelta
 from django.db import models
 from django.db.models import Sum, Count, Avg, Q
 from django.utils import timezone
-from django.http import StreamingHttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from rest_framework import status, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from rest_framework_simplejwt.tokens import AccessToken
 
 from .models import (
     Account,
@@ -18,7 +20,8 @@ from .models import (
     IdempotencyKey,
     TransactionEvent,
     ConcurrencyExperiment,
-    AuditLog
+    AuditLog,
+    AccountAdjustment
 )
 from .serializers import (
     AccountSerializer,
@@ -29,10 +32,17 @@ from .serializers import (
     ConcurrencyExperimentSerializer,
     RunExperimentRequestSerializer,
     AuditLogSerializer,
-    IdempotencyKeySerializer
+    IdempotencyKeySerializer,
+    AdjustmentRequestSerializer,
+    AccountAdjustmentSerializer
 )
 from .permissions import IsAdminUserRole, IsAccountOwner
-from .services import TransferService, RaceExperimentService, IdempotencyException
+from .services import (
+    TransferService,
+    RaceExperimentService,
+    AdjustmentService,
+    IdempotencyException
+)
 from authentication.models import User
 
 class StandardPagination(PageNumberPagination):
@@ -166,42 +176,91 @@ class TransactionHistoryView(generics.ListAPIView):
 
 
 class CustomerEventsView(APIView):
-    """Returns lifecycle events for transactions involving the authenticated customer."""
+    """Returns lifecycle events for transactions and adjustments involving the authenticated customer."""
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        user_accounts = Account.objects.filter(user=request.user).values_list('id', flat=True)
-        events = TransactionEvent.objects.filter(
+        user_accounts = list(Account.objects.filter(user=request.user).values_list('id', flat=True))
+        user_account_strs = [str(a) for a in user_accounts]
+
+        qs = TransactionEvent.objects.filter(
             Q(transaction__sender_account__in=user_accounts) |
-            Q(transaction__receiver_account__in=user_accounts)
-        ).order_by('-created_at')[:50]
+            Q(transaction__receiver_account__in=user_accounts) |
+            Q(details__user_id=str(request.user.id)) |
+            Q(details__account_id__in=user_account_strs)
+        ).order_by('-created_at')
+
+        since = request.query_params.get('since')
+        if since:
+            try:
+                qs = qs.filter(created_at__gt=since)
+            except Exception:
+                pass
+
+        after_id = request.query_params.get('after_id')
+        if after_id:
+            try:
+                target_ev = TransactionEvent.objects.get(id=after_id)
+                qs = qs.filter(created_at__gt=target_ev.created_at)
+            except Exception:
+                pass
+
+        events = qs[:50]
         return Response(TransactionEventSerializer(events, many=True).data)
 
 
 class EventStreamView(APIView):
-    """Server-Sent Events (SSE) streaming live transactions and concurrency events."""
-    permission_classes = [permissions.IsAuthenticated]
+    """Server-Sent Events (SSE) streaming live transactions, balance changes, and concurrency events."""
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        def event_stream():
-            last_check = timezone.now() - timedelta(seconds=10)
-            # Send initial keep-alive ping
-            yield f"data: {json.dumps({'type': 'PING', 'timestamp': timezone.now().isoformat()})}\n\n"
+        user = request.user
+        if not user or not user.is_authenticated:
+            token_str = request.query_params.get('token')
+            if token_str:
+                try:
+                    validated = AccessToken(token_str)
+                    user = User.objects.get(id=validated['user_id'])
+                except Exception:
+                    return Response({"detail": "Invalid authentication token for event stream."}, status=status.HTTP_401_UNAUTHORIZED)
+            else:
+                return Response({"detail": "Authentication credentials required."}, status=status.HTTP_401_UNAUTHORIZED)
 
-            # Stream up to 30 intervals (30 seconds)
-            for _ in range(15):
+        is_admin = getattr(user, 'is_admin', False) or user.is_staff or getattr(user, 'role', '') == 'ADMIN'
+        user_accounts = list(Account.objects.filter(user=user).values_list('id', flat=True))
+        user_account_strs = [str(a) for a in user_accounts]
+
+        def event_stream():
+            last_check = timezone.now() - timedelta(seconds=5)
+            # Initial SSE handshake
+            yield f"event: ping\ndata: {json.dumps({'type': 'CONNECTED', 'timestamp': timezone.now().isoformat()})}\n\n"
+
+            for _ in range(30):  # Stream for up to ~60s per connection
                 time.sleep(2)
                 now = timezone.now()
-                new_events = TransactionEvent.objects.filter(created_at__gte=last_check).order_by('created_at')
+                qs = TransactionEvent.objects.filter(created_at__gt=last_check).order_by('created_at')
+
+                if not is_admin:
+                    qs = qs.filter(
+                        Q(transaction__sender_account__in=user_accounts) |
+                        Q(transaction__receiver_account__in=user_accounts) |
+                        Q(details__user_id=str(user.id)) |
+                        Q(details__account_id__in=user_account_strs)
+                    )
+
+                new_events = list(qs)
                 for ev in new_events:
                     payload = {
-                        'type': 'EVENT',
+                        'id': str(ev.id),
                         'event_type': ev.event_type,
                         'details': ev.details,
                         'created_at': ev.created_at.isoformat()
                     }
-                    yield f"data: {json.dumps(payload)}\n\n"
+                    yield f"id: {ev.id}\nevent: {ev.event_type}\ndata: {json.dumps(payload)}\n\n"
+
                 last_check = now
+                # Periodic keepalive heartbeat
+                yield f"event: ping\ndata: {json.dumps({'timestamp': now.isoformat()})}\n\n"
 
         response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
         response['Cache-Control'] = 'no-cache'
@@ -274,16 +333,82 @@ class AdminOverviewView(APIView):
 
 
 class AdminUsersListView(generics.ListAPIView):
-    """List all registered users with account numbers, balances and transaction counts."""
+    """
+    Searchable, filterable, and paginated administrator user directory.
+    Supports full-text search by name, email, user ID, and account number.
+    Filters by role, active status, and balance range.
+    Supports permission-checked CSV export via ?format=csv.
+    """
     permission_classes = [IsAdminUserRole]
     pagination_class = StandardPagination
 
     def get(self, request):
-        users = User.objects.all().prefetch_related('accounts').order_by('-date_joined')
+        qs = User.objects.all().prefetch_related('accounts').order_by('-date_joined')
+
+        # 1. Search Query
+        search = request.query_params.get('search', '').strip()
+        if search:
+            qs = qs.filter(
+                Q(full_name__icontains=search) |
+                Q(email__icontains=search) |
+                Q(id__icontains=search) |
+                Q(accounts__account_number__icontains=search)
+            ).distinct()
+
+        # 2. Role Filter
+        role = request.query_params.get('role', '').strip().upper()
+        if role in ('USER', 'ADMIN'):
+            qs = qs.filter(role=role)
+
+        # 3. Status Filter
+        status_param = request.query_params.get('is_active')
+        if status_param is not None and status_param != '':
+            if status_param.lower() in ('true', '1'):
+                qs = qs.filter(is_active=True)
+            elif status_param.lower() in ('false', '0'):
+                qs = qs.filter(is_active=False)
+
+        # 4. Balance Filters
+        min_balance = request.query_params.get('min_balance')
+        if min_balance:
+            try:
+                min_val = Decimal(min_balance)
+                qs = qs.filter(accounts__balance__gte=min_val).distinct()
+            except Exception:
+                pass
+
+        max_balance = request.query_params.get('max_balance')
+        if max_balance:
+            try:
+                max_val = Decimal(max_balance)
+                qs = qs.filter(accounts__balance__lte=max_val).distinct()
+            except Exception:
+                pass
+
+        # CSV Export Option
+        if request.query_params.get('format') == 'csv':
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = f'attachment; filename="datacore_users_{timezone.now().strftime("%Y%m%d_%H%M%S")}.csv"'
+            writer = csv.writer(response)
+            writer.writerow(['User ID', 'Full Name', 'Email', 'Role', 'Status', 'Date Joined', 'Accounts', 'Balances'])
+            for u in qs:
+                acc_info = "; ".join([f"{a.account_number} ({a.currency} {a.balance})" for a in u.accounts.all()])
+                writer.writerow([str(u.id), u.full_name, u.email, u.role, 'Active' if u.is_active else 'Suspended', u.date_joined.isoformat(), acc_info])
+            return response
+
+        # Paginate results
+        page = self.paginate_queryset(qs)
         data = []
-        for u in users:
+        target_list = page if page is not None else qs
+        for u in target_list:
             accounts_data = [
-                {"account_number": acc.account_number, "balance": str(acc.balance), "currency": acc.currency}
+                {
+                    "id": str(acc.id),
+                    "account_number": acc.account_number,
+                    "balance": str(acc.balance),
+                    "currency": acc.currency,
+                    "is_active": acc.is_active
+                }
                 for acc in u.accounts.all()
             ]
             tx_count = Transaction.objects.filter(
@@ -296,11 +421,323 @@ class AdminUsersListView(generics.ListAPIView):
                 "role": u.role,
                 "is_active": u.is_active,
                 "date_joined": u.date_joined.isoformat(),
-                "last_heartbeat": u.last_heartbeat.isoformat(),
+                "last_heartbeat": u.last_heartbeat.isoformat() if u.last_heartbeat else None,
                 "accounts": accounts_data,
                 "total_transactions": tx_count
             })
+
+        if page is not None:
+            return self.get_paginated_response(data)
         return Response(data)
+
+
+class AdminUserDetailView(APIView):
+    """
+    Detailed authorized user view including linked accounts, balances,
+    transaction history, adjustment records, and security audit log.
+    """
+    permission_classes = [IsAdminUserRole]
+
+    def get(self, request, user_id):
+        try:
+            target_user = User.objects.prefetch_related('accounts').get(id=user_id)
+        except (User.DoesNotExist, ValueError):
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        accounts_data = [
+            {
+                "id": str(acc.id),
+                "account_number": acc.account_number,
+                "balance": str(acc.balance),
+                "currency": acc.currency,
+                "version": acc.version,
+                "is_active": acc.is_active,
+                "created_at": acc.created_at.isoformat()
+            }
+            for acc in target_user.accounts.all()
+        ]
+
+        user_account_ids = target_user.accounts.values_list('id', flat=True)
+        recent_txs = Transaction.objects.filter(
+            Q(sender_account__in=user_account_ids) | Q(receiver_account__in=user_account_ids)
+        ).select_related('sender_account', 'receiver_account').order_by('-created_at')[:20]
+
+        tx_list = []
+        for tx in recent_txs:
+            is_sender = tx.sender_account and tx.sender_account.id in user_account_ids
+            tx_list.append({
+                "id": str(tx.id),
+                "sender_account_number": tx.sender_account.account_number if tx.sender_account else 'SYSTEM',
+                "receiver_account_number": tx.receiver_account.account_number,
+                "amount": str(tx.amount),
+                "currency": tx.currency,
+                "status": tx.status,
+                "direction": "OUTBOUND" if is_sender else "INBOUND",
+                "concurrency_strategy": tx.concurrency_strategy,
+                "description": tx.description,
+                "created_at": tx.created_at.isoformat()
+            })
+
+        adjustments = AccountAdjustment.objects.filter(
+            account__user=target_user
+        ).select_related('account', 'actor').order_by('-created_at')[:20]
+
+        adj_list = [
+            {
+                "id": str(a.id),
+                "account_number": a.account.account_number,
+                "operation": a.operation,
+                "amount": str(a.amount),
+                "currency": a.currency,
+                "previous_balance": str(a.previous_balance),
+                "resulting_balance": str(a.resulting_balance),
+                "reason_code": a.reason_code,
+                "admin_note": a.admin_note,
+                "actor_email": a.actor.email if a.actor else "System",
+                "created_at": a.created_at.isoformat()
+            }
+            for a in adjustments
+        ]
+
+        recent_audits = AuditLog.objects.filter(user=target_user).order_by('-timestamp')[:20]
+        audit_list = [
+            {
+                "id": str(al.id),
+                "action": al.action,
+                "ip_address": al.ip_address,
+                "details": al.details,
+                "timestamp": al.timestamp.isoformat()
+            }
+            for al in recent_audits
+        ]
+
+        return Response({
+            "id": str(target_user.id),
+            "email": target_user.email,
+            "full_name": target_user.full_name,
+            "role": target_user.role,
+            "is_active": target_user.is_active,
+            "date_joined": target_user.date_joined.isoformat(),
+            "last_heartbeat": target_user.last_heartbeat.isoformat() if target_user.last_heartbeat else None,
+            "accounts": accounts_data,
+            "transactions": tx_list,
+            "adjustments": adj_list,
+            "audit_logs": audit_list
+        })
+
+
+class AdminUserSuspendView(APIView):
+    """Safely suspend user account and revoke transactions without deleting ledger."""
+    permission_classes = [IsAdminUserRole]
+
+    def post(self, request, user_id):
+        reason = request.data.get('reason', 'Administrative suspension').strip()
+        try:
+            target_user = User.objects.get(id=user_id)
+        except (User.DoesNotExist, ValueError):
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if target_user.id == request.user.id:
+            return Response({"detail": "Administrators cannot suspend their own account."}, status=status.HTTP_400_BAD_REQUEST)
+
+        target_user.is_active = False
+        target_user.save(update_fields=['is_active'])
+
+        AuditLog.objects.create(
+            user=request.user,
+            action="USER_SUSPENDED",
+            details={
+                "target_user_id": str(target_user.id),
+                "target_email": target_user.email,
+                "reason": reason
+            }
+        )
+
+        return Response({
+            "message": f"User {target_user.email} suspended successfully.",
+            "user_id": str(target_user.id),
+            "is_active": False
+        })
+
+
+class AdminUserReactivateView(APIView):
+    """Reactivate a suspended user account."""
+    permission_classes = [IsAdminUserRole]
+
+    def post(self, request, user_id):
+        reason = request.data.get('reason', 'Administrative reactivation').strip()
+        try:
+            target_user = User.objects.get(id=user_id)
+        except (User.DoesNotExist, ValueError):
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        target_user.is_active = True
+        target_user.save(update_fields=['is_active'])
+
+        AuditLog.objects.create(
+            user=request.user,
+            action="USER_REACTIVATED",
+            details={
+                "target_user_id": str(target_user.id),
+                "target_email": target_user.email,
+                "reason": reason
+            }
+        )
+
+        return Response({
+            "message": f"User {target_user.email} reactivated successfully.",
+            "user_id": str(target_user.id),
+            "is_active": True
+        })
+
+
+class AdminUserDeactivateView(APIView):
+    """
+    Compliant safe deactivation (soft delete). Never cascades to financial transactions,
+    ledger entries, or audit records. Preserves immutable history.
+    """
+    permission_classes = [IsAdminUserRole]
+
+    def post(self, request, user_id):
+        reason = request.data.get('reason', '').strip()
+        confirm = request.data.get('confirm') is True
+        if not confirm:
+            return Response({"detail": "Explicit confirmation required for account deactivation."}, status=status.HTTP_400_BAD_REQUEST)
+        if not reason:
+            return Response({"detail": "A documented reason is required for account deactivation."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            target_user = User.objects.get(id=user_id)
+        except (User.DoesNotExist, ValueError):
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        target_user.is_active = False
+        target_user.save(update_fields=['is_active'])
+
+        # Deactivate owned accounts to prevent transaction routing
+        Account.objects.filter(user=target_user).update(is_active=False)
+
+        AuditLog.objects.create(
+            user=request.user,
+            action="USER_SOFT_DELETED",
+            details={
+                "target_user_id": str(target_user.id),
+                "target_email": target_user.email,
+                "reason": reason,
+                "financial_records_retained": True
+            }
+        )
+
+        return Response({
+            "message": f"User {target_user.email} safely deactivated. Financial ledger and transaction history permanently preserved.",
+            "user_id": str(target_user.id),
+            "is_active": False
+        })
+
+
+class AdminAccountAdjustmentView(APIView):
+    """
+    Authoritative manual credit or debit balance adjustment.
+    Enforces canonical row locks, positive decimals, double-entry ledger balance conservation,
+    and idempotent re-submissions.
+    """
+    permission_classes = [IsAdminUserRole]
+
+    def post(self, request, account_id):
+        serializer = AdjustmentRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        idempotency_key = (
+            request.headers.get('Idempotency-Key') or
+            request.headers.get('X-Idempotency-Key') or
+            request.data.get('idempotency_key')
+        )
+
+        try:
+            receipt, is_cached = AdjustmentService.execute_adjustment(
+                admin_user=request.user,
+                account_id=account_id,
+                operation=data['operation'],
+                amount=data['amount'],
+                currency=data.get('currency', 'INR'),
+                reason_code=data['reason_code'],
+                admin_note=data['admin_note'],
+                idempotency_key_value=idempotency_key,
+                request_path=request.path
+            )
+            resp_status = status.HTTP_200_OK if is_cached else status.HTTP_201_CREATED
+            return Response(receipt, status=resp_status)
+        except IdempotencyException as ie:
+            return Response({"detail": ie.message}, status=ie.status_code)
+        except (ValueError, PermissionError) as ve:
+            return Response({"detail": str(ve)}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdminReconciliationView(APIView):
+    """
+    Read-only double-entry balance reconciliation tool.
+    Compares stored account balance with sum(credits) - sum(debits) for each account.
+    """
+    permission_classes = [IsAdminUserRole]
+
+    def get(self, request):
+        accounts = Account.objects.all().select_related('user')
+        discrepancies = []
+        total_accounts = 0
+        in_balance = 0
+
+        total_system_debits = LedgerEntry.objects.filter(
+            entry_type=LedgerEntry.EntryType.DEBIT
+        ).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+
+        total_system_credits = LedgerEntry.objects.filter(
+            entry_type=LedgerEntry.EntryType.CREDIT
+        ).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+
+        for acc in accounts:
+            total_accounts += 1
+            credits = LedgerEntry.objects.filter(
+                account=acc,
+                entry_type=LedgerEntry.EntryType.CREDIT
+            ).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+
+            debits = LedgerEntry.objects.filter(
+                account=acc,
+                entry_type=LedgerEntry.EntryType.DEBIT
+            ).aggregate(sum=Sum('amount'))['sum'] or Decimal('0.00')
+
+            derived_balance = credits - debits
+            diff = acc.balance - derived_balance
+
+            if abs(diff) > Decimal('0.001'):
+                discrepancies.append({
+                    "account_id": str(acc.id),
+                    "account_number": acc.account_number,
+                    "user_email": acc.user.email,
+                    "stored_balance": str(acc.balance),
+                    "derived_balance": str(derived_balance),
+                    "discrepancy": str(diff)
+                })
+            else:
+                in_balance += 1
+
+        is_system_balanced = (
+            abs(total_system_debits - total_system_credits) < Decimal('0.01') and
+            len(discrepancies) == 0
+        )
+
+        return Response({
+            "total_accounts_checked": total_accounts,
+            "accounts_in_balance": in_balance,
+            "discrepancies_count": len(discrepancies),
+            "total_system_debits": str(total_system_debits),
+            "total_system_credits": str(total_system_credits),
+            "is_system_balanced": is_system_balanced,
+            "discrepancies": discrepancies
+        })
 
 
 class AdminTransactionsListView(generics.ListAPIView):

@@ -1,3 +1,54 @@
+export interface UserAccount {
+  id: string;
+  account_number: string;
+  balance: string;
+  currency: string;
+  version?: number;
+  is_active?: boolean;
+  created_at?: string;
+}
+
+export interface UserAdjustment {
+  id: string;
+  account_number: string;
+  operation: 'CREDIT' | 'DEBIT' | 'credit' | 'debit';
+  amount: string;
+  currency: string;
+  previous_balance: string;
+  resulting_balance: string;
+  reason_code: string;
+  admin_note: string;
+  actor_email?: string;
+  created_at: string;
+}
+
+export interface UserTransaction {
+  id: string;
+  sender_account_number: string;
+  receiver_account_number: string;
+  amount: string;
+  currency: string;
+  status: string;
+  direction: 'INBOUND' | 'OUTBOUND';
+  concurrency_strategy: string;
+  description: string;
+  created_at: string;
+}
+
+export interface UserDetail {
+  id: string;
+  email: string;
+  full_name: string;
+  role: 'USER' | 'ADMIN';
+  is_active: boolean;
+  date_joined: string;
+  last_heartbeat: string | null;
+  accounts: UserAccount[];
+  transactions: UserTransaction[];
+  adjustments: UserAdjustment[];
+  audit_logs: AuditLog[];
+}
+
 export interface User {
   id: string;
   email: string;
@@ -5,12 +56,8 @@ export interface User {
   role: 'USER' | 'ADMIN';
   is_active: boolean;
   date_joined: string;
-  last_heartbeat: string;
-  accounts?: Array<{
-    account_number: string;
-    balance: string;
-    currency: string;
-  }>;
+  last_heartbeat: string | null;
+  accounts?: UserAccount[];
   total_transactions?: number;
 }
 

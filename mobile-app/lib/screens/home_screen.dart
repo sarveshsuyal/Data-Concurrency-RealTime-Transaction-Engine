@@ -5,7 +5,6 @@ import '../providers/auth_provider.dart';
 import '../providers/account_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/balance_card.dart';
-import '../widgets/upi_lite_card.dart';
 import '../widgets/quick_actions_grid.dart';
 import '../widgets/receive_qr_sheet.dart';
 import '../widgets/services_hub_view.dart';
@@ -131,185 +130,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _openCheckBalanceModal() {
-    final account = context.read<AccountProvider>().primaryAccount;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.account_balance_rounded, color: AppTheme.primary, size: 28),
-            ),
-            const SizedBox(height: 14),
-            const Text(
-              'Bank Account Balance',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              account?.accountNumber ?? 'DC-XXXX-XXXX',
-              style: const TextStyle(fontFamily: 'monospace', fontSize: 13, color: AppTheme.textMuted),
-            ),
-            const SizedBox(height: 18),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              decoration: BoxDecoration(
-                color: AppTheme.surfaceMuted,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.border),
-              ),
-              child: Column(
-                children: [
-                  const Text('Available to Transact', style: TextStyle(fontSize: 12, color: AppTheme.textMuted)),
-                  const SizedBox(height: 4),
-                  Text(
-                    '₹${account?.balance ?? '0.00'}',
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
-                      color: AppTheme.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Close'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _openAddUpiLiteModal() {
-    double selectedTopUp = 500.0;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (context, setModalState) {
-          final accountProvider = context.read<AccountProvider>();
-          return Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Row(
-                      children: [
-                        Text('⚡', style: TextStyle(fontSize: 22)),
-                        SizedBox(width: 8),
-                        Text('Add Money to UPI Lite', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      onPressed: () => Navigator.pop(ctx),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'UPI Lite allows instant 1-tap payments up to ₹500 without entering your UPI PIN.',
-                  style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
-                ),
-                const SizedBox(height: 18),
-                Row(
-                  children: [
-                    _buildTopUpChip(200, selectedTopUp, (v) => setModalState(() => selectedTopUp = v)),
-                    const SizedBox(width: 10),
-                    _buildTopUpChip(500, selectedTopUp, (v) => setModalState(() => selectedTopUp = v)),
-                    const SizedBox(width: 10),
-                    _buildTopUpChip(1000, selectedTopUp, (v) => setModalState(() => selectedTopUp = v)),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      accountProvider.topUpUpiLite(selectedTopUp);
-                      Navigator.pop(ctx);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Added ₹${selectedTopUp.toInt()} to UPI Lite!')),
-                      );
-                    },
-                    child: Text('Add ₹${selectedTopUp.toInt()} to UPI Lite'),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildTopUpChip(double amt, double current, ValueChanged<double> onSelect) {
-    final isSelected = amt == current;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => onSelect(amt),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFFEF3C7) : AppTheme.surfaceMuted,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isSelected ? const Color(0xFFF59E0B) : AppTheme.border,
-              width: isSelected ? 1.5 : 1,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              '+₹${amt.toInt()}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-                color: isSelected ? const Color(0xFFB45309) : AppTheme.textDark,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildHomeDashboard(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final accountProvider = context.watch<AccountProvider>();
@@ -382,25 +202,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 16),
 
-            // 1. Available Balance Gradient Card
+            // 1. Authoritative Available Balance Gradient Card
             BalanceCard(
               account: account,
               isLoading: accountProvider.isLoading,
+              errorMessage: accountProvider.errorMessage,
               onRefresh: () => accountProvider.fetchAccounts(),
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
 
-            // 2. UPI Lite & Check Balance Status Strip (Soundbox removed!)
-            UpiLiteStrip(
-              upiLiteBalance: accountProvider.upiLiteBalance,
-              onAddUpiLite: _openAddUpiLiteModal,
-              onCheckBalance: _openCheckBalanceModal,
-            ),
-
-            const SizedBox(height: 14),
-
-            // 3. Quick Actions Grid (To Mobile, To Bank/UPI, Scan QR, Receive)
+            // 2. Quick Actions Grid (To Mobile, To Bank/UPI, Scan QR, Receive)
             QuickActionsGrid(
               onToMobile: () => context.go('/transfer'),
               onToBank: () => context.go('/transfer'),

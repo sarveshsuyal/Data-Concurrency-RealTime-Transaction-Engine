@@ -108,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 4),
               const Text(
-                'PhonePe-inspired real-time high-concurrency wallet',
+                'DataCore high-concurrency real-time wallet',
                 style: TextStyle(fontSize: 13, color: AppTheme.textMuted),
               ),
 

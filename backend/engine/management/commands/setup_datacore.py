@@ -29,6 +29,8 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(f"Admin already exists: {admin_user.email}")
 
+            system_clearing = Account.get_system_clearing_account()
+
             # 2. Create Demo Customers
             demo_customers = [
                 {"email": "alice@datacore.io", "name": "Alice Johnson", "balance": Decimal("10000.00")},
@@ -54,10 +56,14 @@ class Command(BaseCommand):
                     defaults={
                         "balance": cust["balance"],
                         "currency": "INR",
-                        "version": 0
+                        "version": 0,
+                        "is_primary": True
                     }
                 )
                 if a_created and cust["balance"] > Decimal("0.00"):
+                    system_clearing.balance -= cust["balance"]
+                    system_clearing.save(update_fields=['balance', 'updated_at'])
+
                     LedgerEntry.objects.create(
                         transaction=None,
                         account=acc,
@@ -65,6 +71,14 @@ class Command(BaseCommand):
                         amount=cust["balance"],
                         balance_after=cust["balance"],
                         description="Initial seed deposit"
+                    )
+                    LedgerEntry.objects.create(
+                        transaction=None,
+                        account=system_clearing,
+                        entry_type=LedgerEntry.EntryType.DEBIT,
+                        amount=cust["balance"],
+                        balance_after=system_clearing.balance,
+                        description=f"System seed liquidity allocation for {user.email}"
                     )
                 accounts[cust["email"]] = acc
                 self.stdout.write(self.style.SUCCESS(f"Customer ready: {user.email} (Acc: {acc.account_number})"))

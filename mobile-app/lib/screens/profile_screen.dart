@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/account_provider.dart';
 import '../theme/app_theme.dart';
+import '../services/biometric_service.dart';
 import '../widgets/receive_qr_sheet.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -64,7 +65,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Version: 2.0.0 (PhonePe High-Concurrency Edition)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+            Text('Version: 2.0.0 (DataCore High-Concurrency Edition)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
             SizedBox(height: 6),
             Text('Ledger Architecture: Double-Entry Cryptographic Invariant', style: TextStyle(fontSize: 12)),
             SizedBox(height: 4),
@@ -305,9 +306,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 SwitchListTile(
                   value: _biometricsEnabled,
-                  onChanged: (val) => setState(() => _biometricsEnabled = val),
+                  onChanged: (val) async {
+                    if (val) {
+                      final result = await BiometricService().authenticate(
+                        reason: 'Scan your fingerprint to enable biometric unlock',
+                      );
+                      if (result == BiometricAuthResult.success) {
+                        setState(() => _biometricsEnabled = true);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Biometric security enabled successfully.')),
+                          );
+                        }
+                      } else {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Biometric verification cancelled or failed.')),
+                          );
+                        }
+                      }
+                    } else {
+                      setState(() => _biometricsEnabled = false);
+                    }
+                  },
                   title: const Text('Biometric Fingerprint Unlock', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                  subtitle: const Text('Require biometrics to open app', style: TextStyle(fontSize: 10, color: AppTheme.textMuted)),
+                  subtitle: const Text('Require native biometrics to open app', style: TextStyle(fontSize: 10, color: AppTheme.textMuted)),
                   activeColor: AppTheme.primary,
                 ),
                 const Divider(height: 1),

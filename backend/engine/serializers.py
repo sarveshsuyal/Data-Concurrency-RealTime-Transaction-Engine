@@ -7,7 +7,8 @@ from .models import (
     IdempotencyKey,
     TransactionEvent,
     ConcurrencyExperiment,
-    AuditLog
+    AuditLog,
+    AccountAdjustment
 )
 from authentication.models import User
 
@@ -195,5 +196,37 @@ class IdempotencyKeySerializer(serializers.ModelSerializer):
             'response_body',
             'created_at',
             'updated_at'
+        )
+        read_only_fields = fields
+
+
+class AdjustmentRequestSerializer(serializers.Serializer):
+    operation = serializers.ChoiceField(choices=['credit', 'debit', 'CREDIT', 'DEBIT'])
+    amount = serializers.DecimalField(max_digits=14, decimal_places=2, min_value=Decimal('0.01'))
+    currency = serializers.CharField(max_length=3, default='INR')
+    reason_code = serializers.CharField(max_length=64)
+    admin_note = serializers.CharField(max_length=1000)
+
+
+class AccountAdjustmentSerializer(serializers.ModelSerializer):
+    account_number = serializers.CharField(source='account.account_number', read_only=True)
+    actor_email = serializers.EmailField(source='actor.email', read_only=True, allow_null=True)
+
+    class Meta:
+        model = AccountAdjustment
+        fields = (
+            'id',
+            'account',
+            'account_number',
+            'actor_email',
+            'operation',
+            'amount',
+            'currency',
+            'previous_balance',
+            'resulting_balance',
+            'reason_code',
+            'admin_note',
+            'idempotency_key',
+            'created_at'
         )
         read_only_fields = fields

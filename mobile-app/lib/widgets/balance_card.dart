@@ -7,12 +7,14 @@ class BalanceCard extends StatefulWidget {
   final AccountModel? account;
   final VoidCallback onRefresh;
   final bool isLoading;
+  final String? errorMessage;
 
   const BalanceCard({
     super.key,
     required this.account,
     required this.onRefresh,
     this.isLoading = false,
+    this.errorMessage,
   });
 
   @override
@@ -24,11 +26,13 @@ class _BalanceCardState extends State<BalanceCard> {
 
   @override
   Widget build(BuildContext context) {
+    // Strict financial rule: 0.00 is valid decimal and must not be defaulted to 10k
     final balanceText = widget.account != null
         ? '₹${widget.account!.balance}'
         : '₹0.00';
 
     final accountNumber = widget.account?.accountNumber ?? 'DC-XXXX-XXXX';
+    final isOfflineOrError = widget.errorMessage != null || widget.account == null;
 
     return Container(
       width: double.infinity,
@@ -104,7 +108,7 @@ class _BalanceCardState extends State<BalanceCard> {
 
           const SizedBox(height: 12),
 
-          // Big Amount
+          // Big Authoritative Amount
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -130,11 +134,40 @@ class _BalanceCardState extends State<BalanceCard> {
                   icon: const Icon(Icons.refresh_rounded, color: Colors.white70, size: 20),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
+                  tooltip: 'Refresh Authoritative Balance',
                 ),
             ],
           ),
 
-          const SizedBox(height: 16),
+          // Status Timestamp / Offline indicator
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isOfflineOrError ? Colors.amberAccent : const Color(0xFF34D399),
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                widget.isLoading
+                    ? 'Syncing with ledger...'
+                    : (isOfflineOrError
+                        ? (widget.errorMessage ?? 'Offline • Tap refresh')
+                        : 'Authoritative Sync • Updated just now'),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.75),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 14),
           Divider(color: Colors.white.withOpacity(0.15), height: 1),
           const SizedBox(height: 14),
 

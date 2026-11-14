@@ -33,14 +33,43 @@ class Account(models.Model):
     currency = models.CharField(max_length=3, default='INR')
     version = models.PositiveIntegerField(default=0)  # For optimistic locking
     is_active = models.BooleanField(default=True)
+    is_primary = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['created_at']
 
     def __str__(self):
         return f"{self.account_number} ({self.user.email}) - {self.currency} {self.balance}"
+
+    @classmethod
+    def get_system_clearing_account(cls):
+        """
+        Returns or provisions the authoritative system clearing account for double-entry balance preservation.
+        Used as the offsetting leg for external funding, opening deposits, and admin adjustments.
+        """
+        from authentication.models import User
+        admin_user = User.objects.filter(role=User.Role.ADMIN).first()
+        if not admin_user:
+            admin_user = User.objects.filter(is_superuser=True).first()
+        if not admin_user:
+            admin_user = User.objects.create_user(
+                email="system@datacore.internal",
+                full_name="DataCore System Clearing",
+                role=User.Role.ADMIN
+            )
+        account, _ = cls.objects.get_or_create(
+            account_number="SYS-CLEARING-001",
+            defaults={
+                "user": admin_user,
+                "currency": "INR",
+                "balance": Decimal('0.00'),
+                "is_active": True,
+                "is_primary": False
+            }
+        )
+        return account
 
 
 class Transaction(models.Model):
@@ -235,3 +264,43 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.timestamp} | {self.action} by {self.user}"
+
+
+class AccountAdjustment(models.Model):
+    """
+    Authoritative manual credit or debit adjustment performed by an administrator.
+    Every adjustment strictly writes balanced double-entry ledger records against
+    the system clearing account to guarantee zero-sum money conservation.
+    """
+    class Operation(models.TextChoices):
+        CREDIT = 'CREDIT', 'Credit'
+        DEBIT = 'DEBIT', 'Debit'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.PROTECT,
+        related_name='adjustments'
+    )
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='executed_adjustments'
+    )
+    operation = models.CharField(max_length=10, choices=Operation.choices)
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
+    currency = models.CharField(max_length=3, default='INR')
+    previous_balance = models.DecimalField(max_digits=14, decimal_places=2)
+    resulting_balance = models.DecimalField(max_digits=14, decimal_places=2)
+    reason_code = models.CharField(max_length=64)
+    admin_note = models.TextField()
+    idempotency_key = models.CharField(max_length=255, null=True, blank=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Adjustment {self.id} | {self.operation} {self.currency} {self.amount} -> {self.account.account_number}"

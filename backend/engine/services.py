@@ -14,7 +14,8 @@ from .models import (
     IdempotencyKey,
     TransactionEvent,
     ConcurrencyExperiment,
-    AuditLog
+    AuditLog,
+    AccountAdjustment
 )
 from .concurrency import (
     ConcurrencyStrategyHandler,
@@ -355,3 +356,236 @@ class RaceExperimentService:
         )
 
         return experiment
+
+
+class AdjustmentService:
+    """
+    Executes authoritative administrator manual balance adjustments with
+    canonical row-level locking, double-entry ledger balancing, and idempotency protection.
+    """
+
+    @classmethod
+    def execute_adjustment(
+        cls,
+        admin_user,
+        account_id,
+        operation,
+        amount,
+        currency="INR",
+        reason_code="ADMIN_CORRECTION",
+        admin_note="",
+        idempotency_key_value=None,
+        request_path="/api/admin/accounts/adjustments/"
+    ):
+        start_time = time.time()
+
+        # 1. Authorization Verification
+        if not (admin_user.is_staff or getattr(admin_user, 'role', '') == 'ADMIN' or admin_user.is_superuser):
+            raise PermissionError("Only authorized administrators can perform manual balance adjustments.")
+
+        # 2. Validation
+        try:
+            amount = Decimal(str(amount))
+        except Exception:
+            raise ValueError("Adjustment amount must be a valid decimal number.")
+
+        if amount <= Decimal('0.00'):
+            raise ValueError("Adjustment amount must be strictly positive.")
+
+        op = str(operation).strip().upper()
+        if op not in (AccountAdjustment.Operation.CREDIT, AccountAdjustment.Operation.DEBIT):
+            raise ValueError(f"Invalid operation '{operation}'. Must be 'credit' or 'debit'.")
+
+        if not reason_code:
+            raise ValueError("A reason code is required for audit compliance.")
+        if not admin_note:
+            raise ValueError("An admin note/case reference is required for audit compliance.")
+
+        # 3. Idempotency Check & Fingerprinting
+        idempotency_obj = None
+        if idempotency_key_value:
+            payload_dict = {
+                'account_id': str(account_id),
+                'operation': op,
+                'amount': str(amount),
+                'currency': currency,
+                'reason_code': reason_code,
+                'admin_note': admin_note
+            }
+            payload_str = json.dumps(payload_dict, sort_keys=True)
+            payload_hash = hashlib.sha256(payload_str.encode('utf-8')).hexdigest()
+
+            try:
+                with transaction.atomic():
+                    existing_key = IdempotencyKey.objects.select_for_update().filter(
+                        user=admin_user,
+                        key=idempotency_key_value
+                    ).first()
+
+                    if existing_key:
+                        if existing_key.request_hash != payload_hash:
+                            raise IdempotencyException(
+                                "Idempotency key reused with different request payload.",
+                                status_code=400
+                            )
+                        if existing_key.status == IdempotencyKey.Status.COMPLETED:
+                            return existing_key.response_body, True
+                        elif existing_key.status == IdempotencyKey.Status.PROCESSING:
+                            raise IdempotencyException(
+                                "Duplicate adjustment currently in-flight. Please wait.",
+                                status_code=409
+                            )
+                    else:
+                        idempotency_obj = IdempotencyKey.objects.create(
+                            user=admin_user,
+                            key=idempotency_key_value,
+                            request_path=request_path,
+                            request_hash=payload_hash,
+                            status=IdempotencyKey.Status.PROCESSING
+                        )
+            except DatabaseError:
+                existing_key = IdempotencyKey.objects.filter(user=admin_user, key=idempotency_key_value).first()
+                if existing_key and existing_key.status == IdempotencyKey.Status.COMPLETED:
+                    return existing_key.response_body, True
+                raise IdempotencyException("Concurrent duplicate adjustment in progress.", status_code=409)
+
+        # 4. Atomic Execution with Canonical Row Locks & Balanced Double-Entry Ledger
+        try:
+            with transaction.atomic():
+                system_clearing = Account.get_system_clearing_account()
+
+                # Deadlock prevention: Acquire locks in canonical UUID order
+                first_id, second_id = (
+                    (account_id, system_clearing.id)
+                    if str(account_id) < str(system_clearing.id)
+                    else (system_clearing.id, account_id)
+                )
+
+                first_acc = Account.objects.select_for_update().get(id=first_id)
+                second_acc = Account.objects.select_for_update().get(id=second_id)
+
+                target_account = first_acc if first_acc.id == account_id else second_acc
+                clearing_account = second_acc if second_acc.id == system_clearing.id else first_acc
+
+                if not target_account.is_active:
+                    raise ValueError(f"Target account {target_account.account_number} is suspended or inactive.")
+
+                previous_balance = target_account.balance
+
+                if op == AccountAdjustment.Operation.DEBIT:
+                    if target_account.balance < amount:
+                        raise InsufficientFundsException(
+                            f"Insufficient funds for debit adjustment: Available ₹{target_account.balance}, requested ₹{amount}."
+                        )
+                    target_account.balance -= amount
+                    clearing_account.balance += amount
+                    target_entry_type = LedgerEntry.EntryType.DEBIT
+                    clearing_entry_type = LedgerEntry.EntryType.CREDIT
+                else:  # CREDIT
+                    target_account.balance += amount
+                    clearing_account.balance -= amount
+                    target_entry_type = LedgerEntry.EntryType.CREDIT
+                    clearing_entry_type = LedgerEntry.EntryType.DEBIT
+
+                target_account.version += 1
+                clearing_account.version += 1
+                target_account.save(update_fields=['balance', 'version', 'updated_at'])
+                clearing_account.save(update_fields=['balance', 'version', 'updated_at'])
+
+                # Balanced double-entry ledger entries
+                target_ledger = LedgerEntry.objects.create(
+                    transaction=None,
+                    account=target_account,
+                    entry_type=target_entry_type,
+                    amount=amount,
+                    balance_after=target_account.balance,
+                    description=f"Admin {op}: {reason_code} - {admin_note}"
+                )
+
+                clearing_ledger = LedgerEntry.objects.create(
+                    transaction=None,
+                    account=clearing_account,
+                    entry_type=clearing_entry_type,
+                    amount=amount,
+                    balance_after=clearing_account.balance,
+                    description=f"Offsetting clearing leg for admin {op} on {target_account.account_number}"
+                )
+
+                # Persist Adjustment Record
+                adjustment = AccountAdjustment.objects.create(
+                    account=target_account,
+                    actor=admin_user,
+                    operation=op,
+                    amount=amount,
+                    currency=target_account.currency,
+                    previous_balance=previous_balance,
+                    resulting_balance=target_account.balance,
+                    reason_code=reason_code,
+                    admin_note=admin_note,
+                    idempotency_key=idempotency_key_value
+                )
+
+                # Persist Audit Log
+                AuditLog.objects.create(
+                    user=admin_user,
+                    action=f"ADMIN_ADJUSTMENT_{op}",
+                    details={
+                        "adjustment_id": str(adjustment.id),
+                        "account_id": str(target_account.id),
+                        "account_number": target_account.account_number,
+                        "operation": op,
+                        "amount": str(amount),
+                        "previous_balance": str(previous_balance),
+                        "resulting_balance": str(target_account.balance),
+                        "reason_code": reason_code,
+                        "admin_note": admin_note
+                    }
+                )
+
+                # Publish Transaction / Account Event for Real-Time Subscribers
+                TransactionEvent.objects.create(
+                    transaction=None,
+                    event_type='account.balance_changed',
+                    details={
+                        "adjustment_id": str(adjustment.id),
+                        "account_id": str(target_account.id),
+                        "account_number": target_account.account_number,
+                        "user_id": str(target_account.user.id),
+                        "user_email": target_account.user.email,
+                        "operation": op,
+                        "amount": str(amount),
+                        "new_balance": str(target_account.balance),
+                        "reason": reason_code,
+                        "timestamp": timezone.now().isoformat()
+                    }
+                )
+
+            response_payload = {
+                "id": str(adjustment.id),
+                "account_id": str(target_account.id),
+                "account_number": target_account.account_number,
+                "operation": op.lower(),
+                "amount": str(amount),
+                "currency": target_account.currency,
+                "previous_balance": str(previous_balance),
+                "new_balance": str(target_account.balance),
+                "reason_code": reason_code,
+                "admin_note": admin_note,
+                "created_at": adjustment.created_at.isoformat()
+            }
+
+            if idempotency_obj:
+                idempotency_obj.status = IdempotencyKey.Status.COMPLETED
+                idempotency_obj.response_code = 200
+                idempotency_obj.response_body = response_payload
+                idempotency_obj.save(update_fields=['status', 'response_code', 'response_body', 'updated_at'])
+
+            return response_payload, False
+
+        except Exception as e:
+            if idempotency_obj:
+                idempotency_obj.status = IdempotencyKey.Status.FAILED
+                idempotency_obj.response_code = 400
+                idempotency_obj.response_body = {"error": str(e)}
+                idempotency_obj.save(update_fields=['status', 'response_code', 'response_body', 'updated_at'])
+            raise e

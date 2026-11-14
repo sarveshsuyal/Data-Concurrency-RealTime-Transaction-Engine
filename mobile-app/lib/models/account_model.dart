@@ -23,15 +23,19 @@ class AccountModel {
 
   factory AccountModel.fromJson(Map<String, dynamic> json) {
     return AccountModel(
-      id: json['id'] ?? '',
-      accountNumber: json['account_number'] ?? '',
-      userEmail: json['user_email'] ?? '',
-      userName: json['user_name'] ?? '',
-      balance: json['balance'] ?? '0.00',
-      currency: json['currency'] ?? 'INR',
-      version: json['version'] ?? 0,
-      isActive: json['is_active'] ?? true,
-      createdAt: json['created_at'] ?? '',
+      id: json['id']?.toString() ?? '',
+      accountNumber: json['account_number']?.toString() ?? '',
+      userEmail: json['user_email']?.toString() ?? '',
+      userName: json['user_name']?.toString() ?? '',
+      balance: json['balance']?.toString() ?? '0.00',
+      currency: json['currency']?.toString() ?? 'INR',
+      version: json['version'] is int
+          ? json['version']
+          : int.tryParse(json['version']?.toString() ?? '0') ?? 0,
+      isActive: json['is_active'] is bool
+          ? json['is_active']
+          : (json['is_active']?.toString().toLowerCase() != 'false'),
+      createdAt: json['created_at']?.toString() ?? '',
     );
   }
 }

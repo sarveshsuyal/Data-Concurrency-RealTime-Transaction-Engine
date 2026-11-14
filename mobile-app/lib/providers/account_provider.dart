@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:uuid/uuid.dart';
@@ -14,7 +15,14 @@ class AccountProvider with ChangeNotifier {
   String? _errorMessage;
   double _upiLiteBalance = 0.0;
 
-  AccountProvider(this._apiService);
+  // Real-Time Event Tracking & Deduplication
+  Timer? _eventPollTimer;
+  final Set<String> _processedEventIds = {};
+  String? _lastIncomingNotification;
+
+  AccountProvider(this._apiService) {
+    startEventSync();
+  }
 
   AccountModel? get primaryAccount => _primaryAccount;
   List<TransactionModel> get recentTransactions => _recentTransactions;
@@ -22,6 +30,62 @@ class AccountProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   double get upiLiteBalance => _upiLiteBalance;
+  String? get lastIncomingNotification => _lastIncomingNotification;
+
+  void clearIncomingNotification() {
+    _lastIncomingNotification = null;
+    notifyListeners();
+  }
+
+  void startEventSync() {
+    _eventPollTimer?.cancel();
+    _eventPollTimer = Timer.periodic(const Duration(seconds: 4), (_) async {
+      await pollIncomingEvents();
+    });
+  }
+
+  void stopEventSync() {
+    _eventPollTimer?.cancel();
+    _eventPollTimer = null;
+  }
+
+  Future<void> pollIncomingEvents() async {
+    try {
+      final response = await _apiService.dio.get('/api/events/my/');
+      final List list = response.data is List ? response.data : [];
+      bool hasNewEvent = false;
+
+      for (final ev in list) {
+        final String eventId = ev['id']?.toString() ?? '';
+        if (eventId.isEmpty || _processedEventIds.contains(eventId)) continue;
+        _processedEventIds.add(eventId);
+
+        final String eventType = ev['event_type'] ?? '';
+        final details = ev['details'] is Map ? ev['details'] : {};
+
+        if (eventType == 'TX_COMPLETED' ||
+            eventType == 'account.balance_changed' ||
+            eventType == 'LEDGER_COMMITTED') {
+          hasNewEvent = true;
+          final amt = details['amount'] ?? details['sender_new_balance'];
+          if (amt != null) {
+            _lastIncomingNotification = 'Transaction updated: ₹$amt';
+          }
+        }
+      }
+
+      if (hasNewEvent) {
+        await fetchAccounts();
+        await fetchTransactions();
+      }
+    } catch (_) {}
+  }
+
+  @override
+  void dispose() {
+    stopEventSync();
+    super.dispose();
+  }
 
   Future<void> fetchAccounts() async {
     _isLoading = true;

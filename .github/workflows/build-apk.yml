@@ -85,11 +85,11 @@ jobs:
 
       - name: Analyze Dart Source
         working-directory: mobile-app
-        run: flutter analyze lib/ || true
+        run: flutter analyze lib/
 
       - name: Run Flutter Tests
         working-directory: mobile-app
-        run: flutter test || true
+        run: flutter test
 
       - name: Build Fresh Android Release APK
         working-directory: mobile-app
@@ -135,7 +135,7 @@ jobs:
             - **Build Number:** `${{ github.run_number }}`
             - **Commit:** `${{ github.sha }}`
             - **Backend API URL:** `${{ inputs.api_base_url || 'https://datacore-backend-wktd.onrender.com' }}`
-            - **UI Framework:** Native Flutter (PhonePe High-Concurrency Edition)
+            - **UI Framework:** Native Flutter (DataCore High-Concurrency Edition)
             
             Download `app-release.apk` below and install directly on your Android device.
           draft: false

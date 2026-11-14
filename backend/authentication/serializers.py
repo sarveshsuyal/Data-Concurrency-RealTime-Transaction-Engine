@@ -54,11 +54,17 @@ class RegisterSerializer(serializers.ModelSerializer):
                 user=user,
                 balance=initial_balance,
                 currency=currency,
-                version=0
+                version=0,
+                is_primary=True
             )
 
-            # Record initial deposit in ledger if initial_balance > 0
+            # Record balanced double-entry initial deposit in ledger if initial_balance > 0
             if initial_balance > Decimal('0.00'):
+                system_clearing = Account.get_system_clearing_account()
+                system_clearing.balance -= initial_balance
+                system_clearing.save(update_fields=['balance', 'updated_at'])
+
+                # Credit user account
                 LedgerEntry.objects.create(
                     transaction=None,
                     account=account,
@@ -66,6 +72,15 @@ class RegisterSerializer(serializers.ModelSerializer):
                     amount=initial_balance,
                     balance_after=initial_balance,
                     description="Initial test deposit upon registration"
+                )
+                # Offset debit from system clearing account to preserve debits == credits
+                LedgerEntry.objects.create(
+                    transaction=None,
+                    account=system_clearing,
+                    entry_type=LedgerEntry.EntryType.DEBIT,
+                    amount=initial_balance,
+                    balance_after=system_clearing.balance,
+                    description=f"System opening liquidity grant for {user.email}"
                 )
 
         return user
