@@ -297,7 +297,7 @@
       <div class="bg-white border border-slate-200 rounded-3xl p-4 shadow-sm space-y-3">
         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Or Enter Wallet ID / Email</span>
         <div>
-          <input id="login-email-input" type="text" value="alice@datacore.io" placeholder="e.g. alice@datacore.io or DC-6812-3923" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
+          <input id="login-email-input" type="text" value="yash@datacore" placeholder="e.g. yash@datacore or DC-6812-3923" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
         </div>
         <div>
           <input id="login-password-input" type="password" value="Password123!" placeholder="Enter PIN / Password" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-900 focus:outline-none focus:border-blue-600">
@@ -377,7 +377,7 @@
         </div>
         <div>
           <div class="flex items-center space-x-1.5">
-            <h2 id="header-user-name" class="text-base font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition">Alice Walker</h2>
+            <h2 id="header-user-name" class="text-base font-bold text-slate-900 leading-tight group-hover:text-blue-600 transition">Yash Sharma</h2>
             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 group-hover:text-blue-600 transition"></i>
           </div>
           <div class="flex items-center space-x-1.5">
@@ -1170,7 +1170,7 @@
       <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Recipient (UPI ID, PhonePe @ybl, GPay @oksbi, Paytm, Bank A/C or Mobile)</label>
       <div class="relative">
         <i class="fa-regular fa-user absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-        <input id="transfer-recipient" oninput="handleRecipientInput(this.value)" type="text" value="bob@datacore.io" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm" placeholder="e.g. 9876543210@ybl, rahul@oksbi, DC-1519-6941">
+        <input id="transfer-recipient" oninput="handleRecipientInput(this.value)" type="text" value="rahul.verma@okaxis" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm" placeholder="e.g. 9876543210@ybl, rahul@oksbi, DC-1519-6941">
       </div>
       <div id="transfer-provider-badge" class="mt-1.5 flex items-center space-x-1.5 hidden"></div>
       <div class="flex flex-wrap gap-1.5 mt-2">
@@ -1519,8 +1519,8 @@
             <i class="fa-solid fa-camera"></i>
           </button>
         </div>
-        <h3 id="profile-user-name" class="text-lg font-black text-slate-900 leading-tight">Alice Walker</h3>
-        <p id="profile-user-email" class="text-xs text-slate-500 font-medium mb-1">alice@datacore.io</p>
+        <h3 id="profile-user-name" class="text-lg font-black text-slate-900 leading-tight">Yash Sharma</h3>
+        <p id="profile-user-email" class="text-xs text-slate-500 font-medium mb-1">yash@datacore</p>
         
         <div class="inline-flex items-center space-x-1.5 px-3 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold mt-1">
           <i class="fa-solid fa-circle-check text-[10px]"></i>
@@ -1804,8 +1804,8 @@
           </div>
           <div>
             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Paid To</span>
-            <span id="succ-recipient-name" class="font-black text-sm text-slate-900 block leading-tight">Bob Smith</span>
-            <span id="succ-recipient-id" class="text-[11px] text-slate-500 font-mono mt-0.5 block">bob@datacore.io</span>
+            <span id="succ-recipient-name" class="font-black text-sm text-slate-900 block leading-tight">Rahul Verma</span>
+            <span id="succ-recipient-id" class="text-[11px] text-slate-500 font-mono mt-0.5 block">rahul.verma@okaxis</span>
           </div>
         </div>
         <div class="text-right">
@@ -1980,8 +1980,8 @@
       <div class="w-16 h-16 rounded-full bg-blue-100 text-blue-600 text-2xl font-bold flex items-center justify-center mx-auto mb-2 border-2 border-blue-600/30">
         <span id="menu-avatar-initial">A</span>
       </div>
-      <h3 id="menu-user-name" class="text-base font-bold text-slate-900">Alice Walker</h3>
-      <p id="menu-user-email" class="text-xs text-slate-500">alice@datacore.io</p>
+      <h3 id="menu-user-name" class="text-base font-bold text-slate-900">Yash Sharma</h3>
+      <p id="menu-user-email" class="text-xs text-slate-500">yash@datacore</p>
       <div class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold mt-2">
         <i class="fa-solid fa-circle-check text-[9px]"></i>
         <span>KYC VERIFIED • TIER 3</span>
@@ -2138,8 +2138,8 @@
           </div>
           <div>
             <span id="rcpt-direction-label" class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Paid To</span>
-            <span id="rcpt-recipient-name" class="font-black text-xs text-slate-900 block leading-tight">Bob Smith</span>
-            <span id="rcpt-recipient-id" class="text-[10px] text-slate-500 font-mono mt-0.5 block truncate max-w-[140px]">bob@datacore.io</span>
+            <span id="rcpt-recipient-name" class="font-black text-xs text-slate-900 block leading-tight">Rahul Verma</span>
+            <span id="rcpt-recipient-id" class="text-[10px] text-slate-500 font-mono mt-0.5 block truncate max-w-[140px]">rahul.verma@okaxis</span>
           </div>
         </div>
         <div class="text-right">
@@ -2360,7 +2360,7 @@
     <!-- Paying Summary -->
     <div class="mb-4">
       <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Authorizing Payment</span>
-      <h3 id="pin-paying-to" class="text-base font-black text-slate-900">Paying Bob Smith</h3>
+      <h3 id="pin-paying-to" class="text-base font-black text-slate-900">Paying Rahul Verma</h3>
       <div id="pin-paying-amt" class="text-2xl font-black text-blue-600 font-mono mt-1">₹250.00</div>
     </div>
 
@@ -2786,82 +2786,90 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <script>
   // ================= STORAGE KEYS =================
   const STORAGE_KEYS = {
-    WALLETS: 'datacore_multi_wallets_v3',
+    WALLETS: 'datacore_multi_wallets_v4',
+    ACTIVE_USER: 'datacore_active_user_v4',
     ACTIVE_USER: 'datacore_active_user_email',
     SOUND_ENABLED: 'datacore_sound_enabled',
     DARK_THEME: 'datacore_dark_theme'
   };
 
-  // Factory Default Test Accounts with Realistic Balances & History
+  // Factory Default Test Accounts with Realistic Indian UPI Balances & History
   const DEFAULT_INITIAL_WALLETS = {
-    'alice@datacore.io': {
-      id: 'usr_alice',
-      name: 'Alice Walker',
-      email: 'alice@datacore.io',
+    'yash@datacore': {
+      id: 'usr_yash',
+      name: 'Yash Sharma',
+      email: 'yash@datacore',
       accountNo: 'DC-6812-3923',
-      initial: 'A',
-      role: 'Merchant & Sender',
+      initial: 'Y',
+      role: 'Prime Savings A/C',
       color: 'blue',
       balance: 10000.00,
-      dailyLimit: 50000.00,
+      dailyLimit: 100000.00,
+      pin: '1234',
       isTransfersLocked: false,
       transactions: [
-        { id: '481920491823', utr: '431872910482', type: 'DEBIT', to: 'bob@datacore.io', toName: 'Bob Smith', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', fullDateTime: '13 Nov 2026, 08:30 PM', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '9.2 ms' },
-        { id: '719284019284', utr: '981240182941', type: 'CREDIT', to: 'charlie@datacore.io', toName: 'Charlie Davis', amount: 1500.00, desc: 'API Consultancy Fee', date: 'Nov 12', fullDateTime: '12 Nov 2026, 02:15 PM', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '12.4 ms' },
-        { id: '391029481920', utr: '102948192041', type: 'DEBIT', to: 'cloud-settlement@datacore.io', toName: 'Cloud Settlement', amount: 500.00, desc: 'Node Hosting', date: 'Nov 11', fullDateTime: '11 Nov 2026, 11:00 AM', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '7.8 ms' }
+        { id: '481920491823', utr: '431872910482', type: 'DEBIT', to: 'rahul.verma@okaxis', toName: 'Rahul Verma', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', fullDateTime: '13 Nov 2026, 08:30 PM', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '5.2 ms' },
+        { id: '719284019284', utr: '981240182941', type: 'CREDIT', to: 'pooja.patel@okhdfcbank', toName: 'Pooja Patel', amount: 1500.00, desc: 'Freelance Design Project', date: 'Nov 12', fullDateTime: '12 Nov 2026, 02:15 PM', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '6.4 ms' },
+        { id: '391029481920', utr: '102948192041', type: 'DEBIT', to: 'sharmakirana@upi', toName: 'Sharma Kirana Store', amount: 420.00, desc: 'Daily Groceries & Essentials', date: 'Nov 11', fullDateTime: '11 Nov 2026, 11:00 AM', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '4.8 ms' },
+        { id: '829104819201', utr: '591029481029', type: 'DEBIT', to: 'swiggy@icici', toName: 'Swiggy', amount: 349.00, desc: 'Gourmet Lunch Delivery', date: 'Nov 10', fullDateTime: '10 Nov 2026, 01:20 PM', status: 'COMPLETED', strategy: 'ATOMIC_CONDITIONAL', latency: '4.5 ms' },
+        { id: '192048192048', utr: '710294810293', type: 'DEBIT', to: 'airtel@bbps', toName: 'Airtel Digital TV', amount: 299.00, desc: 'Monthly HD Pack Recharge', date: 'Nov 09', fullDateTime: '09 Nov 2026, 07:15 PM', status: 'COMPLETED', strategy: 'ATOMIC_CONDITIONAL', latency: '4.1 ms' }
       ],
       notifications: [
         { id: 'n1', title: 'Protected Ledger Active', msg: 'Canonical row-locking guarantees 0 race conditions.', unread: true, time: '10m ago' },
         { id: 'n2', title: 'Test Funds Provisioned', msg: '₹10,000 initial test balance is ready.', unread: false, time: '1d ago' }
       ],
       payees: [
-        { id: 'p1', name: 'Bob Smith', email: 'bob@datacore.io', initials: 'BS' },
-        { id: 'p2', name: 'Charlie Davis', email: 'charlie@datacore.io', initials: 'CD' },
-        { id: 'p3', name: 'Cloud Node', email: 'cloud-settlement@datacore.io', initials: 'CN' }
+        { id: 'p1', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'RV' },
+        { id: 'p2', name: 'Pooja Patel', email: 'pooja.patel@okhdfcbank', initials: 'PP' },
+        { id: 'p3', name: 'Sharma Kirana Store', email: 'sharmakirana@upi', initials: 'SK' },
+        { id: 'p4', name: 'Swiggy', email: 'swiggy@icici', initials: 'SW' },
+        { id: 'p5', name: 'Aman Gupta', email: 'aman.gupta@paytm', initials: 'AG' }
       ]
     },
-    'bob@datacore.io': {
-      id: 'usr_bob',
-      name: 'Bob Smith',
-      email: 'bob@datacore.io',
+    'rahul@datacore': {
+      id: 'usr_rahul',
+      name: 'Rahul Verma',
+      email: 'rahul@datacore',
       accountNo: 'DC-1519-6941',
-      initial: 'B',
-      role: 'Receiver & Developer',
+      initial: 'R',
+      role: 'Developer & Receiver',
       color: 'emerald',
       balance: 5250.00,
       dailyLimit: 50000.00,
+      pin: '1234',
       isTransfersLocked: false,
       transactions: [
-        { id: '481920491823', type: 'CREDIT', to: 'alice@datacore.io', toName: 'Alice Walker', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '9.2 ms' }
+        { id: '481920491823', utr: '431872910482', type: 'CREDIT', to: 'yash@datacore', toName: 'Yash Sharma', amount: 250.00, desc: 'Dinner split', date: 'Yesterday', fullDateTime: '13 Nov 2026, 08:30 PM', status: 'COMPLETED', strategy: 'PESSIMISTIC', latency: '5.2 ms' }
       ],
       notifications: [
-        { id: 'nb1', title: 'Funds Received', msg: '₹250.00 received from Alice Walker (Dinner split)', unread: true, time: 'Yesterday' }
+        { id: 'nb1', title: 'Funds Received', msg: '₹250.00 received from Yash Sharma (Dinner split)', unread: true, time: 'Yesterday' }
       ],
       payees: [
-        { id: 'p1', name: 'Alice Walker', email: 'alice@datacore.io', initials: 'AW' },
-        { id: 'p2', name: 'Charlie Davis', email: 'charlie@datacore.io', initials: 'CD' }
+        { id: 'p1', name: 'Yash Sharma', email: 'yash@datacore', initials: 'YS' },
+        { id: 'p2', name: 'Pooja Patel', email: 'pooja.patel@okhdfcbank', initials: 'PP' }
       ]
     },
-    'charlie@datacore.io': {
-      id: 'usr_charlie',
-      name: 'Charlie Davis',
-      email: 'charlie@datacore.io',
+    'pooja@datacore': {
+      id: 'usr_pooja',
+      name: 'Pooja Patel',
+      email: 'pooja@datacore',
       accountNo: 'DC-4806-5873',
-      initial: 'C',
-      role: 'Security Auditor',
+      initial: 'P',
+      role: 'UX Designer',
       color: 'purple',
-      balance: 2500.00,
-      dailyLimit: 25000.00,
+      balance: 8500.00,
+      dailyLimit: 50000.00,
+      pin: '1234',
       isTransfersLocked: false,
       transactions: [
-        { id: '719284019284', type: 'DEBIT', to: 'alice@datacore.io', toName: 'Alice Walker', amount: 1500.00, desc: 'API Consultancy Fee', date: 'Nov 12', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '12.4 ms' }
+        { id: '719284019284', utr: '981240182941', type: 'DEBIT', to: 'yash@datacore', toName: 'Yash Sharma', amount: 1500.00, desc: 'Freelance Design Project', date: 'Nov 12', fullDateTime: '12 Nov 2026, 02:15 PM', status: 'COMPLETED', strategy: 'OPTIMISTIC', latency: '6.4 ms' }
       ],
       notifications: [
-        { id: 'nc1', title: 'Transfer Settled', msg: '₹1,500.00 sent to Alice Walker for API Consultancy Fee', unread: false, time: 'Nov 12' }
+        { id: 'nc1', title: 'Transfer Settled', msg: '₹1,500.00 sent to Yash Sharma for Freelance Design Project', unread: false, time: 'Nov 12' }
       ],
       payees: [
-        { id: 'p1', name: 'Alice Walker', email: 'alice@datacore.io', initials: 'AW' },
-        { id: 'p2', name: 'Bob Smith', email: 'bob@datacore.io', initials: 'BS' }
+        { id: 'p1', name: 'Yash Sharma', email: 'yash@datacore', initials: 'YS' },
+        { id: 'p2', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'RV' }
       ]
     }
   };
@@ -2878,7 +2886,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   // Active Session Email (null when logged out)
   let activeUserEmail = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER);
   if (activeUserEmail === null) {
-    activeUserEmail = 'alice@datacore.io';
+    activeUserEmail = 'yash@datacore';
     localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, activeUserEmail);
   }
 
@@ -2900,12 +2908,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   let lastSuccessfulTx = {
     txId: '481920491823',
     utrNo: '431872910482',
-    amount: 500.00,
-    recipientName: 'Bob Smith',
-    recipientId: 'bob@datacore.io',
-    recipientInitial: 'B',
-    dateTime: '13 Nov 2026, 10:45 PM',
-    latency: '6.4 ms',
+    amount: 250.00,
+    recipientName: 'Rahul Verma',
+    recipientId: 'rahul.verma@okaxis',
+    recipientInitial: 'R',
+    dateTime: '13 Nov 2026, 08:30 PM',
+    latency: '5.2 ms',
     senderLast4: '3923'
   };
 
@@ -3036,9 +3044,22 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     localStorage.setItem(STORAGE_KEYS.WALLETS, JSON.stringify(wallets));
   }
 
-  // ================= QR SCANNER SIMULATION =================
-  // ================= REAL LIVE CAMERA SCANNER & GALLERY QR UPLOAD =================
+  // ================= REAL LIVE CAMERA SCANNER & GALLERY QR UPLOAD (jsQR + BarcodeDetector) =================
   let cameraStream = null;
+  let scannerVideoEl = null;
+  let scannerOffscreenCanvas = null;
+  let scannerOffscreenCtx = null;
+  let scannerAnimFrame = null;
+  let isScanningLive = false;
+  let nativeBarcodeDetector = null;
+
+  if ('BarcodeDetector' in window) {
+    try {
+      nativeBarcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+    } catch (e) {
+      nativeBarcodeDetector = null;
+    }
+  }
 
   function openScannerModal() {
     closeAllModals();
@@ -3055,39 +3076,125 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
   function startCameraScanner() {
-    const video = document.getElementById('scanner-camera-video');
+    scannerVideoEl = document.getElementById('scanner-camera-video');
     const fallback = document.getElementById('scanner-camera-fallback');
     const statusMsg = document.getElementById('camera-status-msg');
 
+    if (!scannerOffscreenCanvas) {
+      scannerOffscreenCanvas = document.createElement('canvas');
+      scannerOffscreenCtx = scannerOffscreenCanvas.getContext('2d', { willReadFrequently: true });
+    }
+
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       if (fallback) fallback.classList.remove('hidden');
-      if (statusMsg) statusMsg.innerText = 'Camera API not available in this browser. Please upload a QR code image from gallery or enter UPI ID manually below.';
+      if (statusMsg) statusMsg.innerText = 'Camera API unavailable. Upload any UPI QR code from gallery or enter UPI ID manually below.';
       return;
     }
 
+    isScanningLive = true;
+
     navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' } }
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
     }).then(stream => {
       cameraStream = stream;
-      if (video) {
-        video.srcObject = stream;
-        video.play().catch(e => console.warn('Video play warning:', e));
+      if (scannerVideoEl) {
+        scannerVideoEl.srcObject = stream;
+        scannerVideoEl.setAttribute('playsinline', 'true');
+        scannerVideoEl.play().catch(e => console.warn('Video play error:', e));
+
+        scannerVideoEl.onloadedmetadata = () => {
+          scannerVideoEl.play();
+          requestLiveScan();
+        };
       }
       if (fallback) fallback.classList.add('hidden');
     }).catch(err => {
-      console.warn('Camera access denied or device has no camera:', err);
+      console.warn('Camera access denied or unavailable:', err);
       if (fallback) fallback.classList.remove('hidden');
-      if (statusMsg) statusMsg.innerText = 'Camera access was blocked or unavailable. Tap "Allow Camera Access", upload a QR image from gallery, or type UPI ID below.';
+      if (statusMsg) statusMsg.innerText = 'Camera access denied or device has no camera. Upload QR image from gallery or enter UPI ID below.';
     });
   }
 
+  function requestLiveScan() {
+    if (!isScanningLive || !scannerVideoEl) return;
+
+    if (scannerVideoEl.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      // 1. Try native BarcodeDetector API if available
+      if (nativeBarcodeDetector) {
+        nativeBarcodeDetector.detect(scannerVideoEl).then(barcodes => {
+          if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+            processScannedUpiData(barcodes[0].rawValue);
+            return;
+          }
+          scheduleNextScan();
+        }).catch(() => {
+          scanFrameWithJsQR();
+        });
+        return;
+      }
+
+      // 2. Fallback to jsQR
+      scanFrameWithJsQR();
+      return;
+    }
+
+    scheduleNextScan();
+  }
+
+  function scanFrameWithJsQR() {
+    if (!isScanningLive || !scannerVideoEl || !scannerOffscreenCanvas || !scannerOffscreenCtx) return;
+
+    try {
+      const vw = scannerVideoEl.videoWidth || 640;
+      const vh = scannerVideoEl.videoHeight || 480;
+
+      const scale = Math.min(1, 640 / Math.max(vw, vh));
+      const cw = Math.floor(vw * scale);
+      const ch = Math.floor(vh * scale);
+
+      if (scannerOffscreenCanvas.width !== cw || scannerOffscreenCanvas.height !== ch) {
+        scannerOffscreenCanvas.width = cw;
+        scannerOffscreenCanvas.height = ch;
+      }
+
+      scannerOffscreenCtx.drawImage(scannerVideoEl, 0, 0, cw, ch);
+      const imgData = scannerOffscreenCtx.getImageData(0, 0, cw, ch);
+
+      if (typeof jsQR !== 'undefined') {
+        const qrCode = jsQR(imgData.data, cw, ch, {
+          inversionAttempts: 'dontInvert'
+        });
+        if (qrCode && qrCode.data) {
+          processScannedUpiData(qrCode.data);
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Frame scan error:', e);
+    }
+
+    scheduleNextScan();
+  }
+
+  function scheduleNextScan() {
+    if (isScanningLive) {
+      scannerAnimFrame = requestAnimationFrame(requestLiveScan);
+    }
+  }
+
   function stopCameraScanner() {
+    isScanningLive = false;
+    if (scannerAnimFrame) {
+      cancelAnimationFrame(scannerAnimFrame);
+      scannerAnimFrame = null;
+    }
     if (cameraStream) {
       cameraStream.getTracks().forEach(track => track.stop());
       cameraStream = null;
     }
-    const video = document.getElementById('scanner-camera-video');
-    if (video) video.srcObject = null;
+    if (scannerVideoEl) {
+      scannerVideoEl.srcObject = null;
+    }
   }
 
   function requestCameraAccess() {
@@ -3098,29 +3205,47 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     const file = event.target.files && event.target.files[0];
     if (!file) return;
 
-    showToast('Reading QR code from gallery image...');
+    showToast('Analyzing QR code from gallery image...');
 
-    if ('BarcodeDetector' in window) {
-      try {
-        const detector = new BarcodeDetector({ formats: ['qr_code'] });
-        const img = new Image();
-        img.src = URL.createObjectURL(file);
-        await img.decode();
-        const barcodes = await detector.detect(img);
-        if (barcodes && barcodes.length > 0) {
-          processScannedUpiData(barcodes[0].rawValue);
-          return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = async function() {
+        if (nativeBarcodeDetector) {
+          try {
+            const barcodes = await nativeBarcodeDetector.detect(img);
+            if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+              processScannedUpiData(barcodes[0].rawValue);
+              return;
+            }
+          } catch (err) {
+            console.warn('BarcodeDetector error:', err);
+          }
         }
-      } catch (e) {
-        console.warn('BarcodeDetector error:', e);
-      }
-    }
 
-    // Process image and simulate verified merchant QR detection
-    const simulatedUpi = 'upi://pay?pa=store.pay@upi&pn=Retail%20Store&am=350.00&cu=INR';
-    setTimeout(() => {
-      processScannedUpiData(simulatedUpi);
-    }, 600);
+        try {
+          const cvs = document.createElement('canvas');
+          cvs.width = img.width;
+          cvs.height = img.height;
+          const ctx = cvs.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imgData = ctx.getImageData(0, 0, cvs.width, cvs.height);
+          if (typeof jsQR !== 'undefined') {
+            const code = jsQR(imgData.data, cvs.width, cvs.height);
+            if (code && code.data) {
+              processScannedUpiData(code.data);
+              return;
+            }
+          }
+        } catch (err) {
+          console.warn('jsQR gallery scan error:', err);
+        }
+
+        showToast('No valid UPI QR code found in this image', false);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   function handleManualScanSubmit() {
@@ -3137,37 +3262,80 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
   function processScannedUpiData(data) {
+    if (!data) return;
     closeAllModals();
     stopCameraScanner();
     playSuccessChime();
+    triggerSuccessHaptic();
 
-    let pa = 'merchant@datacore';
-    let pn = 'UPI Merchant';
+    let pa = '';
+    let pn = '';
     let am = '';
+    let tn = '';
 
-    if (data.startsWith('upi://pay')) {
+    const raw = data.trim();
+
+    if (raw.toLowerCase().startsWith('upi://pay')) {
       try {
-        const url = new URL(data.replace('upi://pay', 'http://upi.org'));
-        pa = url.searchParams.get('pa') || pa;
-        pn = decodeURIComponent(url.searchParams.get('pn') || '') || pa.split('@')[0];
-        am = url.searchParams.get('am') || '';
-      } catch (_) {}
-    } else if (data.includes('@')) {
-      pa = data.trim();
+        const qIdx = raw.indexOf('?');
+        if (qIdx !== -1) {
+          const params = new URLSearchParams(raw.slice(qIdx + 1));
+          pa = params.get('pa') || '';
+          pn = params.get('pn') || '';
+          am = params.get('am') || '';
+          tn = params.get('tn') || '';
+        }
+      } catch (e) {
+        console.warn('UPI URL parse error:', e);
+      }
+    } else if (raw.includes('@')) {
+      pa = raw;
+      pn = raw.split('@')[0];
+    } else if (/^\d{10}$/.test(raw)) {
+      pa = `${raw}@datacore`;
+      pn = `Contact +91 ${raw}`;
+    } else {
+      const matchPa = raw.match(/[?&]pa=([^&]+)/i);
+      const matchPn = raw.match(/[?&]pn=([^&]+)/i);
+      const matchAm = raw.match(/[?&]am=([^&]+)/i);
+      const matchTn = raw.match(/[?&]tn=([^&]+)/i);
+      if (matchPa) pa = decodeURIComponent(matchPa[1]);
+      if (matchPn) pn = decodeURIComponent(matchPn[1]);
+      if (matchAm) am = decodeURIComponent(matchAm[1]);
+      if (matchTn) tn = decodeURIComponent(matchTn[1]);
+
+      if (!pa) {
+        pa = raw;
+        pn = 'UPI Payee';
+      }
+    }
+
+    if (pn) {
+      pn = decodeURIComponent(pn).replace(/\+/g, ' ');
+    } else if (pa) {
       pn = pa.split('@')[0];
     }
 
     navigateTo('transfer');
-    const recipientInput = document.getElementById('transfer-recipient');
+
+    const recInput = document.getElementById('transfer-recipient');
     const nameInput = document.getElementById('transfer-recipient-name');
     const amtInput = document.getElementById('transfer-amount');
+    const noteInput = document.getElementById('transfer-note');
 
-    if (recipientInput) recipientInput.value = pa;
+    if (recInput) recInput.value = pa;
     if (nameInput) nameInput.value = pn;
-    if (amtInput && am) amtInput.value = am;
-    handleRecipientInput(pa);
+    if (amtInput && am) amtInput.value = parseFloat(am) || '';
+    if (noteInput && tn) noteInput.value = decodeURIComponent(tn).replace(/\+/g, ' ');
 
+    handleRecipientInput(pa);
     showToast(`QR Scanned: Paying ${pn} (${pa})`);
+
+    if (am && parseFloat(am) > 0) {
+      setTimeout(() => {
+        initiateTransferAuth();
+      }, 400);
+    }
   }
 
   function toggleFlashlight() {
@@ -3202,11 +3370,29 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     }, 400);
   }
 
-  // ================= 4-DIGIT UPI PIN KEYPAD MODAL =================
+  // ================= 4-DIGIT UPI PIN KEYPAD MODAL & VERIFICATION =================
+  function promptUpiPinKeypad(payingTo, amount, onSuccessCallback) {
+    isTransfersLocked = false;
+    enteredPin = '';
+    updatePinDots();
+
+    const titleEl = document.getElementById('pin-paying-to');
+    const amtEl = document.getElementById('pin-paying-amt');
+    if (titleEl) titleEl.innerText = payingTo ? `Paying ${payingTo}` : 'Authorizing Payment';
+    if (amtEl) amtEl.innerText = `₹${parseFloat(amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    pendingTransferCallback = onSuccessCallback;
+
+    closeAllModals();
+    const backdrop = document.getElementById('backdrop');
+    const modal = document.getElementById('modal-pin-auth');
+    if (backdrop) backdrop.classList.add('active');
+    if (modal) modal.classList.add('active');
+    triggerHaptic();
+  }
+
   function initiateTransferAuth() {
     isTransfersLocked = false;
-    const lockCheckbox = document.getElementById('lock-transfers');
-    if (lockCheckbox) lockCheckbox.checked = false;
 
     const amt = parseFloat(document.getElementById('transfer-amount').value) || 0;
     const recipient = document.getElementById('transfer-recipient').value.trim() || 'merchant@datacore';
@@ -3215,7 +3401,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       return showToast('Please enter a valid transfer amount', false);
     }
 
-    // Auto test funds top-up if balance is lower than amount so user is NEVER blocked
     if (amt > balance) {
       balance += (amt + 5000.00);
       renderBalance();
@@ -3234,41 +3419,10 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       recName = recipient.split('@')[0];
     }
 
-    enteredPin = '';
-    updatePinDots();
-    document.getElementById('pin-paying-to').innerText = `Paying ${recName}`;
-    document.getElementById('pin-paying-amt').innerText = `₹${amt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-
-    pendingTransferCallback = () => {
+    promptUpiPinKeypad(recName, amt, () => {
       executeTransfer();
-    };
-
-    closeAllModals();
-    document.getElementById('backdrop').classList.add('active');
-    document.getElementById('modal-pin-auth').classList.add('active');
-    triggerHaptic();
+    });
   }
-  // ================= AUTH SWITCHER (SIGN IN VS CREATE ACCOUNT) =================
-  function switchAuthTab(tab) {
-    const btnIn = document.getElementById('auth-tab-signin');
-    const btnUp = document.getElementById('auth-tab-signup');
-    const viewIn = document.getElementById('auth-view-signin');
-    const viewUp = document.getElementById('auth-view-signup');
-
-    if (tab === 'signup') {
-      if (btnUp) btnUp.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm transition';
-      if (btnIn) btnIn.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 transition';
-      if (viewUp) viewUp.classList.remove('hidden');
-      if (viewIn) viewIn.classList.add('hidden');
-    } else {
-      if (btnIn) btnIn.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm transition';
-      if (btnUp) btnUp.className = 'flex-1 py-2.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-900 transition';
-      if (viewIn) viewIn.classList.remove('hidden');
-      if (viewUp) viewUp.classList.add('hidden');
-      renderLoginWallets();
-    }
-  }
-
 
   function pressPinDigit(d) {
     if (enteredPin.length < 4) {
@@ -3276,10 +3430,34 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       updatePinDots();
       triggerHaptic();
       if (enteredPin.length === 4) {
-        setTimeout(() => {
-          closeAllModals();
-          if (pendingTransferCallback) pendingTransferCallback();
-        }, 220);
+        const activePin = (currentUser && currentUser.pin) ? currentUser.pin : '1234';
+        if (enteredPin === activePin) {
+          triggerSuccessHaptic();
+          for (let i = 1; i <= 4; i++) {
+            const dot = document.getElementById(`pin-dot-${i}`);
+            if (dot) dot.className = 'w-4 h-4 rounded-full border-2 border-emerald-500 bg-emerald-500 shadow-sm transition-all duration-150';
+          }
+          setTimeout(() => {
+            closeAllModals();
+            if (pendingTransferCallback) pendingTransferCallback();
+          }, 200);
+        } else {
+          triggerErrorHaptic();
+          const dots = document.getElementById('pin-dots-container');
+          if (dots) {
+            dots.classList.add('animate-shake');
+            setTimeout(() => dots.classList.remove('animate-shake'), 400);
+          }
+          for (let i = 1; i <= 4; i++) {
+            const dot = document.getElementById(`pin-dot-${i}`);
+            if (dot) dot.className = 'w-4 h-4 rounded-full border-2 border-rose-500 bg-rose-500 shadow-sm transition-all duration-150';
+          }
+          showToast(`Incorrect UPI PIN! Default is ${activePin}`, false);
+          setTimeout(() => {
+            enteredPin = '';
+            updatePinDots();
+          }, 500);
+        }
       }
     }
   }
@@ -3306,9 +3484,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
   function authenticatePinBiometric() {
-    triggerHaptic();
+    triggerSuccessHaptic();
     enteredPin = '••••';
-    updatePinDots();
+    for (let i = 1; i <= 4; i++) {
+      const dot = document.getElementById(`pin-dot-${i}`);
+      if (dot) dot.className = 'w-4 h-4 rounded-full border-2 border-emerald-500 bg-emerald-500 shadow-sm transition-all duration-150';
+    }
     showToast('Biometrics Authenticated!');
     setTimeout(() => {
       closeAllModals();
@@ -3429,7 +3610,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     const exact12TxId = generateRandomDigits(12);
     const exact12UtrNo = generateRandomDigits(12);
     const latencyVal = `${(Math.random() * 3 + 4.1).toFixed(1)} ms`;
-    const formattedDateTime = formatSuccessDateTime();
+    const formattedDateTime = (typeof data !== "undefined" && data && data.dateTime) ? data.dateTime : formatSuccessDateTime();
 
     transactions.unshift({
       id: exact12TxId,
@@ -3712,8 +3893,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         { id: `n-${Date.now()}`, title: 'Wallet Created', msg: `Welcome ${name}! Your wallet is provisioned with ₹${initialBal.toFixed(2)}.`, unread: true, time: 'Just now' }
       ],
       payees: [
-        { id: 'p1', name: 'Alice Walker', email: 'alice@datacore.io', initials: 'AW' },
-        { id: 'p2', name: 'Bob Smith', email: 'bob@datacore.io', initials: 'BS' }
+        { id: 'p1', name: 'Yash Sharma', email: 'yash@datacore', initials: 'AW' },
+        { id: 'p2', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'BS' }
       ]
     };
 
@@ -4003,7 +4184,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       if (activeUserEmail && wallets[activeUserEmail]) {
         loginAs(activeUserEmail);
       } else {
-        loginAs('alice@datacore.io');
+        loginAs('yash@datacore');
       }
       showToast('All wallets reset successfully!');
     }
@@ -4392,9 +4573,19 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     };
 
     closeAllModals();
-    document.getElementById('backdrop').classList.add('active');
-    document.getElementById('modal-receipt').classList.add('active');
-    triggerHaptic();
+    playSuccessChime();
+    triggerSuccessHaptic();
+
+    showSuccessScreen({
+      recipientName: tx.toName || tx.to,
+      recipientAccount: tx.to,
+      amount: tx.amount,
+      txId: tx.id,
+      utr: utr,
+      initial: tx.toName ? tx.toName.charAt(0).toUpperCase() : (tx.to ? tx.to.charAt(0).toUpperCase() : '₹'),
+      note: tx.desc || 'UPI Transfer',
+      dateTime: dateTime
+    });
   }
 
   function splitExpenseFromReceipt() {
@@ -4504,7 +4695,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   // ================= CROSS-WALLET TRANSFER EXECUTION WITH PHONEPE SUCCESS SCREEN =================
       function showSuccessScreen(data) {
-    const formattedDateTime = formatSuccessDateTime();
+    const formattedDateTime = (typeof data !== "undefined" && data && data.dateTime) ? data.dateTime : formatSuccessDateTime();
     const senderLast4 = (currentUser && currentUser.accountNo ? currentUser.accountNo : '3923').replace(/[^0-9]/g, '').slice(-4) || '3923';
     const latencyVal = `${(Math.random() * 3 + 4.1).toFixed(1)} ms`;
 
@@ -4567,7 +4758,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     const exact12TxId = generateRandomDigits(12);
     const exact12UtrNo = generateRandomDigits(12);
     const latencyVal = `${(Math.random() * 3 + 4.1).toFixed(1)} ms`;
-    const formattedDateTime = formatSuccessDateTime();
+    const formattedDateTime = (typeof data !== "undefined" && data && data.dateTime) ? data.dateTime : formatSuccessDateTime();
 
     let recipientName = recipient;
     let recipientAccountNo = recipient;
@@ -4840,18 +5031,31 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
   function saveNewPin() {
-    const pin = document.getElementById('new-pin-val').value.trim();
-    const confirm = document.getElementById('confirm-pin-val').value.trim();
+    const pin = (document.getElementById('new-pin-val')?.value || '').trim();
+    const confirm = (document.getElementById('confirm-pin-val')?.value || '').trim();
 
     if (pin.length !== 4 || isNaN(pin)) {
-      return showToast('PIN must be exactly 4 digits', false);
+      return showToast('UPI PIN must be exactly 4 digits', false);
     }
     if (pin !== confirm) {
       return showToast('PINs do not match', false);
     }
 
+    if (currentUser) {
+      currentUser.pin = pin;
+    }
+    if (wallets[activeUserEmail]) {
+      wallets[activeUserEmail].pin = pin;
+    }
+    saveCurrentWalletState();
     closeAllModals();
-    showToast('Security PIN updated successfully!');
+    playSuccessChime();
+    triggerSuccessHaptic();
+
+    const helper = document.getElementById('pin-helper-text');
+    if (helper) helper.innerText = `Enter your 4-digit UPI PIN (Custom PIN: ${pin})`;
+
+    showToast(`UPI PIN successfully updated to ${pin}!`);
   }
 
   // ================= LINK BANK ACCOUNT =================
@@ -5344,9 +5548,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       return showToast('Please fetch bill details first', false);
     }
     const amt = currentFetchedBill.amount;
-    if (amt > balance) {
-      return showToast('Insufficient account balance to pay bill', false);
-    }
+    if (amt > balance) { balance += (amt + 2000.00); renderBalance(); showToast('Demo balance topped up'); }
 
     promptUpiPinKeypad(
       `Electricity Bill: ${currentFetchedBill.boardName}`,
@@ -5607,7 +5809,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         balance -= p.amount;
         const exact12TxId = generateRandomDigits(12);
         const exact12UtrNo = generateRandomDigits(12);
-        const formattedDateTime = formatSuccessDateTime();
+        const formattedDateTime = (typeof data !== "undefined" && data && data.dateTime) ? data.dateTime : formatSuccessDateTime();
 
         const tx = {
           id: exact12TxId,
@@ -5726,7 +5928,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     if (!subId || subId.length < 5) return showToast('Please enter a valid Subscriber ID / VC Number', false);
     if (amt <= 0) return showToast('Please enter a valid recharge amount', false);
-    if (amt > balance) return showToast('Insufficient account balance for DTH recharge', false);
+    if (amt > balance) { balance += (amt + 2000.00); renderBalance(); showToast('Demo balance topped up'); }
 
     promptUpiPinKeypad(
       `DTH: ${op}`,
@@ -6186,8 +6388,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         }
       ],
       payees: [
-        { id: 'p1', name: 'Alice Walker', email: 'alice@datacore.io', initials: 'AW' },
-        { id: 'p2', name: 'Bob Smith', email: 'bob@datacore.io', initials: 'BS' }
+        { id: 'p1', name: 'Yash Sharma', email: 'yash@datacore', initials: 'AW' },
+        { id: 'p2', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'BS' }
       ]
     };
 
@@ -6219,12 +6421,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     }
   }
 
-  // ================= PIN CHANGE & BIOMETRIC SIMULATION =================
-  function openChangePinModal() {
-    document.getElementById('backdrop').classList.add('active');
-    document.getElementById('modal-change-pin').classList.add('active');
-    triggerHaptic();
-  }
+  // ================= BIOMETRIC SIMULATION =================
 
   function openFingerprintModal() {
     const status = document.getElementById('fp-modal-status');
@@ -6262,14 +6459,43 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
 
-  // ================= BOOTSTRAP INITIAL VIEW =================
+  // ================= BOOTSTRAP INITIAL VIEW (START ON LOGIN SCREEN) =================
   applyTheme();
 
-  if (!activeUserEmail || !wallets[activeUserEmail]) {
-    activeUserEmail = 'alice@datacore.io';
-    localStorage.setItem(STORAGE_KEYS.ACTIVE_USER, activeUserEmail);
+  activeUserEmail = localStorage.getItem(STORAGE_KEYS.ACTIVE_USER) || 'yash@datacore';
+  if (!wallets[activeUserEmail]) {
+    activeUserEmail = 'yash@datacore';
   }
-  loginAs(activeUserEmail);
+
+  currentUser = wallets[activeUserEmail] || DEFAULT_INITIAL_WALLETS['yash@datacore'];
+  balance = currentUser.balance;
+  dailyLimit = currentUser.dailyLimit || 100000.00;
+  transactions = currentUser.transactions || [];
+  notifications = currentUser.notifications || [];
+  payees = currentUser.payees || [];
+  isTransfersLocked = false;
+
+  updateUserBindings();
+  renderBalance();
+  renderPayees();
+  renderTransactions();
+  renderNotifications();
+  initServicesHub();
+
+  // START APP ON LOGIN SCREEN AS REQUESTED
+  const nav = document.getElementById('bottom-nav');
+  if (nav) nav.classList.add('hidden');
+
+  ['home', 'transfer', 'services', 'history', 'statement', 'notifications', 'profile', 'success'].forEach(id => {
+    const screen = document.getElementById(`screen-${id}`);
+    if (screen) screen.classList.add('hidden');
+    const tab = document.getElementById(`tab-${id}`);
+    if (tab) tab.classList.remove('active');
+  });
+
+  const loginScreen = document.getElementById('screen-login');
+  if (loginScreen) loginScreen.classList.remove('hidden');
+  renderLoginWallets();
 </script>
 
 </body>
