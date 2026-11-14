@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/account_provider.dart';
 import '../providers/notification_provider.dart';
+import '../models/account_model.dart';
 import '../widgets/transaction_detail_sheet.dart';
 import '../widgets/receive_money_sheet.dart';
 

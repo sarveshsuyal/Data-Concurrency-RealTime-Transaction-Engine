@@ -39,10 +39,13 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.dio.post('/api/auth/login/', {
-        'email': email.trim(),
-        'password': password,
-      });
+      final response = await _apiService.dio.post(
+        '/api/auth/login/',
+        data: {
+          'email': email.trim(),
+          'password': password,
+        },
+      );
 
       final data = response.data;
       await _apiService.storage.write(key: 'access_token', value: data['access']);
@@ -77,12 +80,15 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.dio.post('/api/auth/register/', {
-        'full_name': fullName.trim(),
-        'email': email.trim(),
-        'password': password,
-        'confirm_password': confirmPassword,
-      });
+      final response = await _apiService.dio.post(
+        '/api/auth/register/',
+        data: {
+          'full_name': fullName.trim(),
+          'email': email.trim(),
+          'password': password,
+          'confirm_password': confirmPassword,
+        },
+      );
 
       final data = response.data;
       await _apiService.storage.write(key: 'access_token', value: data['access']);
@@ -113,7 +119,7 @@ class AuthProvider with ChangeNotifier {
     try {
       final refreshToken = await _apiService.storage.read(key: 'refresh_token');
       if (refreshToken != null) {
-        await _apiService.dio.post('/api/auth/logout/', {'refresh': refreshToken});
+        await _apiService.dio.post('/api/auth/logout/', data: {'refresh': refreshToken});
       }
     } catch (_) {}
     await _apiService.storage.deleteAll();
