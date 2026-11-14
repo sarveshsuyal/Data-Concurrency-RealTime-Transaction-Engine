@@ -147,7 +147,19 @@ export const Login: React.FC = () => {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-slate-800 text-center space-y-2">
+          <div className="mt-6 pt-6 border-t border-slate-800 text-center space-y-3">
+            <div>
+              <button
+                type="button"
+                onClick={() => {
+                  setEmail('admin@datacore.io');
+                  setPassword('AdminPassword123!');
+                }}
+                className="inline-flex items-center space-x-1.5 text-xs text-brand-400 hover:text-brand-300 font-medium bg-brand-950/40 hover:bg-brand-900/50 border border-brand-800/60 px-3 py-1.5 rounded-lg transition-colors"
+              >
+                <span>⚡ Auto-fill Default Admin Credentials</span>
+              </button>
+            </div>
             <p className="text-xs text-slate-500">
               Default Seed: <span className="text-slate-300 font-mono">admin@datacore.io</span> / <span className="text-slate-300 font-mono">AdminPassword123!</span>
             </p>

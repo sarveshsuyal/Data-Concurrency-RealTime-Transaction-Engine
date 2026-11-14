@@ -103,9 +103,12 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
-            'TIMEOUT': 20,
+            'TIMEOUT': 30,
         }
     }
+
+if 'sqlite' in DATABASES['default'].get('ENGINE', ''):
+    DATABASES['default'].setdefault('OPTIONS', {})['timeout'] = 30
 
 # Custom User Model
 AUTH_USER_MODEL = 'authentication.User'

@@ -280,6 +280,7 @@ class RaceExperimentService:
         logs = []
         threads = []
         results = []
+        barrier = threading.Barrier(len(withdrawals))
 
         def worker(thread_idx, amount):
             log_entry = {
@@ -289,6 +290,10 @@ class RaceExperimentService:
                 'timestamp': timezone.now().isoformat()
             }
             try:
+                try:
+                    barrier.wait(timeout=5)
+                except threading.BrokenBarrierError:
+                    pass
                 # Direct invocation of strategy (Unsafe baseline runs without atomic transaction)
                 if strategy == Transaction.ConcurrencyStrategy.UNSAFE_BASELINE:
                     s, r = ConcurrencyStrategyHandler.execute_unsafe_baseline(test_sender.id, test_receiver.id, amount)
@@ -310,6 +315,9 @@ class RaceExperimentService:
                 log_entry['status'] = 'REJECTED'
                 log_entry['message'] = str(exc)
                 results.append((False, str(exc)))
+            finally:
+                from django.db import connections
+                connections.close_all()
             logs.append(log_entry)
 
         # Launch concurrent threads simultaneously

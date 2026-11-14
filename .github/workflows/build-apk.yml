@@ -57,10 +57,26 @@ jobs:
           path: mobile-app/build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
 
-      - name: Create GitHub Release
+      - name: Create or Update GitHub Release
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
         with:
+          tag_name: v1.0.0-release
+          name: "DataCore Customer Mobile App (v1.0.0 Release)"
+          body: |
+            ## 📱 DataCore Mobile Customer Application (Android Release)
+            - **Platform:** Native Flutter on Android
+            - **Backend Cloud:** Render (`https://datacore-backend-wktd.onrender.com`)
+            - **Database Cloud:** Supabase PostgreSQL (`https://kphdytcnwanrmudtcojz.supabase.co`)
+            - **Features:**
+              - Strict ACID double-entry ledger integration
+              - Multi-strategy concurrency engine (Pessimistic, Optimistic, Atomic Conditional)
+              - 7-day extended JWT session auth with transparent token rotation
+              - Biometric authentication & Secure Token Storage
+              - Real-time transaction history and balance updates
+              - Bharat BillPay, QR Pay, and scratch cards
           files: mobile-app/build/app/outputs/flutter-apk/app-release.apk
-          name: "DataCore Customer App ${{ github.ref_name }}"
-          generate_release_notes: true
+          prerelease: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

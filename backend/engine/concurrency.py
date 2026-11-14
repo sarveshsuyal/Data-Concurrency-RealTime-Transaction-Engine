@@ -213,8 +213,16 @@ class ConcurrencyStrategyHandler:
         time.sleep(0.08)
 
         # Unsafe check-then-act: applies the withdrawal without row lock or conditional guard
-        Account.objects.filter(id=sender_id).update(balance=models.F('balance') - amount)
-        Account.objects.filter(id=receiver_id).update(balance=models.F('balance') + amount)
+        for attempt in range(5):
+            try:
+                Account.objects.filter(id=sender_id).update(balance=models.F('balance') - amount)
+                Account.objects.filter(id=receiver_id).update(balance=models.F('balance') + amount)
+                break
+            except Exception as e:
+                if 'locked' in str(e).lower() and attempt < 4:
+                    time.sleep(0.05)
+                else:
+                    raise
 
         sender.refresh_from_db()
         receiver.refresh_from_db()
