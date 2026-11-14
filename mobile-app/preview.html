@@ -123,6 +123,66 @@
     .action-btn-card:active {
       transform: scale(0.93);
     }
+    @keyframes laserScan {
+      0% { top: 10%; opacity: 0.9; }
+      50% { top: 90%; opacity: 1; }
+      100% { top: 10%; opacity: 0.9; }
+    }
+    .animate-laser {
+      animation: laserScan 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes rewardPop {
+      0% { transform: scale(0.6); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-reward {
+      animation: rewardPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    /* Dark Theme Support */
+    .phone-container.dark-theme {
+      background-color: #0B0F19 !important;
+      color: #F8FAFC !important;
+    }
+    .dark-theme .bg-white {
+      background-color: #151D2F !important;
+      border-color: #24324A !important;
+    }
+    .dark-theme .bg-slate-50 {
+      background-color: #0F1626 !important;
+      border-color: #24324A !important;
+    }
+    .dark-theme .bg-slate-100 {
+      background-color: #1A2438 !important;
+      color: #E2E8F0 !important;
+    }
+    .dark-theme .text-slate-900 {
+      color: #F8FAFC !important;
+    }
+    .dark-theme .text-slate-800 {
+      color: #F1F5F9 !important;
+    }
+    .dark-theme .text-slate-700 {
+      color: #CBD5E1 !important;
+    }
+    .dark-theme .text-slate-600 {
+      color: #94A3B8 !important;
+    }
+    .dark-theme .modal-sheet {
+      background-color: #151D2F !important;
+      color: #F8FAFC !important;
+    }
+    .dark-theme .border-slate-200 {
+      border-color: #24324A !important;
+    }
+    .dark-theme #bottom-nav {
+      background-color: #101726 !important;
+      border-color: #24324A !important;
+    }
+    .dark-theme .sticky {
+      background-color: rgba(11, 15, 25, 0.95) !important;
+      color: #F8FAFC !important;
+    }
     .chat-bubble {
       animation: fadeIn 0.25s ease-out forwards;
     }
@@ -241,12 +301,18 @@
           </div>
         </div>
       </div>
-      <div class="flex items-center space-x-1">
-        <button onclick="navigateTo('notifications')" class="relative p-2 text-slate-700 hover:text-blue-600">
+      <div class="flex items-center space-x-0.5">
+        <button onclick="openScannerModal()" class="p-2 text-slate-700 hover:text-blue-600 active:scale-95 transition" title="Scan QR Code">
+          <i class="fa-solid fa-qrcode text-lg"></i>
+        </button>
+        <button onclick="toggleTheme()" id="theme-toggle-btn" class="p-2 text-slate-700 hover:text-blue-600 active:scale-95 transition" title="Toggle Dark/Light Mode">
+          <i id="theme-toggle-icon" class="fa-regular fa-moon text-lg"></i>
+        </button>
+        <button onclick="navigateTo('notifications')" class="relative p-2 text-slate-700 hover:text-blue-600 active:scale-95 transition" title="Notifications">
           <i class="fa-regular fa-bell text-lg"></i>
           <span id="notif-badge" class="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
         </button>
-        <button onclick="navigateTo('profile')" class="p-2 text-slate-700 hover:text-blue-600">
+        <button onclick="navigateTo('profile')" class="p-2 text-slate-700 hover:text-blue-600 active:scale-95 transition" title="Profile">
           <i class="fa-regular fa-circle-user text-lg"></i>
         </button>
       </div>
@@ -284,35 +350,91 @@
       </div>
     </div>
 
-    <!-- 4 Quick Actions -->
-    <div class="grid grid-cols-4 gap-2 mb-6">
-      <button onclick="navigateTo('transfer')" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition">
-        <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-1.5">
+    <!-- Quick Actions (Send, Scan QR, Receive, Statement) -->
+    <div class="grid grid-cols-4 gap-2 mb-5">
+      <button onclick="navigateTo('transfer')" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-500">
+        <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-1.5 shadow-sm">
           <i class="fa-solid fa-paper-plane text-sm"></i>
         </div>
         <span class="text-xs font-bold text-slate-800">Send</span>
       </button>
 
-      <button onclick="openReceiveModal()" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition">
-        <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1.5">
+      <button onclick="openScannerModal()" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-500">
+        <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-1.5 shadow-sm">
           <i class="fa-solid fa-qrcode text-sm"></i>
+        </div>
+        <span class="text-xs font-bold text-slate-800">Scan QR</span>
+      </button>
+
+      <button onclick="openReceiveModal()" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-500">
+        <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1.5 shadow-sm">
+          <i class="fa-solid fa-arrow-down text-sm"></i>
         </div>
         <span class="text-xs font-bold text-slate-800">Receive</span>
       </button>
 
-      <button onclick="navigateTo('statement')" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition">
-        <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center mb-1.5">
+      <button onclick="navigateTo('statement')" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-500">
+        <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-1.5 shadow-sm">
           <i class="fa-solid fa-chart-pie text-sm"></i>
         </div>
-        <span class="text-xs font-bold text-slate-800">Statement</span>
+        <span class="text-xs font-bold text-slate-800">Analytics</span>
       </button>
+    </div>
 
-      <button onclick="navigateTo('history')" class="bg-white border border-slate-200/80 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition">
-        <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-800 flex items-center justify-center mb-1.5">
-          <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+    <!-- Recharge & Pay Bills Hub (PhonePe / GPay Style) -->
+    <div class="mb-5">
+      <div class="flex justify-between items-center mb-2.5">
+        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Recharge & Pay Bills</span>
+        <span class="text-[10px] text-blue-600 font-bold">1-Tap Fast Pay</span>
+      </div>
+
+      <div class="grid grid-cols-4 gap-2">
+        <button onclick="openBillModal('Mobile Recharge', 299, 'Jio 5G Unlimited Plan')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
+          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-1 text-base">
+            📱
+          </div>
+          <span class="text-[10px] font-bold text-slate-800 text-center leading-tight">Mobile<br>Recharge</span>
+        </button>
+
+        <button onclick="openBillModal('Electricity Bill', 1420, 'Torrent Power Electricity')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
+          <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-1 text-base">
+            💡
+          </div>
+          <span class="text-[10px] font-bold text-slate-800 text-center leading-tight">Electricity<br>Bill</span>
+        </button>
+
+        <button onclick="openBillModal('DTH Recharge', 450, 'Tata Play Ultra HD')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
+          <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center mb-1 text-base">
+            📺
+          </div>
+          <span class="text-[10px] font-bold text-slate-800 text-center leading-tight">DTH<br>Cable</span>
+        </button>
+
+        <button onclick="openBillModal('Credit Card Bill', 2500, 'HDFC Bank Credit Card')" class="bg-white border border-slate-200/90 p-3 rounded-2xl flex flex-col items-center shadow-sm active:scale-95 transition hover:border-blue-400">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1 text-base">
+            💳
+          </div>
+          <span class="text-[10px] font-bold text-slate-800 text-center leading-tight">Credit<br>Card</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Rewards & Cashback Hub Banner -->
+    <div onclick="openScratchCardModal()" class="bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 text-white rounded-3xl p-3.5 shadow-md shadow-amber-500/20 mb-5 cursor-pointer active:scale-98 transition flex items-center justify-between group">
+      <div class="flex items-center space-x-3">
+        <div class="w-11 h-11 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-xl shadow-inner group-hover:scale-105 transition">
+          🎁
         </div>
-        <span class="text-xs font-bold text-slate-800">History</span>
-      </button>
+        <div>
+          <span class="text-[9px] font-bold text-amber-100 uppercase tracking-wider block">Cashback Hub</span>
+          <span class="text-xs font-black text-white block leading-tight">Scratch Cards Available</span>
+          <span class="text-[10px] text-amber-100 font-medium">Won: ₹125.00 • Tap to claim</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-1 font-bold text-[11px] bg-white text-amber-800 px-3 py-1.5 rounded-xl shadow-sm">
+        <span>Scratch</span>
+        <i class="fa-solid fa-chevron-right text-[9px]"></i>
+      </div>
     </div>
 
     <!-- Inflow vs Outflow Mini Banner -->
@@ -436,10 +558,10 @@
       </div>
     </div>
 
-    <!-- Submit Button -->
-    <button onclick="executeTransfer()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-sm shadow-lg shadow-blue-600/30 active:scale-98 transition flex items-center justify-center space-x-2">
-      <i class="fa-solid fa-lock text-xs"></i>
-      <span>Review & Authorize Transfer</span>
+    <!-- Submit Button with UPI PIN Flow -->
+    <button onclick="initiateTransferAuth()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-sm shadow-lg shadow-blue-600/30 active:scale-98 transition flex items-center justify-center space-x-2">
+      <i class="fa-solid fa-shield-halved text-xs"></i>
+      <span>Review & Enter UPI PIN</span>
     </button>
   </div>
 
@@ -504,6 +626,45 @@
         <span class="font-mono text-[11px] font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600">DC-6812-3923</span>
       </div>
 
+      <!-- Category Spending Analytics Card -->
+      <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 mb-4 space-y-2.5">
+        <div class="flex justify-between items-center">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Spending By Category</span>
+          <span class="text-[10px] font-bold text-blue-600">This Month</span>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-700">🍔 Food & Dining</span>
+              <span id="cat-food-val" class="font-bold text-slate-900">₹250.00 (33%)</span>
+            </div>
+            <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+              <div id="cat-food-bar" class="h-full bg-amber-500 rounded-full" style="width: 33%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-700">💻 Cloud & Node Hosting</span>
+              <span id="cat-cloud-val" class="font-bold text-slate-900">₹500.00 (67%)</span>
+            </div>
+            <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+              <div id="cat-cloud-bar" class="h-full bg-blue-600 rounded-full" style="width: 67%;"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-[11px] mb-1">
+              <span class="font-medium text-slate-700">👥 Peer-to-Peer Transfers</span>
+              <span id="cat-peer-val" class="font-bold text-slate-900">₹0.00 (0%)</span>
+            </div>
+            <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+              <div id="cat-peer-bar" class="h-full bg-purple-500 rounded-full" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Credits vs Debits -->
       <div class="grid grid-cols-2 gap-2.5 mb-4">
         <div class="p-3 rounded-2xl bg-emerald-50 border border-emerald-100">
@@ -953,6 +1114,24 @@
       </div>
     </div>
 
+    <!-- Cashback Scratch Card Banner (PhonePe / GPay Style Reward) -->
+    <div onclick="openScratchCardModal()" class="bg-gradient-to-r from-amber-500 via-amber-600 to-yellow-500 text-white rounded-3xl p-4 shadow-lg shadow-amber-500/20 mb-4 cursor-pointer active:scale-98 transition flex items-center justify-between group">
+      <div class="flex items-center space-x-3">
+        <div class="w-12 h-12 rounded-2xl bg-white/20 border border-white/30 flex items-center justify-center text-2xl shadow-inner group-hover:rotate-12 transition">
+          🎁
+        </div>
+        <div>
+          <span class="text-[10px] font-bold text-amber-100 uppercase tracking-wider block">Instant Payment Reward</span>
+          <span class="text-xs font-black text-white block">You won a Cashback Card!</span>
+          <span class="text-[10px] text-amber-100 font-medium">Tap to scratch and win up to ₹50</span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-1 font-bold text-xs bg-white text-amber-700 px-3 py-1.5 rounded-xl shadow-sm">
+        <span>Scratch</span>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </div>
+    </div>
+
     <!-- 4 Interactive Actions: View History, Split Expense, Share Receipt, Download Receipt -->
     <div class="grid grid-cols-4 gap-2 mb-4">
       <!-- 1. View History -->
@@ -1212,6 +1391,196 @@
     </div>
   </div>
 
+  <!-- ==================== QR SCANNER MODAL (CAMERA SIMULATION) ==================== -->
+  <div id="modal-scanner" class="modal-sheet p-6 text-center">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex justify-between items-center mb-3">
+      <h3 class="text-base font-bold text-slate-900">Scan Any UPI QR</h3>
+      <button onclick="toggleFlashlight()" id="torch-btn" class="p-2 text-slate-600 hover:text-blue-600 text-xs font-bold flex items-center space-x-1">
+        <i id="torch-icon" class="fa-solid fa-bolt text-xs"></i>
+        <span id="torch-label">Torch Off</span>
+      </button>
+    </div>
+
+    <!-- Scanner Viewfinder Box -->
+    <div class="relative w-64 h-64 mx-auto rounded-3xl bg-slate-950 overflow-hidden shadow-2xl flex items-center justify-center mb-4 border-2 border-slate-800">
+      <!-- Animated Laser Line -->
+      <div class="absolute left-4 right-4 h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_12px_#3b82f6] animate-laser z-20"></div>
+
+      <!-- Corner Brackets -->
+      <div class="absolute top-4 left-4 w-7 h-7 border-t-4 border-l-4 border-blue-500 rounded-tl-xl pointer-events-none"></div>
+      <div class="absolute top-4 right-4 w-7 h-7 border-t-4 border-r-4 border-blue-500 rounded-tr-xl pointer-events-none"></div>
+      <div class="absolute bottom-4 left-4 w-7 h-7 border-b-4 border-l-4 border-blue-500 rounded-bl-xl pointer-events-none"></div>
+      <div class="absolute bottom-4 right-4 w-7 h-7 border-b-4 border-r-4 border-blue-500 rounded-br-xl pointer-events-none"></div>
+
+      <!-- QR Code Simulation in Center -->
+      <i class="fa-solid fa-qrcode text-8xl text-white/40"></i>
+      <p class="absolute bottom-3 text-[10px] text-white/70 font-medium">Align QR code inside the frame</p>
+    </div>
+
+    <!-- 1-Tap Test Merchant QRs -->
+    <div class="mb-4 text-left">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Tap a Sample Merchant QR to Test:</span>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <button onclick="simulateScanMerchant('Cafe Coffee Day', 'ccd@datacore.io', 180.00)" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 text-left active:scale-95 transition">
+          <span class="font-bold text-slate-900 block">☕ Cafe Coffee Day</span>
+          <span class="text-[10px] text-slate-400 font-mono">₹180.00 • CCD-9921</span>
+        </button>
+
+        <button onclick="simulateScanMerchant('Swiggy Delivery', 'swiggy@datacore.io', 340.00)" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 text-left active:scale-95 transition">
+          <span class="font-bold text-slate-900 block">🍕 Swiggy Order</span>
+          <span class="text-[10px] text-slate-400 font-mono">₹340.00 • SW-4821</span>
+        </button>
+
+        <button onclick="simulateScanMerchant('Uber Ride Fare', 'uber@datacore.io', 210.00)" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 text-left active:scale-95 transition">
+          <span class="font-bold text-slate-900 block">🚖 Uber Cab</span>
+          <span class="text-[10px] text-slate-400 font-mono">₹210.00 • UB-1029</span>
+        </button>
+
+        <button onclick="simulateScanMerchant('Bob Smith', 'bob@datacore.io', 250.00)" class="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 text-left active:scale-95 transition">
+          <span class="font-bold text-slate-900 block">👤 Bob Smith</span>
+          <span class="text-[10px] text-slate-400 font-mono">₹250.00 • DC-1519-6941</span>
+        </button>
+      </div>
+    </div>
+
+    <button onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+      Cancel
+    </button>
+  </div>
+
+  <!-- ==================== AUTHENTIC 4-DIGIT UPI PIN KEYPAD MODAL ==================== -->
+  <div id="modal-pin-auth" class="modal-sheet p-6 text-center">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-3"></div>
+    
+    <!-- Paying Summary -->
+    <div class="mb-4">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Authorizing Payment</span>
+      <h3 id="pin-paying-to" class="text-base font-black text-slate-900">Paying Bob Smith</h3>
+      <div id="pin-paying-amt" class="text-2xl font-black text-blue-600 font-mono mt-1">₹250.00</div>
+    </div>
+
+    <!-- 4 PIN Dots -->
+    <div class="flex justify-center space-x-4 mb-4">
+      <div id="pin-dot-1" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
+      <div id="pin-dot-2" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
+      <div id="pin-dot-3" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
+      <div id="pin-dot-4" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
+    </div>
+    <p class="text-[10px] text-slate-400 mb-4">Enter your 4-digit UPI PIN or authenticate with Biometrics</p>
+
+    <!-- 1-Tap Biometric Button -->
+    <button onclick="authenticatePinBiometric()" class="w-full py-2.5 mb-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 rounded-xl text-xs font-bold flex items-center justify-center space-x-2 transition active:scale-95">
+      <i class="fa-solid fa-fingerprint text-sm text-blue-600"></i>
+      <span>Authorize with Fingerprint</span>
+    </button>
+
+    <!-- Keypad Grid (1-9, Biometric, 0, Backspace) -->
+    <div class="grid grid-cols-3 gap-2.5 max-w-xs mx-auto mb-3">
+      <button onclick="pressPinDigit('1')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">1</button>
+      <button onclick="pressPinDigit('2')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">2</button>
+      <button onclick="pressPinDigit('3')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">3</button>
+
+      <button onclick="pressPinDigit('4')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">4</button>
+      <button onclick="pressPinDigit('5')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">5</button>
+      <button onclick="pressPinDigit('6')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">6</button>
+
+      <button onclick="pressPinDigit('7')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">7</button>
+      <button onclick="pressPinDigit('8')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">8</button>
+      <button onclick="pressPinDigit('9')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">9</button>
+
+      <button onclick="authenticatePinBiometric()" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition">
+        <i class="fa-solid fa-fingerprint text-base text-blue-600"></i>
+      </button>
+      <button onclick="pressPinDigit('0')" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-lg font-bold text-slate-800 active:scale-90 transition">0</button>
+      <button onclick="pressPinBackspace()" class="py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition">
+        <i class="fa-solid fa-delete-left text-base"></i>
+      </button>
+    </div>
+
+    <button onclick="closeAllModals()" class="text-xs text-slate-400 hover:text-slate-600 font-semibold py-1">
+      Cancel Payment
+    </button>
+  </div>
+
+  <!-- ==================== CASHBACK SCRATCH CARD MODAL ==================== -->
+  <div id="modal-scratch-card" class="modal-sheet p-6 text-center">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <h3 class="text-base font-bold text-slate-900 mb-1">DataCore Rewards</h3>
+    <p class="text-xs text-slate-500 mb-4">Tap to scratch your exclusive reward card!</p>
+
+    <!-- Scratch Area Container -->
+    <div id="scratch-box" onclick="scratchRewardCard()" class="w-64 h-64 mx-auto rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-yellow-600 shadow-xl p-5 flex flex-col items-center justify-center cursor-pointer relative overflow-hidden group select-none active:scale-95 transition">
+      
+      <!-- Unscratched View -->
+      <div id="scratch-cover" class="absolute inset-0 bg-gradient-to-br from-amber-500 via-yellow-600 to-amber-700 flex flex-col items-center justify-center p-4 transition-opacity duration-500">
+        <div class="w-16 h-16 rounded-full bg-white/20 border-2 border-white/40 flex items-center justify-center text-3xl mb-3 shadow-inner group-hover:scale-110 transition">
+          ✨
+        </div>
+        <h4 class="text-base font-black text-white tracking-wide">TAP TO SCRATCH</h4>
+        <p class="text-[10px] text-amber-100 mt-1">Guaranteed Cashback up to ₹50</p>
+      </div>
+
+      <!-- Scratched Reward View -->
+      <div id="scratch-revealed" class="flex flex-col items-center justify-center hidden animate-reward">
+        <div class="text-4xl mb-2">🎉</div>
+        <span class="text-[10px] font-bold text-white uppercase tracking-wider block">Cashback Won!</span>
+        <div id="scratch-reward-amt" class="text-3xl font-black text-white font-mono my-1">₹25.00</div>
+        <p class="text-[10px] text-amber-100">Credited to your DataCore Wallet</p>
+      </div>
+    </div>
+
+    <div id="scratch-claim-box" class="mt-4 hidden">
+      <button onclick="claimCashbackReward()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-xs shadow-md shadow-emerald-600/20 active:scale-98 transition flex items-center justify-center space-x-1.5">
+        <i class="fa-solid fa-gift"></i>
+        <span>Claim & Deposit to Wallet</span>
+      </button>
+    </div>
+
+    <button onclick="closeAllModals()" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition mt-3">
+      Close
+    </button>
+  </div>
+
+  <!-- ==================== 1-TAP BILL PAYMENT MODAL ==================== -->
+  <div id="modal-bill-pay" class="modal-sheet p-6">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center space-x-3 mb-4">
+      <div id="bill-icon" class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl">
+        📱
+      </div>
+      <div>
+        <h3 id="bill-title" class="text-base font-bold text-slate-900 leading-tight">Mobile Recharge</h3>
+        <p id="bill-provider" class="text-xs text-slate-500">Jio 5G Unlimited Plan</p>
+      </div>
+    </div>
+
+    <!-- Bill Details Box -->
+    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-2 mb-4">
+      <div class="flex justify-between">
+        <span class="text-slate-400">Bill Amount</span>
+        <span id="bill-amt" class="font-mono font-bold text-slate-900 text-sm">₹299.00</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Payment Due</span>
+        <span class="font-bold text-amber-600">Due Today</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Debited From</span>
+        <span class="font-bold text-slate-800">DataCore Bank (Default)</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-slate-400">Engine Invariant</span>
+        <span class="font-bold text-emerald-600">Instant Row-Lock</span>
+      </div>
+    </div>
+
+    <button onclick="payCurrentBill()" class="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold text-xs shadow-md shadow-blue-500/20 active:scale-98 transition flex items-center justify-center space-x-2">
+      <i class="fa-solid fa-lock text-xs"></i>
+      <span>Pay Bill Now</span>
+    </button>
+  </div>
+
   <!-- ==================== SPLIT EXPENSE MODAL ==================== -->
   <div id="modal-split-expense" class="modal-sheet p-6">
     <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
@@ -1432,7 +1801,8 @@
   const STORAGE_KEYS = {
     WALLETS: 'datacore_multi_wallets_v3',
     ACTIVE_USER: 'datacore_active_user_email',
-    SOUND_ENABLED: 'datacore_sound_enabled'
+    SOUND_ENABLED: 'datacore_sound_enabled',
+    DARK_THEME: 'datacore_dark_theme'
   };
 
   // Factory Default Test Accounts with Realistic Balances & History
@@ -1534,6 +1904,7 @@
   let isTransfersLocked = currentUser ? !!currentUser.isTransfersLocked : false;
   let isBalanceHidden = false;
   let isSoundEnabled = localStorage.getItem(STORAGE_KEYS.SOUND_ENABLED) !== 'false';
+  let isDarkTheme = localStorage.getItem(STORAGE_KEYS.DARK_THEME) === 'true';
   let selectedStrategy = 'PESSIMISTIC';
   let activeHistoryFilter = 'ALL';
   let activeTxId = null;
@@ -1547,16 +1918,41 @@
     recipientId: 'bob@datacore.io',
     recipientInitial: 'B',
     dateTime: '13 Nov 2026, 10:45 PM',
-    latency: '6.4 ms'
+    latency: '6.4 ms',
+    senderLast4: '3923'
   };
 
   let splitPersonCount = 2;
+  let isFlashlightOn = false;
+  let enteredPin = '';
+  let pendingTransferCallback = null;
+  let currentScratchWon = 25.00;
+  let isCardScratched = false;
+  let currentBillData = { category: 'Mobile Recharge', amt: 299, provider: 'Jio 5G Unlimited Plan' };
+
+  // ================= THEME TOGGLE (DARK / LIGHT) =================
+  function toggleTheme() {
+    isDarkTheme = !isDarkTheme;
+    localStorage.setItem(STORAGE_KEYS.DARK_THEME, isDarkTheme.toString());
+    applyTheme();
+    showToast(isDarkTheme ? 'Dark theme activated' : 'Light theme activated');
+  }
+
+  function applyTheme() {
+    const container = document.querySelector('.phone-container');
+    const icon = document.getElementById('theme-toggle-icon');
+    if (isDarkTheme) {
+      if (container) container.classList.add('dark-theme');
+      if (icon) icon.className = 'fa-solid fa-sun text-amber-400 text-lg';
+    } else {
+      if (container) container.classList.remove('dark-theme');
+      if (icon) icon.className = 'fa-regular fa-moon text-lg';
+    }
+  }
 
   // ================= RANDOM DIGITS GENERATOR =================
-  // Exactly generates specified number of digits (no more, no less)
   function generateRandomDigits(len) {
     let result = '';
-    // First digit is 1-9 to avoid leading zero
     result += Math.floor(1 + Math.random() * 9);
     for (let i = 1; i < len; i++) {
       result += Math.floor(Math.random() * 10);
@@ -1653,6 +2049,316 @@
     localStorage.setItem(STORAGE_KEYS.WALLETS, JSON.stringify(wallets));
   }
 
+  // ================= QR SCANNER SIMULATION =================
+  function openScannerModal() {
+    closeAllModals();
+    isFlashlightOn = false;
+    const icon = document.getElementById('torch-icon');
+    const label = document.getElementById('torch-label');
+    if (icon) icon.className = 'fa-solid fa-bolt text-xs';
+    if (label) label.innerText = 'Torch Off';
+
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-scanner').classList.add('active');
+    triggerHaptic();
+  }
+
+  function toggleFlashlight() {
+    isFlashlightOn = !isFlashlightOn;
+    const icon = document.getElementById('torch-icon');
+    const label = document.getElementById('torch-label');
+    if (isFlashlightOn) {
+      if (icon) icon.className = 'fa-solid fa-bolt text-amber-400 text-xs';
+      if (label) label.innerText = 'Torch On';
+      showToast('Camera flashlight turned ON');
+    } else {
+      if (icon) icon.className = 'fa-solid fa-bolt text-xs';
+      if (label) label.innerText = 'Torch Off';
+      showToast('Camera flashlight turned OFF');
+    }
+    triggerHaptic();
+  }
+
+  function simulateScanMerchant(name, id, amt) {
+    closeAllModals();
+    playSuccessChime();
+    triggerHaptic();
+    showToast(`Scanned QR: ${name} (₹${amt.toFixed(2)})`);
+
+    document.getElementById('transfer-recipient').value = id;
+    document.getElementById('transfer-amount').value = amt.toFixed(2);
+    document.getElementById('transfer-note').value = `Payment to ${name}`;
+    navigateTo('transfer');
+
+    setTimeout(() => {
+      initiateTransferAuth();
+    }, 400);
+  }
+
+  // ================= 4-DIGIT UPI PIN KEYPAD MODAL =================
+  function initiateTransferAuth() {
+    if (isTransfersLocked) {
+      return showToast('Transfers are locked by security settings', false);
+    }
+    const amt = parseFloat(document.getElementById('transfer-amount').value) || 0;
+    const recipient = document.getElementById('transfer-recipient').value.trim();
+
+    if (amt <= 0 || isNaN(amt)) {
+      return showToast('Transfer amount must be strictly positive', false);
+    }
+    const recClean = recipient.toLowerCase();
+    if (currentUser && (recClean === currentUser.email.toLowerCase() || recClean === currentUser.accountNo.toLowerCase())) {
+      return showToast('Cannot transfer funds to your own wallet account', false);
+    }
+    if (amt > balance) {
+      return showToast('Insufficient account balance', false);
+    }
+    if (amt > dailyLimit) {
+      return showToast(`Daily transfer limit of ₹${dailyLimit.toLocaleString('en-IN')} exceeded`, false);
+    }
+
+    let recName = recipient;
+    Object.keys(wallets).forEach(k => {
+      const w = wallets[k];
+      if (w.email.toLowerCase() === recClean || w.accountNo.toLowerCase() === recClean) {
+        recName = w.name;
+      }
+    });
+
+    enteredPin = '';
+    updatePinDots();
+    document.getElementById('pin-paying-to').innerText = `Paying ${recName}`;
+    document.getElementById('pin-paying-amt').innerText = `₹${amt.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    pendingTransferCallback = () => {
+      executeTransfer();
+    };
+
+    closeAllModals();
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-pin-auth').classList.add('active');
+    triggerHaptic();
+  }
+
+  function pressPinDigit(d) {
+    if (enteredPin.length < 4) {
+      enteredPin += d;
+      updatePinDots();
+      triggerHaptic();
+      if (enteredPin.length === 4) {
+        setTimeout(() => {
+          closeAllModals();
+          if (pendingTransferCallback) pendingTransferCallback();
+        }, 220);
+      }
+    }
+  }
+
+  function pressPinBackspace() {
+    if (enteredPin.length > 0) {
+      enteredPin = enteredPin.slice(0, -1);
+      updatePinDots();
+      triggerHaptic();
+    }
+  }
+
+  function updatePinDots() {
+    for (let i = 1; i <= 4; i++) {
+      const dot = document.getElementById(`pin-dot-${i}`);
+      if (dot) {
+        if (i <= enteredPin.length) {
+          dot.className = 'w-4 h-4 rounded-full border-2 border-blue-600 bg-blue-600 shadow-sm transition-all duration-150';
+        } else {
+          dot.className = 'w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150';
+        }
+      }
+    }
+  }
+
+  function authenticatePinBiometric() {
+    triggerHaptic();
+    enteredPin = '••••';
+    updatePinDots();
+    showToast('Biometrics Authenticated!');
+    setTimeout(() => {
+      closeAllModals();
+      if (pendingTransferCallback) pendingTransferCallback();
+    }, 280);
+  }
+
+  // ================= CASHBACK SCRATCH CARD =================
+  function openScratchCardModal() {
+    closeAllModals();
+    isCardScratched = false;
+    currentScratchWon = Math.floor(15 + Math.random() * 30);
+    document.getElementById('scratch-reward-amt').innerText = `₹${currentScratchWon.toFixed(2)}`;
+    
+    const cover = document.getElementById('scratch-cover');
+    const revealed = document.getElementById('scratch-revealed');
+    const claimBox = document.getElementById('scratch-claim-box');
+
+    if (cover) cover.style.opacity = '1';
+    if (revealed) revealed.classList.add('hidden');
+    if (claimBox) claimBox.classList.add('hidden');
+
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-scratch-card').classList.add('active');
+    triggerHaptic();
+  }
+
+  function scratchRewardCard() {
+    if (isCardScratched) return;
+    isCardScratched = true;
+
+    const cover = document.getElementById('scratch-cover');
+    const revealed = document.getElementById('scratch-revealed');
+    const claimBox = document.getElementById('scratch-claim-box');
+
+    if (cover) cover.style.opacity = '0';
+    setTimeout(() => {
+      if (revealed) revealed.classList.remove('hidden');
+      if (claimBox) claimBox.classList.remove('hidden');
+      playSuccessChime();
+      triggerSuccessHaptic();
+      showToast(`🎉 You revealed ₹${currentScratchWon.toFixed(2)} Cashback!`);
+    }, 200);
+  }
+
+  function claimCashbackReward() {
+    balance += currentScratchWon;
+    const txId = generateRandomDigits(12);
+    const utrNo = generateRandomDigits(12);
+
+    transactions.unshift({
+      id: txId,
+      utr: utrNo,
+      type: 'CREDIT',
+      to: 'rewards@datacore.io',
+      toName: 'DataCore Rewards Engine',
+      amount: currentScratchWon,
+      desc: 'DataCore Cashback Reward',
+      date: 'Just now',
+      status: 'COMPLETED',
+      strategy: 'ATOMIC_CONDITIONAL',
+      latency: '3.4 ms'
+    });
+
+    notifications.unshift({
+      id: `n-rew-${Date.now()}`,
+      title: 'Cashback Deposited',
+      msg: `₹${currentScratchWon.toFixed(2)} cashback credited to your primary wallet!`,
+      unread: true,
+      time: 'Just now'
+    });
+
+    saveCurrentWalletState();
+    renderBalance();
+    renderTransactions();
+    renderNotifications();
+    closeAllModals();
+
+    playSuccessChime();
+    showToast(`₹${currentScratchWon.toFixed(2)} deposited into your wallet!`);
+  }
+
+  // ================= 1-TAP BILL PAYMENT =================
+  function openBillModal(category, amt, provider) {
+    currentBillData = { category, amt, provider };
+    const iconMap = {
+      'Mobile Recharge': '📱',
+      'Electricity Bill': '💡',
+      'DTH Recharge': '📺',
+      'Credit Card Bill': '💳'
+    };
+
+    const iconEl = document.getElementById('bill-icon');
+    const titleEl = document.getElementById('bill-title');
+    const provEl = document.getElementById('bill-provider');
+    const amtEl = document.getElementById('bill-amt');
+
+    if (iconEl) iconEl.innerText = iconMap[category] || '⚡';
+    if (titleEl) titleEl.innerText = category;
+    if (provEl) provEl.innerText = provider;
+    if (amtEl) amtEl.innerText = `₹${amt.toFixed(2)}`;
+
+    closeAllModals();
+    document.getElementById('backdrop').classList.add('active');
+    document.getElementById('modal-bill-pay').classList.add('active');
+    triggerHaptic();
+  }
+
+  function payCurrentBill() {
+    if (isTransfersLocked) {
+      return showToast('Transfers are locked by security settings', false);
+    }
+    if (currentBillData.amt > balance) {
+      return showToast('Insufficient balance to pay bill', false);
+    }
+
+    balance -= currentBillData.amt;
+    const exact12TxId = generateRandomDigits(12);
+    const exact12UtrNo = generateRandomDigits(12);
+    const latencyVal = `${(Math.random() * 3 + 4.1).toFixed(1)} ms`;
+    const formattedDateTime = formatSuccessDateTime();
+
+    transactions.unshift({
+      id: exact12TxId,
+      utr: exact12UtrNo,
+      type: 'DEBIT',
+      to: currentBillData.provider,
+      toName: currentBillData.category,
+      amount: currentBillData.amt,
+      desc: `${currentBillData.category} - ${currentBillData.provider}`,
+      date: 'Just now',
+      status: 'COMPLETED',
+      strategy: 'PESSIMISTIC',
+      latency: latencyVal
+    });
+
+    notifications.unshift({
+      id: `n-bill-${Date.now()}`,
+      title: 'Bill Paid Successfully',
+      msg: `₹${currentBillData.amt.toFixed(2)} paid to ${currentBillData.provider}.`,
+      unread: true,
+      time: 'Just now'
+    });
+
+    saveCurrentWalletState();
+    renderBalance();
+    renderTransactions();
+    renderNotifications();
+
+    const senderLast4 = (currentUser.accountNo || '3923').replace(/[^0-9]/g, '').slice(-4) || '3923';
+    lastSuccessfulTx = {
+      txId: exact12TxId,
+      utrNo: exact12UtrNo,
+      amount: currentBillData.amt,
+      recipientName: currentBillData.provider,
+      recipientId: currentBillData.category,
+      recipientInitial: '⚡',
+      dateTime: formattedDateTime,
+      latency: latencyVal,
+      senderLast4: senderLast4,
+      note: currentBillData.category
+    };
+
+    document.getElementById('succ-datetime').innerText = formattedDateTime;
+    document.getElementById('succ-avatar-initial').innerText = '⚡';
+    document.getElementById('succ-recipient-name').innerText = currentBillData.provider;
+    document.getElementById('succ-recipient-id').innerText = currentBillData.category;
+    document.getElementById('succ-amount').innerText = `₹${currentBillData.amt.toFixed(2)}`;
+    document.getElementById('succ-tx-id').innerText = exact12TxId;
+    document.getElementById('succ-debited-bank').innerText = `DataCore Bank - XXXXXXXXXXXX${senderLast4}`;
+    document.getElementById('succ-debited-amt').innerText = `₹${currentBillData.amt.toFixed(2)}`;
+    document.getElementById('succ-utr-no').innerText = exact12UtrNo;
+    document.getElementById('succ-latency-text').innerText = `Instant Settlement • ${latencyVal} latency`;
+
+    closeAllModals();
+    playSuccessChime();
+    triggerSuccessHaptic();
+    navigateTo('success');
+  }
+
   // ================= LOGIN & LOGOUT LIFECYCLE =================
   function loginAs(email) {
     if (!wallets[email]) {
@@ -1672,24 +2378,19 @@
     payees = currentUser.payees || [];
     isTransfersLocked = !!currentUser.isTransfersLocked;
 
-    // Update Lock Checkbox
     const lockCheckbox = document.getElementById('lock-transfers');
     if (lockCheckbox) lockCheckbox.checked = isTransfersLocked;
 
-    // Show Bottom Navigation
     const nav = document.getElementById('bottom-nav');
     if (nav) nav.classList.remove('hidden');
 
-    // Update User Profile & Menu bindings
+    applyTheme();
     updateUserBindings();
-
-    // Render components
     renderBalance();
     renderPayees();
     renderTransactions();
     renderNotifications();
 
-    // Navigate to Home screen
     navigateTo('home');
     showToast(`Signed into ${currentUser.name}'s wallet`);
     triggerHaptic();
@@ -1703,11 +2404,9 @@
 
     closeAllModals();
 
-    // Hide bottom navigation
     const nav = document.getElementById('bottom-nav');
     if (nav) nav.classList.add('hidden');
 
-    // Hide all app screens
     ['home', 'transfer', 'history', 'statement', 'notifications', 'profile', 'success'].forEach(id => {
       const screen = document.getElementById(`screen-${id}`);
       if (screen) screen.classList.add('hidden');
@@ -1715,13 +2414,10 @@
       if (tab) tab.classList.remove('active');
     });
 
-    // Show login screen
     const loginScreen = document.getElementById('screen-login');
     if (loginScreen) loginScreen.classList.remove('hidden');
 
-    // Render fresh login wallet cards with latest balances
     renderLoginWallets();
-
     showToast('Signed out from wallet');
     triggerHaptic();
   }
@@ -1940,7 +2636,6 @@
     if (profBankBal) profBankBal.innerText = `₹${balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     if (profLimit) profLimit.innerText = `Max ₹${dailyLimit.toLocaleString('en-IN')} / day`;
 
-    // Calculate today's spent amount from transactions
     let todaySpent = 0;
     transactions.forEach(t => {
       if (t.type === 'DEBIT' && t.status === 'COMPLETED') {
@@ -2096,7 +2791,6 @@
     const activeTab = document.getElementById(`tab-${screenId}`);
     if (activeTab) activeTab.classList.add('active');
 
-    // Hide bottom nav on login and success screens, show on main dashboard screens
     const nav = document.getElementById('bottom-nav');
     if (nav) {
       if (screenId === 'login' || screenId === 'success') {
@@ -2160,10 +2854,22 @@
     let totalCredits = 0;
     let totalDebits = 0;
 
+    let foodSpent = 0;
+    let cloudSpent = 0;
+    let peerSpent = 0;
+
     transactions.forEach(tx => {
       const isDebit = tx.type === 'DEBIT';
       if (isDebit && tx.status === 'COMPLETED') {
         totalDebits += tx.amount;
+        const d = (tx.desc + ' ' + tx.to).toLowerCase();
+        if (d.includes('dinner') || d.includes('lunch') || d.includes('food') || d.includes('cafe') || d.includes('swiggy')) {
+          foodSpent += tx.amount;
+        } else if (d.includes('cloud') || d.includes('node') || d.includes('api') || d.includes('hosting')) {
+          cloudSpent += tx.amount;
+        } else {
+          peerSpent += tx.amount;
+        }
       } else if (!isDebit) {
         totalCredits += tx.amount;
       }
@@ -2231,6 +2937,26 @@
     if (ratioLabel) ratioLabel.innerText = `Inflow Ratio: ${ratio}%`;
     if (countLabel) countLabel.innerText = `Ledger Entries: ${transactions.length}`;
     if (ratioBar) ratioBar.style.width = `${ratio}%`;
+
+    // Category Analytics update
+    const totalCat = foodSpent + cloudSpent + peerSpent || 1;
+    const fPct = Math.round((foodSpent / totalCat) * 100);
+    const cPct = Math.round((cloudSpent / totalCat) * 100);
+    const pPct = Math.round((peerSpent / totalCat) * 100);
+
+    const catFVal = document.getElementById('cat-food-val');
+    const catFBar = document.getElementById('cat-food-bar');
+    const catCVal = document.getElementById('cat-cloud-val');
+    const catCBar = document.getElementById('cat-cloud-bar');
+    const catPVal = document.getElementById('cat-peer-val');
+    const catPBar = document.getElementById('cat-peer-bar');
+
+    if (catFVal) catFVal.innerText = `₹${foodSpent.toFixed(2)} (${fPct}%)`;
+    if (catFBar) catFBar.style.width = `${Math.max(4, fPct)}%`;
+    if (catCVal) catCVal.innerText = `₹${cloudSpent.toFixed(2)} (${cPct}%)`;
+    if (catCBar) catCBar.style.width = `${Math.max(4, cPct)}%`;
+    if (catPVal) catPVal.innerText = `₹${peerSpent.toFixed(2)} (${pPct}%)`;
+    if (catPBar) catPBar.style.width = `${Math.max(4, pPct)}%`;
 
     filterHistory();
   }
@@ -2455,37 +3181,27 @@
     const recipient = document.getElementById('transfer-recipient').value.trim();
     const note = document.getElementById('transfer-note').value.trim() || 'Fund Transfer';
 
-    // Validation 1: Positive number
     if (amt <= 0 || isNaN(amt)) {
       return showToast('Transfer amount must be strictly positive', false);
     }
-
-    // Validation 2: Self-transfer block
     const recClean = recipient.toLowerCase();
     if (currentUser && (recClean === currentUser.email.toLowerCase() || recClean === currentUser.accountNo.toLowerCase())) {
       return showToast('Cannot transfer funds to your own wallet account', false);
     }
-
-    // Validation 3: Sufficient balance
     if (amt > balance) {
       return showToast('Insufficient account balance', false);
     }
-
-    // Validation 4: Daily Limit check
     if (amt > dailyLimit) {
       return showToast(`Daily transfer limit of ₹${dailyLimit.toLocaleString('en-IN')} exceeded`, false);
     }
 
-    // Deduct balance from sender
     balance -= amt;
 
-    // Exact 12-digit random transaction ID and exact 12-digit random UTR (per user specification)
     const exact12TxId = generateRandomDigits(12);
     const exact12UtrNo = generateRandomDigits(12);
     const latencyVal = `${(Math.random() * 4 + 4.2).toFixed(1)} ms`;
     const formattedDateTime = formatSuccessDateTime();
 
-    // Match recipient in multi-wallet database
     let recipientName = recipient;
     let recipientAccountNo = recipient;
     let recipientInitial = recipient.charAt(0).toUpperCase();
@@ -2525,7 +3241,7 @@
       time: 'Just now'
     });
 
-    // ================= REAL-TIME CREDIT TO RECIPIENT WALLET =================
+    // Real-time credit to recipient wallet
     if (targetWalletKey && wallets[targetWalletKey]) {
       const targetWallet = wallets[targetWalletKey];
       targetWallet.balance += amt;
@@ -2558,12 +3274,10 @@
     renderTransactions();
     renderNotifications();
 
-    // Clear form inputs
     document.getElementById('transfer-amount').value = '';
     document.getElementById('transfer-recipient').value = '';
     document.getElementById('transfer-note').value = '';
 
-    // Save Last Successful Transaction for Receipt, Split, and Sharing
     const senderLast4 = (currentUser.accountNo || '3923').replace(/[^0-9]/g, '').slice(-4) || '3923';
     lastSuccessfulTx = {
       txId: exact12TxId,
@@ -2578,7 +3292,6 @@
       note: note
     };
 
-    // Populate Payment Successful Page Elements (PhonePe / GPay Style)
     document.getElementById('succ-datetime').innerText = formattedDateTime;
     document.getElementById('succ-avatar-initial').innerText = recipientInitial;
     document.getElementById('succ-recipient-name').innerText = recipientName;
@@ -2590,15 +3303,12 @@
     document.getElementById('succ-utr-no').innerText = exact12UtrNo;
     document.getElementById('succ-latency-text').innerText = `Row lock committed in ${latencyVal} • 0 race conditions`;
 
-    // Reset split state
     splitPersonCount = 2;
     updateSplitCalculation();
 
-    // Trigger PhonePe Audio Chime and Haptic Vibration
     playSuccessChime();
     triggerSuccessHaptic();
 
-    // Transition smoothly to Payment Successful Page!
     navigateTo('success');
   }
 
@@ -2709,7 +3419,6 @@
     const container = document.getElementById('support-messages');
     if (!container) return;
 
-    // Add user bubble
     container.innerHTML += `
       <div class="chat-bubble bg-purple-600 text-white p-3 rounded-2xl rounded-tr-sm text-[11px] ml-auto max-w-[85%]">
         ${msg}
@@ -2718,7 +3427,6 @@
     input.value = '';
     container.scrollTop = container.scrollHeight;
 
-    // Generate smart response after 600ms
     setTimeout(() => {
       let reply = `Thank you for reaching out! Our real-time concurrency engine guarantees your transfer (Tx: ${lastSuccessfulTx.txId}) is authoritatively committed. Zero race conditions occurred.`;
       const q = msg.toLowerCase();
@@ -2737,7 +3445,7 @@
       `;
       container.scrollTop = container.scrollHeight;
       triggerHaptic();
-    }, 600);
+    }, 550);
   }
 
   function reportFraud() {
@@ -2809,7 +3517,6 @@
         showToast('Engine Node online and responsive!');
       })
       .catch(() => {
-        // Fallback realistic ping simulation if node is cold
         const sim = (Math.random() * 3 + 5.1).toFixed(1);
         if (pingEl) pingEl.innerText = `${sim} ms`;
         showToast(`Engine latency: ${sim} ms`);
@@ -2823,7 +3530,6 @@
       tx.status = 'REVERSED';
       balance += tx.amount;
 
-      // Deduct from recipient wallet if internal user
       const recClean = tx.to.toLowerCase();
       Object.keys(wallets).forEach(key => {
         const w = wallets[key];
@@ -2863,6 +3569,8 @@
   }
 
   // ================= BOOTSTRAP INITIAL VIEW =================
+  applyTheme();
+
   if (!activeUserEmail || !wallets[activeUserEmail]) {
     logout();
   } else {
