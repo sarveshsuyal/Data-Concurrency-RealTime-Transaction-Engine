@@ -2819,6 +2819,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       id: 'usr_yash',
       name: 'Yash Sharma',
       email: 'yash@datacore',
+      mobile: '9820192840',
       accountNo: 'DC-6812-3923',
       initial: 'Y',
       role: 'Prime Savings A/C',
@@ -2850,6 +2851,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       id: 'usr_rahul',
       name: 'Rahul Verma',
       email: 'rahul@datacore',
+      mobile: '9876543210',
       accountNo: 'DC-1519-6941',
       initial: 'R',
       role: 'Developer & Receiver',
@@ -2873,6 +2875,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       id: 'usr_pooja',
       name: 'Pooja Patel',
       email: 'pooja@datacore',
+      mobile: '9811223344',
       accountNo: 'DC-4806-5873',
       initial: 'P',
       role: 'UX Designer',
@@ -3726,7 +3729,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     Object.keys(wallets).forEach(k => {
       const w = wallets[k];
       if (
-        (w.mobile && (w.mobile === digitsOnly || w.mobile.replace(/[^0-9]/g, '') === digitsOnly)) ||
+        (digitsOnly && w.mobile && (w.mobile === digitsOnly || w.mobile.replace(/[^0-9]/g, '') === digitsOnly)) ||
         w.email.toLowerCase() === clean ||
         w.accountNo.toLowerCase() === clean ||
         (w.name && w.name.toLowerCase() === clean)
@@ -3742,41 +3745,24 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     }
 
     if (!matchedEmail) {
-      const mobileNum = digitsOnly.length === 10 ? digitsOnly : '9820192840';
-      const email = `${mobileNum}@datacore`;
-      wallets[email] = {
-        id: `usr_${Date.now()}`,
-        name: `User ${mobileNum.slice(-4)}`,
-        email: email,
-        mobile: mobileNum,
-        accountNo: `DC-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
-        initial: 'U',
-        role: 'Prime Savings A/C',
-        color: 'blue',
-        balance: 10000.00,
-        dailyLimit: 100000.00,
-        pin: pin || '1234',
-        upiPin: pin || '1234',
-        isTransfersLocked: false,
-        transactions: [],
-        notifications: [
-          { id: `n-${Date.now()}`, title: 'Welcome to DataCore Pay', msg: 'Your UPI wallet is active with ₹10,000 balance.', unread: true, time: 'Just now' }
-        ],
-        payees: [
-          { id: 'p1', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'RV' },
-          { id: 'p2', name: 'Sharma Kirana Store', email: 'sharmakirana@upi', initials: 'SK' }
-        ]
-      };
-      saveCurrentWalletState();
-      matchedEmail = email;
+      triggerErrorHaptic();
+      showToast(`No account found for +91 ${digitsOnly || phoneOrId}. Please tap 'Create Account' to register.`, false);
+      const regMob = document.getElementById('reg-mobile');
+      if (regMob && digitsOnly.length === 10) regMob.value = digitsOnly;
+      switchAuthTab('signup');
+      return;
     }
 
     const userWallet = wallets[matchedEmail];
     const expectedPin = userWallet.pin || userWallet.upiPin || '1234';
 
-    if (pin && pin !== expectedPin) {
+    if (!pin) {
+      return showToast('Please enter your 4-digit UPI PIN', false);
+    }
+
+    if (pin !== expectedPin) {
       triggerErrorHaptic();
-      return showToast(`Incorrect UPI PIN. (Default: ${expectedPin})`, false);
+      return showToast(`Incorrect UPI PIN. (Hint: Default is ${expectedPin})`, false);
     }
 
     localStorage.setItem('datacore_is_logged_in', 'true');
@@ -6480,7 +6466,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     showToast(`Appended ${handle}`);
   }
 
-  // ================= NEW USER REGISTRATION FLOW (FLAT 10K, DEFAULT PIN 1234) =================
+  // ================= NEW USER REGISTRATION FLOW (STRICT UNIQUENESS ENFORCED) =================
   function handleRegisterNewUser() {
     const name = (document.getElementById('reg-name')?.value || '').trim();
     const mobile = (document.getElementById('reg-mobile')?.value || '').trim().replace(/[^0-9]/g, '');
@@ -6496,6 +6482,42 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       email = `${mobile}@datacore`;
     }
 
+    // STRICT CHECK 1: Disallow duplicate mobile numbers
+    const existingByPhone = Object.values(wallets).find(w => {
+      if (!w || !w.mobile) return false;
+      const wClean = w.mobile.replace(/[^0-9]/g, '');
+      return wClean === mobile;
+    });
+
+    if (existingByPhone) {
+      triggerErrorHaptic();
+      showToast(`Account already exists for +91 ${mobile}! Enter your PIN to sign in.`, false);
+      const phoneInput = document.getElementById('login-phone-input');
+      if (phoneInput) phoneInput.value = mobile;
+      switchAuthTab('signin');
+      const pinInput = document.getElementById('login-pin-input');
+      if (pinInput) {
+        pinInput.value = '';
+        pinInput.focus();
+      }
+      return;
+    }
+
+    // STRICT CHECK 2: Disallow duplicate email addresses
+    const existingByEmail = wallets[email] || Object.values(wallets).find(w => {
+      return w && w.email && w.email.toLowerCase() === email;
+    });
+
+    if (existingByEmail) {
+      triggerErrorHaptic();
+      showToast(`Account already registered with email ${email}! Please sign in.`, false);
+      const phoneInput = document.getElementById('login-phone-input');
+      if (phoneInput) phoneInput.value = existingByEmail.mobile || email;
+      switchAuthTab('signin');
+      return;
+    }
+
+    // All checks passed: Provision brand-new unique account with flat 10k
     const startingBal = 10000.00; // Flat ₹10,000 for everyone, not more, not less
     const pin = '1234';           // Default PIN, chosen/customized inside app
     const randomSuffix = Math.floor(1000 + Math.random() * 9000);
@@ -6559,7 +6581,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     playSuccessChime();
     triggerSuccessHaptic();
-    showToast(`🎉 Welcome ${name}! Account provisioned with ₹10,000.`);
+    showToast(`🎉 Welcome ${name}! Account created with ₹10,000.`);
     loginAs(email);
   }
 
