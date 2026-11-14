@@ -78,6 +78,25 @@ class TransactionAndLedgerTests(TestCase):
         # Mathematical Invariant: Debits == Credits
         self.assertEqual(debit.amount, credit.amount)
 
+    def test_transfer_using_upi_id(self):
+        """Test transfer executes successfully when recipient is identified by generated UPI ID."""
+        self.receiver_account.upi_id = 'receiver@dc'
+        self.receiver_account.save()
+
+        payload = {
+            'sender_account_id': str(self.sender_account.id),
+            'receiver_identifier': 'receiver@dc',
+            'amount': '250.00',
+            'description': 'UPI transfer test'
+        }
+        response = self.client.post(self.tx_url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.sender_account.refresh_from_db()
+        self.receiver_account.refresh_from_db()
+        self.assertEqual(self.sender_account.balance, Decimal('1750.00'))
+        self.assertEqual(self.receiver_account.balance, Decimal('750.00'))
+
     def test_insufficient_funds_rollback(self):
         """Test insufficient funds causes complete rollback with zero ledger entries."""
         payload = {

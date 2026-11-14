@@ -34,6 +34,7 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'account_number',
+            'upi_id',
             'user_email',
             'user_name',
             'balance',
@@ -129,6 +130,8 @@ class TransferRequestSerializer(serializers.Serializer):
     def validate_receiver_identifier(self, value):
         value = value.strip()
         account = Account.objects.filter(account_number=value).first()
+        if not account:
+            account = Account.objects.filter(upi_id__iexact=value).first()
         if not account:
             user = User.objects.filter(email=value).first()
             if user:

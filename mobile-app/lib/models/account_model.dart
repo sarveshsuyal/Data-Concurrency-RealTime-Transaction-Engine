@@ -1,6 +1,7 @@
 class AccountModel {
   final String id;
   final String accountNumber;
+  final String upiId;
   final String userEmail;
   final String userName;
   final String balance;
@@ -12,6 +13,7 @@ class AccountModel {
   AccountModel({
     required this.id,
     required this.accountNumber,
+    this.upiId = '',
     required this.userEmail,
     required this.userName,
     required this.balance,
@@ -25,6 +27,7 @@ class AccountModel {
     return AccountModel(
       id: json['id'] ?? '',
       accountNumber: json['account_number'] ?? '',
+      upiId: json['upi_id'] ?? '',
       userEmail: json['user_email'] ?? '',
       userName: json['user_name'] ?? '',
       balance: json['balance'] ?? '0.00',

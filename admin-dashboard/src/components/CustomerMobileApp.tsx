@@ -57,11 +57,11 @@ export const CustomerMobileApp: React.FC = () => {
   const [isRegisterMode, setIsRegisterMode] = useState(false);
 
   // Auth Inputs
-  const [loginEmail, setLoginEmail] = useState('alice@datacore.io');
-  const [loginPassword, setLoginPassword] = useState('Password123!');
-  const [regName, setRegName] = useState('David Miller');
-  const [regEmail, setRegEmail] = useState('david@datacore.io');
-  const [regPassword, setRegPassword] = useState('Password123!');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [regName, setRegName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPassword, setRegPassword] = useState('');
   const [authError, setAuthError] = useState<string | null>(null);
   const [authLoading, setAuthLoading] = useState(false);
 
@@ -265,32 +265,6 @@ export const CustomerMobileApp: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Demo Quick Logins */}
-                  <div className="mb-5 bg-slate-900/90 rounded-2xl p-3 border border-slate-800">
-                    <p className="text-[11px] font-medium text-slate-400 mb-2">⚡ Quick 1-Click Demo Accounts:</p>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLoginEmail('alice@datacore.io');
-                          handleLogin(undefined, 'alice@datacore.io');
-                        }}
-                        className="text-left px-2.5 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 rounded-lg text-xs transition"
-                      >
-                        <span className="font-semibold">Alice</span> (Sender)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLoginEmail('bob@datacore.io');
-                          handleLogin(undefined, 'bob@datacore.io');
-                        }}
-                        className="text-left px-2.5 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs transition"
-                      >
-                        <span className="font-semibold">Bob</span> (Receiver)
-                      </button>
-                    </div>
-                  </div>
 
                   {authError && (
                     <div className="mb-4 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center space-x-2">

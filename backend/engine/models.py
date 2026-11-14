@@ -20,6 +20,13 @@ class Account(models.Model):
         default=generate_account_number,
         db_index=True
     )
+    upi_id = models.CharField(
+        max_length=128,
+        unique=True,
+        null=True,
+        blank=True,
+        db_index=True
+    )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

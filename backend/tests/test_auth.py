@@ -31,10 +31,38 @@ class AuthAndSecurityTests(TestCase):
         self.assertEqual(user.role, User.Role.USER)
         self.assertFalse(user.is_staff)
 
-        # Verify an account was automatically provisioned
+        # Verify an account was automatically provisioned with a unique UPI ID
         account = Account.objects.filter(user=user).first()
         self.assertIsNotNone(account)
         self.assertEqual(account.balance, 10000.00)
+        self.assertIsNotNone(account.upi_id)
+        self.assertTrue(account.upi_id.endswith('@dc'))
+        self.assertEqual(account.upi_id, 'test@dc')
+
+    def test_unique_upi_id_generation_for_multiple_users(self):
+        """Test unique and non-colliding UPI ID generation."""
+        user1_data = {
+            'email': 'john.doe@test.com',
+            'full_name': 'John Doe',
+            'password': 'SecurePassword123!',
+            'confirm_password': 'SecurePassword123!'
+        }
+        user2_data = {
+            'email': 'john.smith@test.com',
+            'full_name': 'John Smith',
+            'password': 'SecurePassword123!',
+            'confirm_password': 'SecurePassword123!'
+        }
+        res1 = self.client.post(self.register_url, user1_data, format='json')
+        self.assertEqual(res1.status_code, status.HTTP_201_CREATED)
+        acc1 = Account.objects.get(user__email=user1_data['email'])
+        self.assertEqual(acc1.upi_id, 'john@dc')
+
+        res2 = self.client.post(self.register_url, user2_data, format='json')
+        self.assertEqual(res2.status_code, status.HTTP_201_CREATED)
+        acc2 = Account.objects.get(user__email=user2_data['email'])
+        self.assertEqual(acc2.upi_id, 'john1@dc')
+        self.assertNotEqual(acc1.upi_id, acc2.upi_id)
 
     def test_login_successful_and_jwt_returned(self):
         """Test login with email and password returns JWT tokens."""

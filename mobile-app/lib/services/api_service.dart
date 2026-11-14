@@ -3,8 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiService {
-  // Default base URL: 127.0.0.1 for local/Termux/Web, 10.0.2.2 for Android Emulator
-  static const String defaultBaseUrl = kIsWeb ? 'http://127.0.0.1:8000' : 'http://10.0.2.2:8000';
+  // Production Render Backend URL
+  static const String defaultBaseUrl = 'https://datacore-backend-wktd.onrender.com';
   final Dio dio;
   final FlutterSecureStorage storage = const FlutterSecureStorage();
 
@@ -69,5 +69,24 @@ class ApiService {
     } catch (_) {
       return false;
     }
+  }
+
+  Future<Response> createIncident({
+    required String title,
+    required String description,
+    String severity = 'MEDIUM',
+    String status = 'DETECTED',
+    String affectedService = 'Customer Mobile App',
+  }) async {
+    return await dio.post(
+      '/api/admin/incidents/',
+      data: {
+        'title': title,
+        'description': description,
+        'severity': severity,
+        'status': status,
+        'affected_service': affectedService,
+      },
+    );
   }
 }

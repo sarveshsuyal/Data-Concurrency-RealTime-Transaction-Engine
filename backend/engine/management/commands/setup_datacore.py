@@ -49,12 +49,14 @@ class Command(BaseCommand):
                     user.set_password("Password123!")
                     user.save()
 
+                slug = cust["name"].split()[0].lower()
                 acc, a_created = Account.objects.get_or_create(
                     user=user,
                     defaults={
                         "balance": cust["balance"],
                         "currency": "INR",
-                        "version": 0
+                        "version": 0,
+                        "upi_id": f"{slug}@dc"
                     }
                 )
                 if a_created and cust["balance"] > Decimal("0.00"):

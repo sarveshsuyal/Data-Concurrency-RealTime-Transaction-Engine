@@ -11,8 +11,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController(text: 'alice@datacore.io');
-  final _passwordController = TextEditingController(text: 'Password123!');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
   @override
@@ -34,12 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _fillAccount(String email, String password) {
-    setState(() {
-      _emailController.text = email;
-      _passwordController.text = password;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,51 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16),
 
-              // Demo Account Chips
-              Row(
-                children: [
-                  const Text('Quick Fill:', style: TextStyle(fontSize: 11, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () => _fillAccount('alice@datacore.io', 'Password123!'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFCBD5E1)),
-                      ),
-                      child: const Text('Alice', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF334155))),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () => _fillAccount('bob@datacore.io', 'Password123!'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFCBD5E1)),
-                      ),
-                      child: const Text('Bob', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF334155))),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: () => _fillAccount('charlie@datacore.io', 'Password123!'),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFFCBD5E1)),
-                      ),
-                      child: const Text('Charlie', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF334155))),
-                    ),
-                  ),
-                ],
-              ),
+
               const SizedBox(height: 24),
 
               // Submit Button

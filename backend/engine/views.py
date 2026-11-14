@@ -718,7 +718,10 @@ class AnomalyAlertsView(APIView):
 
 class IncidentManagementView(APIView):
     """Incident response board and lifecycle tracking."""
-    permission_classes = [IsAdminUserRole]
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [permissions.AllowAny()]
+        return [IsAdminUserRole()]
 
     def get(self, request):
         incidents = Incident.objects.all().order_by('-created_at')

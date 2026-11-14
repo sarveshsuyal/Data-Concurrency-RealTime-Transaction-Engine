@@ -3,6 +3,7 @@ class UserModel {
   final String email;
   final String fullName;
   final String role;
+  final String upiId;
   final String dateJoined;
 
   UserModel({
@@ -10,6 +11,7 @@ class UserModel {
     required this.email,
     required this.fullName,
     required this.role,
+    this.upiId = '',
     required this.dateJoined,
   });
 
@@ -19,6 +21,7 @@ class UserModel {
       email: json['email'] ?? '',
       fullName: json['full_name'] ?? '',
       role: json['role'] ?? 'USER',
+      upiId: json['upi_id'] ?? '',
       dateJoined: json['date_joined'] ?? '',
     );
   }
@@ -29,6 +32,7 @@ class UserModel {
       'email': email,
       'full_name': fullName,
       'role': role,
+      'upi_id': upiId,
       'date_joined': dateJoined,
     };
   }
