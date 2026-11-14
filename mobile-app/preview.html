@@ -213,6 +213,23 @@
     .animate-fp-pulse {
       animation: fp-pulse 2s infinite;
     }
+        #toast {
+      z-index: 99999 !important;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-shake {
+      animation: shake 0.35s ease-in-out;
+    }
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
     .qr-container canvas, .qr-container img {
       margin: 0 auto;
       border-radius: 12px;
@@ -1036,6 +1053,8 @@
         <div>
           <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Water Supply Board</label>
           <select id="water-board-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none">
+            <option value="Uttarakhand Jal Sansthan (UJS)" selected>Uttarakhand Jal Sansthan (UJS - All Districts)</option>
+            <option value="Uttarakhand Peyjal Nigam">Uttarakhand Peyjal Nigam</option>
             <option value="Delhi Jal Board (DJB)">Delhi Jal Board (DJB)</option>
             <option value="Bangalore Water Supply (BWSSB)">Bangalore Water Supply (BWSSB)</option>
             <option value="Municipal Corporation of Greater Mumbai (MCGM)">MCGM Mumbai Water</option>
@@ -1084,6 +1103,8 @@
         <div>
           <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Select Gas Provider</label>
           <select id="gas-provider-select" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:outline-none">
+            <option value="Haridwar Natural Gas (HNGPL Uttarakhand)" selected>Haridwar Natural Gas (HNGPL Uttarakhand)</option>
+            <option value="GAIL Gas Limited (Dehradun)">GAIL Gas Limited (Dehradun & Rishikesh)</option>
             <option value="Mahanagar Gas Limited (MGL)">Mahanagar Gas Limited (MGL)</option>
             <option value="Indraprastha Gas Limited (IGL)">Indraprastha Gas Limited (IGL)</option>
             <option value="Indane LPG Cylinder Booking">Indane LPG Cylinder</option>
@@ -1189,10 +1210,11 @@
       <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5">Recipient (UPI ID, PhonePe @ybl, GPay @oksbi, Paytm, Bank A/C or Mobile)</label>
       <div class="relative">
         <i class="fa-regular fa-user absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
-        <input id="transfer-recipient" oninput="handleRecipientInput(this.value)" type="text" value="rahul.verma@okaxis" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm" placeholder="e.g. 9876543210@ybl, rahul@oksbi, DC-1519-6941">
+        <input id="transfer-recipient" oninput="handleRecipientInput(this.value)" type="text" value="" class="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-blue-600 shadow-sm" placeholder="e.g. 9876543210@ybl, rahul@oksbi, DC-1519-6941">
       </div>
       <div id="transfer-provider-badge" class="mt-1.5 flex items-center space-x-1.5 hidden"></div>
       <div class="flex flex-wrap gap-1.5 mt-2">
+        <button onclick="appendUpiHandle('@dc')" class="px-2.5 py-1 bg-blue-50 hover:bg-blue-100 text-[10px] font-bold text-blue-700 rounded-lg border border-blue-200 transition">+ @dc (DataCore)</button>
         <button onclick="appendUpiHandle('@ybl')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 text-[10px] font-bold text-slate-600 hover:text-blue-600 rounded-lg border border-slate-200 transition">+ @ybl (PhonePe)</button>
         <button onclick="appendUpiHandle('@oksbi')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 text-[10px] font-bold text-slate-600 hover:text-blue-600 rounded-lg border border-slate-200 transition">+ @oksbi (GPay)</button>
         <button onclick="appendUpiHandle('@paytm')" class="px-2 py-0.5 bg-slate-100 hover:bg-blue-50 text-[10px] font-bold text-slate-600 hover:text-blue-600 rounded-lg border border-slate-200 transition">+ @paytm</button>
@@ -1502,7 +1524,7 @@
         </button>
         <h2 class="text-base font-bold text-slate-900 ml-2">Notifications</h2>
       </div>
-      <button onclick="markAllNotificationsRead()" class="text-xs font-bold text-blue-600 hover:underline">Mark all read</button>
+      <button onclick="markAllNotificationsRead()" class="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-bold transition flex items-center space-x-1 active:scale-95"><i class="fa-solid fa-broom text-[10px]"></i><span>Clear All</span></button>
     </div>
 
     <div id="notif-list" class="space-y-3">
@@ -1593,7 +1615,7 @@
           <span id="profile-upi-handle-display" class="font-mono font-black text-slate-900 text-xs">DC-6812-3923@datacore</span>
         </div>
         <div class="flex items-center space-x-2">
-          <button onclick="copyToClipboard(currentUser.accountNo + '@datacore', 'UPI ID copied to clipboard!')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1 shadow-sm active:scale-95">
+          <button onclick="copyToClipboard(getUserUpiId(currentUser), 'UPI ID copied to clipboard!')" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center space-x-1 shadow-sm active:scale-95">
             <i class="fa-regular fa-copy text-xs"></i>
             <span>Copy</span>
           </button>
@@ -2125,7 +2147,7 @@
     <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3 mb-4 text-left">
       <div class="flex justify-between items-center mb-1">
         <span class="text-[10px] font-bold text-slate-400 uppercase">Primary UPI Handle</span>
-        <button onclick="copyToClipboard(currentUser.accountNo + '@datacore', 'UPI handle copied!')" class="text-blue-600 text-xs font-bold hover:underline">Copy</button>
+        <button onclick="copyToClipboard(getUserUpiId(currentUser), 'UPI handle copied!')" class="text-blue-600 text-xs font-bold hover:underline">Copy</button>
       </div>
       <div class="flex items-center space-x-2">
         <span id="receive-account-no" class="font-mono text-xs font-bold text-slate-800">DC-6812-3923@datacore</span>
@@ -2388,7 +2410,12 @@
       <div id="pin-dot-3" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
       <div id="pin-dot-4" class="w-4 h-4 rounded-full border-2 border-slate-300 bg-transparent transition-all duration-150"></div>
     </div>
-    <p id="pin-helper-text" class="text-[11px] text-slate-500 font-medium mb-3">Enter your 4-digit UPI PIN (Default: 1234)</p>
+    <p id="pin-helper-text" class="text-[11px] text-slate-500 font-medium mb-2">Enter your 4-digit UPI PIN (Default: 1234)</p>
+    <!-- Inline Error Box on Keypad -->
+    <div id="pin-error-box" class="hidden mb-3 p-2.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold flex items-center justify-center space-x-2 animate-shake">
+      <i class="fa-solid fa-circle-exclamation text-rose-600 text-sm"></i>
+      <span id="pin-error-text">Incorrect UPI PIN! Please try again.</span>
+    </div>
 
     <!-- Prominent 1-Tap Biometric Bar (Both PIN & Biometric available!) -->
     <button type="button" onclick="authenticatePinBiometric()" class="w-full py-2.5 mb-3.5 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 border border-blue-200 text-blue-800 rounded-2xl text-xs font-bold flex items-center justify-center space-x-2 transition active:scale-95 shadow-sm">
@@ -2716,6 +2743,66 @@
     </button>
   </div>
 
+    <!-- ==================== BIOMETRIC PAYMENT TOUCH SENSOR MODAL ==================== -->
+  <div id="modal-biometric-pay" class="modal-sheet p-6 text-center">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="mb-3">
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Biometric Authorization</span>
+      <h3 id="bio-pay-recipient" class="text-base font-black text-slate-900">Paying Yash Sharma</h3>
+      <div id="bio-pay-amt" class="text-2xl font-black text-blue-600 font-mono mt-0.5">₹0.00</div>
+    </div>
+    
+    <p class="text-xs text-slate-500 mb-5">Touch the fingerprint sensor below to authorize instant payment</p>
+
+    <!-- Fingerprint Touch Sensor Graphic -->
+    <div onclick="processBiometricPaymentTouch()" class="relative w-28 h-28 mx-auto rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center cursor-pointer active:scale-95 transition mb-5 group shadow-sm">
+      <div id="bio-pay-sensor-ring" class="w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl shadow-lg shadow-blue-500/40 animate-fp-pulse">
+        <i id="bio-pay-sensor-icon" class="fa-solid fa-fingerprint"></i>
+      </div>
+    </div>
+
+    <p id="bio-pay-status" class="text-xs font-bold text-slate-700 mb-4">Touch sensor to authenticate</p>
+
+    <div class="space-y-2">
+      <button type="button" onclick="switchToPinFromBiometric()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition">
+        <i class="fa-solid fa-key mr-1.5"></i> Use 4-Digit UPI PIN Instead
+      </button>
+      <button type="button" onclick="closeAllModals()" class="text-xs text-slate-400 hover:text-slate-600 font-semibold py-1">
+        Cancel Payment
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== NOTIFICATION DETAIL MODAL ==================== -->
+  <div id="modal-notification-detail" class="modal-sheet p-6">
+    <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div class="flex items-center space-x-3 mb-4">
+      <div id="notif-detail-icon-wrap" class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shrink-0 border border-blue-200/60 shadow-sm">
+        <i id="notif-detail-icon" class="fa-solid fa-bell"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <h3 id="notif-detail-title" class="text-sm font-bold text-slate-900 leading-tight">Notification Title</h3>
+        <span id="notif-detail-time" class="text-[10px] text-slate-400 font-medium block mt-0.5">Just now</span>
+      </div>
+    </div>
+    
+    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mb-4">
+      <p id="notif-detail-body" class="text-xs text-slate-700 leading-relaxed font-medium">Notification message details...</p>
+    </div>
+
+    <div id="notif-detail-action-container" class="space-y-2 mb-3"></div>
+
+    <div class="grid grid-cols-2 gap-2">
+      <button id="notif-detail-del-btn" class="py-2.5 px-4 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-xl text-xs font-bold border border-rose-200 transition flex items-center justify-center space-x-1">
+        <i class="fa-regular fa-trash-can text-xs"></i>
+        <span>Delete</span>
+      </button>
+      <button onclick="closeAllModals()" class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition">
+        Close
+      </button>
+    </div>
+  </div>
+
   <!-- ==================== CHANGE OPERATOR & CIRCLE MODAL ==================== -->
   <div id="modal-change-operator" class="modal-sheet p-6">
     <div class="w-10 h-1 bg-slate-200 rounded-full mx-auto mb-4"></div>
@@ -2748,6 +2835,8 @@
 
     <label class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Telecom Circle</label>
     <select id="modal-circle-select" onchange="selectCircle(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none mb-4">
+      <option value="Uttarakhand">Uttarakhand (Dehradun, Haridwar, Nainital, Roorkee)</option>
+      <option value="UP West & Uttarakhand">UP West & Uttarakhand</option>
       <option value="Maharashtra & Goa">Maharashtra & Goa</option>
       <option value="Mumbai">Mumbai Metro</option>
       <option value="Delhi NCR">Delhi NCR</option>
@@ -2813,9 +2902,19 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     DARK_THEME: 'datacore_dark_theme'
   };
 
+  // Clean Short UPI ID Generator (name@dc, 9820192840@dc)
+  function getUserUpiId(user) {
+    if (!user) return 'user@dc';
+    if (user.upiId) return user.upiId;
+    const cleanName = (user.name || 'user').toLowerCase().split(' ')[0].replace(/[^a-z0-9]/g, '');
+    return `${cleanName || 'user'}@dc`;
+  }
+
   // Factory Default Test Accounts with Realistic Indian UPI Balances & History
   const DEFAULT_INITIAL_WALLETS = {
     'yash@datacore': {
+      upiId: 'yash@dc',
+      mobileUpiId: '9820192840@dc',
       id: 'usr_yash',
       name: 'Yash Sharma',
       email: 'yash@datacore',
@@ -2848,6 +2947,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       ]
     },
     'rahul@datacore': {
+      upiId: 'rahul@dc',
+      mobileUpiId: '9876543210@dc',
       id: 'usr_rahul',
       name: 'Rahul Verma',
       email: 'rahul@datacore',
@@ -2872,6 +2973,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       ]
     },
     'pooja@datacore': {
+      upiId: 'pooja@dc',
+      mobileUpiId: '9811223344@dc',
       id: 'usr_pooja',
       name: 'Pooja Patel',
       email: 'pooja@datacore',
@@ -3394,9 +3497,16 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
   // ================= 4-DIGIT UPI PIN KEYPAD MODAL & VERIFICATION =================
+  let pendingPaymentRecipient = '';
+  let pendingPaymentAmount = 0;
+
   function promptUpiPinKeypad(payingTo, amount, onSuccessCallback) {
     isTransfersLocked = false;
     enteredPin = '';
+    pendingPaymentRecipient = payingTo || 'Recipient';
+    pendingPaymentAmount = amount || 0;
+    pendingTransferCallback = onSuccessCallback;
+
     updatePinDots();
 
     const titleEl = document.getElementById('pin-paying-to');
@@ -3404,7 +3514,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     if (titleEl) titleEl.innerText = payingTo ? `Paying ${payingTo}` : 'Authorizing Payment';
     if (amtEl) amtEl.innerText = `₹${parseFloat(amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-    pendingTransferCallback = onSuccessCallback;
+    const errBox = document.getElementById('pin-error-box');
+    if (errBox) errBox.classList.add('hidden');
 
     closeAllModals();
     const backdrop = document.getElementById('backdrop');
@@ -3418,23 +3529,32 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     isTransfersLocked = false;
 
     const amt = parseFloat(document.getElementById('transfer-amount').value) || 0;
-    const recipient = document.getElementById('transfer-recipient').value.trim() || 'merchant@datacore';
+    const recipient = (document.getElementById('transfer-recipient').value || '').trim();
+
+    if (!recipient) {
+      return showToast('Please enter a recipient UPI ID or mobile number', false);
+    }
 
     if (amt <= 0 || isNaN(amt)) {
       return showToast('Please enter a valid transfer amount', false);
     }
 
     if (amt > balance) {
-      balance += (amt + 5000.00);
-      renderBalance();
-      showToast('Demo balance topped up (+₹' + (amt + 5000).toFixed(2) + ')');
+      triggerErrorHaptic();
+      return showToast(`Insufficient wallet balance! Available: ₹${balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, false);
     }
 
     let recName = recipient;
-    const recClean = recipient.toLowerCase();
+    const recClean = recipient.toLowerCase().trim();
     Object.keys(wallets).forEach(k => {
       const w = wallets[k];
-      if (w.email.toLowerCase() === recClean || w.accountNo.toLowerCase() === recClean) {
+      const wHandle = getUserUpiId(w).toLowerCase();
+      const wMobileHandle = w.mobile ? `${w.mobile}@dc` : '';
+      if (w.email.toLowerCase() === recClean || 
+          w.accountNo.toLowerCase() === recClean || 
+          wHandle === recClean || 
+          wMobileHandle === recClean ||
+          (w.mobile && w.mobile === recClean)) {
         recName = w.name;
       }
     });
@@ -3448,6 +3568,11 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
   function pressPinDigit(d) {
+    const errBox = document.getElementById('pin-error-box');
+    if (errBox && !errBox.classList.contains('hidden')) {
+      errBox.classList.add('hidden');
+    }
+
     if (enteredPin.length < 4) {
       enteredPin += d;
       updatePinDots();
@@ -3462,10 +3587,20 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
           }
           setTimeout(() => {
             closeAllModals();
-            if (pendingTransferCallback) pendingTransferCallback();
+            if (pendingTransferCallback) {
+              const cb = pendingTransferCallback;
+              pendingTransferCallback = null;
+              cb();
+            }
           }, 200);
         } else {
           triggerErrorHaptic();
+          const errBox = document.getElementById('pin-error-box');
+          const errText = document.getElementById('pin-error-text');
+          if (errBox) {
+            errBox.classList.remove('hidden');
+            if (errText) errText.innerText = 'Incorrect UPI PIN! Please check and try again.';
+          }
           const dots = document.getElementById('pin-dots-container');
           if (dots) {
             dots.classList.add('animate-shake');
@@ -3475,17 +3610,21 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
             const dot = document.getElementById(`pin-dot-${i}`);
             if (dot) dot.className = 'w-4 h-4 rounded-full border-2 border-rose-500 bg-rose-500 shadow-sm transition-all duration-150';
           }
-          showToast(`Incorrect UPI PIN! Default is ${activePin}`, false);
+          showToast('Incorrect UPI PIN entered! Please try again.', false);
           setTimeout(() => {
             enteredPin = '';
             updatePinDots();
-          }, 500);
+          }, 600);
         }
       }
     }
   }
 
   function pressPinBackspace() {
+    const errBox = document.getElementById('pin-error-box');
+    if (errBox && !errBox.classList.contains('hidden')) {
+      errBox.classList.add('hidden');
+    }
     if (enteredPin.length > 0) {
       enteredPin = enteredPin.slice(0, -1);
       updatePinDots();
@@ -3507,20 +3646,72 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   }
 
   function authenticatePinBiometric() {
-    triggerSuccessHaptic();
-    enteredPin = '••••';
-    for (let i = 1; i <= 4; i++) {
-      const dot = document.getElementById(`pin-dot-${i}`);
-      if (dot) dot.className = 'w-4 h-4 rounded-full border-2 border-emerald-500 bg-emerald-500 shadow-sm transition-all duration-150';
+    // 1. Check if user has enrolled/enabled biometrics
+    if (!currentUser || currentUser.biometricEnabled === false) {
+      triggerErrorHaptic();
+      const errBox = document.getElementById('pin-error-box');
+      const errText = document.getElementById('pin-error-text');
+      if (errBox) {
+        errBox.classList.remove('hidden');
+        if (errText) errText.innerText = 'Fingerprint not enrolled! Set up in Profile or enter your 4-digit PIN.';
+      }
+      showToast('Biometrics not enrolled yet. Please set up fingerprint in Profile.', false);
+      return;
     }
-    showToast('Biometrics Authenticated!');
-    setTimeout(() => {
-      closeAllModals();
-      if (pendingTransferCallback) pendingTransferCallback();
-    }, 280);
+
+    // 2. Open dedicated biometric sensor authorization modal
+    closeAllModals();
+    const bioModal = document.getElementById('modal-biometric-pay');
+    const bioRec = document.getElementById('bio-pay-recipient');
+    const bioAmt = document.getElementById('bio-pay-amt');
+    const bioStatus = document.getElementById('bio-pay-status');
+    const bioIcon = document.getElementById('bio-pay-sensor-icon');
+    const bioRing = document.getElementById('bio-pay-sensor-ring');
+
+    if (bioRec) bioRec.innerText = `Paying ${pendingPaymentRecipient || 'Recipient'}`;
+    if (bioAmt) bioAmt.innerText = `₹${(pendingPaymentAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (bioStatus) bioStatus.innerText = 'Touch sensor to authenticate';
+    if (bioIcon) bioIcon.className = 'fa-solid fa-fingerprint text-white';
+    if (bioRing) bioRing.className = 'w-20 h-20 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl shadow-lg shadow-blue-500/40 animate-fp-pulse';
+
+    document.getElementById('backdrop').classList.add('active');
+    if (bioModal) bioModal.classList.add('active');
+    triggerHaptic();
   }
 
-  // ================= CASHBACK SCRATCH CARD =================
+  function processBiometricPaymentTouch() {
+    const bioStatus = document.getElementById('bio-pay-status');
+    const bioIcon = document.getElementById('bio-pay-sensor-icon');
+    const bioRing = document.getElementById('bio-pay-sensor-ring');
+
+    if (bioStatus) bioStatus.innerText = 'Verifying fingerprint sensor...';
+    triggerHaptic();
+
+    setTimeout(() => {
+      if (bioStatus) bioStatus.innerHTML = '<span class="text-emerald-600 font-bold">✓ Biometric Authenticated</span>';
+      if (bioIcon) bioIcon.className = 'fa-solid fa-check text-white';
+      if (bioRing) bioRing.className = 'w-20 h-20 rounded-full bg-emerald-600 text-white flex items-center justify-center text-4xl shadow-lg shadow-emerald-500/40';
+
+      playSuccessChime();
+      triggerSuccessHaptic();
+
+      setTimeout(() => {
+        closeAllModals();
+        if (pendingTransferCallback) {
+          const cb = pendingTransferCallback;
+          pendingTransferCallback = null;
+          cb();
+        }
+      }, 350);
+    }, 450);
+  }
+
+  function switchToPinFromBiometric() {
+    closeAllModals();
+    promptUpiPinKeypad(pendingPaymentRecipient || 'Recipient', pendingPaymentAmount || 0, pendingTransferCallback);
+  }
+
+    // ================= CASHBACK SCRATCH CARD =================
   function openScratchCardModal() {
     closeAllModals();
     isCardScratched = false;
@@ -4064,11 +4255,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     // Receive Modal & Profile UPI Handle
     const recAcc = document.getElementById('receive-account-no');
     const recBtn = document.getElementById('receive-share-btn');
-    if (recAcc) recAcc.innerText = `${currentUser.accountNo}@datacore`;
-    if (recBtn) recBtn.setAttribute('onclick', `copyToClipboard('DataCore: ${currentUser.accountNo}@datacore (${currentUser.email})', 'Payment handle copied!')`);
+    if (recAcc) recAcc.innerText = getUserUpiId(currentUser);
+    if (recBtn) recBtn.setAttribute('onclick', `copyToClipboard('${userHandle}', 'UPI handle copied!')`);
 
     const profUpi = document.getElementById('profile-upi-handle-display');
-    if (profUpi) profUpi.innerText = `${currentUser.accountNo}@datacore`;
+    const userHandle = getUserUpiId(currentUser);
+    if (profUpi) profUpi.innerText = userHandle;
 
     renderAllAvatars();
     updateBiometricUI();
@@ -4378,6 +4570,11 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     const container = document.getElementById('payees-carousel');
     if (!container) return;
 
+    if (!payees || payees.length === 0) {
+      container.innerHTML = '<div class="py-2 px-3 text-xs text-slate-400 italic flex items-center space-x-1.5"><i class="fa-solid fa-user-plus text-slate-300"></i><span>No saved contacts yet. Tap + to add.</span></div>';
+      return;
+    }
+
     let html = '';
     payees.forEach(p => {
       html += `
@@ -4385,7 +4582,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
           <div class="w-12 h-12 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center justify-center font-bold text-slate-700 text-xs group-hover:border-blue-500 group-hover:bg-blue-50 transition">
             ${p.initials}
           </div>
-          <span class="text-[11px] font-medium text-slate-600 mt-1.5">${p.name}</span>
+          <span class="text-[11px] font-medium text-slate-600 mt-1.5 max-w-[70px] truncate text-center">${p.name}</span>
         </div>
       `;
     });
@@ -4417,7 +4614,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     const homeList = document.getElementById('home-tx-list');
     const stmtList = document.getElementById('statement-entries-list');
 
-    let html = '';
+    let homeHtml = '';
     let stmtHtml = '';
 
     let totalCredits = 0;
@@ -4426,6 +4623,36 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     let foodSpent = 0;
     let cloudSpent = 0;
     let peerSpent = 0;
+
+    // Home list: STRICT LIMIT OF 4 RECENT TRANSACTIONS
+    const recentTx = transactions.slice(0, 4);
+
+    recentTx.forEach(tx => {
+      const isDebit = tx.type === 'DEBIT';
+      const color = isDebit ? (tx.status === 'REVERSED' ? 'text-purple-600 line-through' : 'text-rose-600') : 'text-emerald-600';
+      const bg = isDebit ? (tx.status === 'REVERSED' ? 'bg-purple-50 text-purple-600' : 'bg-rose-50 text-rose-600') : 'bg-emerald-50 text-emerald-600';
+      const icon = isDebit ? (tx.status === 'REVERSED' ? 'fa-rotate-left' : 'fa-arrow-up') : 'fa-arrow-down';
+      const sign = isDebit ? '-' : '+';
+      const displayPartner = tx.toName ? `${tx.toName} (${tx.to})` : tx.to;
+
+      homeHtml += `
+        <div onclick="openReceipt('${tx.id}')" class="bg-white border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer active:scale-98 transition hover:border-blue-300">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl ${bg} flex items-center justify-center text-sm font-bold">
+              <i class="fa-solid ${icon}"></i>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-slate-900 leading-tight">${tx.desc}</p>
+              <p class="text-[10px] text-slate-400">${displayPartner} • ${tx.date}</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-xs font-bold ${color}">${sign}₹${tx.amount.toFixed(2)}</span>
+            <span class="block text-[9px] font-bold ${tx.status === 'COMPLETED' ? 'text-emerald-600' : 'text-purple-600'} uppercase">${tx.status}</span>
+          </div>
+        </div>
+      `;
+    });
 
     transactions.forEach(tx => {
       const isDebit = tx.type === 'DEBIT';
@@ -4447,25 +4674,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       const bg = isDebit ? (tx.status === 'REVERSED' ? 'bg-purple-50 text-purple-600' : 'bg-rose-50 text-rose-600') : 'bg-emerald-50 text-emerald-600';
       const icon = isDebit ? (tx.status === 'REVERSED' ? 'fa-rotate-left' : 'fa-arrow-up') : 'fa-arrow-down';
       const sign = isDebit ? '-' : '+';
-      const displayPartner = tx.toName ? `${tx.toName} (${tx.to})` : tx.to;
-
-      html += `
-        <div onclick="openReceipt('${tx.id}')" class="bg-white border border-slate-200 rounded-2xl p-3 flex items-center justify-between shadow-sm cursor-pointer active:scale-98 transition">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl ${bg} flex items-center justify-center text-sm font-bold">
-              <i class="fa-solid ${icon}"></i>
-            </div>
-            <div>
-              <p class="text-xs font-bold text-slate-900 leading-tight">${tx.desc}</p>
-              <p class="text-[10px] text-slate-400">${displayPartner} • ${tx.date}</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <span class="text-xs font-bold ${color}">${sign}₹${tx.amount.toFixed(2)}</span>
-            <span class="block text-[9px] font-bold ${tx.status === 'COMPLETED' ? 'text-emerald-600' : 'text-purple-600'} uppercase">${tx.status}</span>
-          </div>
-        </div>
-      `;
 
       stmtHtml += `
         <div class="bg-white border border-slate-200 rounded-2xl p-3 flex justify-between items-center text-xs">
@@ -4486,7 +4694,23 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       `;
     });
 
-    if (homeList) homeList.innerHTML = html || '<div class="text-center py-6 text-xs text-slate-400">No transactions recorded yet</div>';
+    if (homeList) {
+      if (recentTx.length === 0) {
+        homeList.innerHTML = '<div class="text-center py-6 text-xs text-slate-400">No transactions recorded yet</div>';
+      } else {
+        let fullHome = homeHtml;
+        if (transactions.length > 4) {
+          fullHome += `
+            <button type="button" onclick="navigateTo('history')" class="w-full py-2.5 mt-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl text-xs font-bold text-blue-600 flex items-center justify-center space-x-1.5 transition active:scale-98">
+              <span>View All History (${transactions.length} Transactions)</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+          `;
+        }
+        homeList.innerHTML = fullHome;
+      }
+    }
+
     if (stmtList) stmtList.innerHTML = stmtHtml || '<div class="text-center py-6 text-xs text-slate-400">No ledger entries recorded yet</div>';
 
     const miniIn = document.getElementById('mini-inflow');
@@ -4497,15 +4721,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     if (miniOut) miniOut.innerText = `-₹${totalDebits.toFixed(2)}`;
     if (stmtCred) stmtCred.innerText = `+₹${totalCredits.toFixed(2)}`;
     if (stmtDeb) stmtDeb.innerText = `-₹${totalDebits.toFixed(2)}`;
-
-    const totalVol = totalCredits + totalDebits;
-    const ratio = totalVol > 0 ? Math.round((totalCredits / totalVol) * 100) : 100;
-    const ratioLabel = document.getElementById('stmt-ratio-label');
-    const countLabel = document.getElementById('stmt-count-label');
-    const ratioBar = document.getElementById('stmt-ratio-bar');
-    if (ratioLabel) ratioLabel.innerText = `Inflow Ratio: ${ratio}%`;
-    if (countLabel) countLabel.innerText = `Ledger Entries: ${transactions.length}`;
-    if (ratioBar) ratioBar.style.width = `${ratio}%`;
 
     // Category Analytics update
     const totalCat = foodSpent + cloudSpent + peerSpent || 1;
@@ -4614,39 +4829,118 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       }
     }
 
+    if (!notifications || notifications.length === 0) {
+      list.innerHTML = `
+        <div class="text-center py-12 text-slate-400">
+          <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
+            <i class="fa-regular fa-bell-slash"></i>
+          </div>
+          <p class="text-xs font-bold text-slate-700">No notifications</p>
+          <p class="text-[10px] text-slate-400 mt-0.5">All transactions & updates will appear here</p>
+        </div>
+      `;
+      return;
+    }
+
     notifications.forEach((n, idx) => {
+      const isTx = (n.title || '').toLowerCase().includes('payment') || (n.title || '').toLowerCase().includes('recharge') || (n.title || '').toLowerCase().includes('transfer') || (n.title || '').toLowerCase().includes('bill') || (n.title || '').toLowerCase().includes('funds');
+      const icon = isTx ? 'fa-receipt' : 'fa-bell';
+      const iconCol = n.unread ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500';
+
       html += `
-        <div onclick="markSingleNotificationRead(${idx})" class="p-3.5 rounded-2xl ${n.unread ? 'bg-blue-50/50 border border-blue-200' : 'bg-white border border-slate-200'} shadow-sm flex items-start space-x-3 cursor-pointer">
-          <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-            <i class="fa-solid fa-shield-halved text-xs"></i>
+        <div onclick="openNotificationDetail(${idx})" class="p-3.5 rounded-2xl ${n.unread ? 'bg-blue-50/50 border border-blue-200' : 'bg-white border border-slate-200'} shadow-sm flex items-start space-x-3 cursor-pointer hover:border-blue-300 active:scale-98 transition group">
+          <div class="w-9 h-9 rounded-xl ${iconCol} flex items-center justify-center shrink-0">
+            <i class="fa-solid ${icon} text-xs"></i>
           </div>
-          <div class="flex-1">
-            <div class="flex justify-between items-center">
-              <span class="text-xs font-bold text-slate-900">${n.title}</span>
-              <span class="text-[9px] text-slate-400">${n.time}</span>
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-center mb-0.5">
+              <span class="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition truncate pr-2">${n.title}</span>
+              <span class="text-[9px] text-slate-400 shrink-0 font-medium">${n.time}</span>
             </div>
-            <p class="text-[11px] text-slate-600 mt-0.5 leading-snug">${n.msg}</p>
+            <p class="text-[11px] text-slate-600 leading-snug line-clamp-2">${n.msg}</p>
           </div>
-          ${n.unread ? '<span class="w-2 h-2 rounded-full bg-blue-600 mt-1"></span>' : ''}
+          <div class="flex flex-col items-center space-y-1.5 shrink-0 ml-1">
+            ${n.unread ? '<span class="w-2 h-2 rounded-full bg-blue-600 mt-1"></span>' : ''}
+            <button type="button" onclick="deleteSingleNotification(${idx}, event)" class="p-1 text-slate-300 hover:text-rose-600 rounded-lg transition" title="Delete notification">
+              <i class="fa-regular fa-trash-can text-xs"></i>
+            </button>
+          </div>
         </div>
       `;
     });
-    list.innerHTML = html || '<div class="text-center py-8 text-xs text-slate-400">No notifications</div>';
+    list.innerHTML = html;
   }
 
-  function markSingleNotificationRead(idx) {
-    if (notifications[idx]) {
-      notifications[idx].unread = false;
-      saveCurrentWalletState();
-      renderNotifications();
+  function openNotificationDetail(idx) {
+    const n = notifications[idx];
+    if (!n) return;
+
+    n.unread = false;
+    saveCurrentWalletState();
+    renderNotifications();
+
+    const titleEl = document.getElementById('notif-detail-title');
+    const timeEl = document.getElementById('notif-detail-time');
+    const bodyEl = document.getElementById('notif-detail-body');
+    const actBox = document.getElementById('notif-detail-action-container');
+    const delBtn = document.getElementById('notif-detail-del-btn');
+
+    if (titleEl) titleEl.innerText = n.title;
+    if (timeEl) timeEl.innerText = n.time;
+    if (bodyEl) bodyEl.innerText = n.msg;
+
+    if (delBtn) {
+      delBtn.onclick = () => {
+        deleteSingleNotification(idx);
+        closeAllModals();
+      };
     }
+
+    if (actBox) {
+      actBox.innerHTML = '';
+      const matchedTx = transactions.find(t => (n.msg && (n.msg.includes(t.id) || (t.utr && n.msg.includes(t.utr)))) || (t.desc && n.msg && n.msg.includes(t.desc)));
+      if (matchedTx || transactions.length > 0) {
+        const txToShow = matchedTx || transactions[0];
+        actBox.innerHTML = `
+          <button type="button" onclick="closeAllModals(); openReceipt('${txToShow.id}')" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1.5 shadow-sm active:scale-95">
+            <i class="fa-solid fa-receipt text-xs"></i>
+            <span>View Payment Receipt</span>
+          </button>
+        `;
+      }
+    }
+
+    closeAllModals();
+    const backdrop = document.getElementById('backdrop');
+    const modal = document.getElementById('modal-notification-detail');
+    if (backdrop) backdrop.classList.add('active');
+    if (modal) modal.classList.add('active');
+    triggerHaptic();
+  }
+
+  function deleteSingleNotification(idx, event) {
+    if (event) event.stopPropagation();
+    notifications.splice(idx, 1);
+    if (currentUser) {
+      currentUser.notifications = notifications;
+      if (wallets[currentUser.email]) wallets[currentUser.email].notifications = notifications;
+    }
+    saveCurrentWalletState();
+    renderNotifications();
+    showToast('Notification deleted');
+    triggerHaptic();
   }
 
   function markAllNotificationsRead() {
-    notifications = notifications.map(n => ({ ...n, unread: false }));
+    notifications = [];
+    if (currentUser) {
+      currentUser.notifications = [];
+      if (wallets[currentUser.email]) wallets[currentUser.email].notifications = [];
+    }
     saveCurrentWalletState();
     renderNotifications();
-    showToast('All notifications marked read');
+    showToast('All notifications cleared');
+    triggerHaptic();
   }
 
   function openReceipt(txId) {
@@ -4906,12 +5200,18 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     let recipientInitial = recipient.charAt(0).toUpperCase();
 
     let targetWallet = null;
-    const recClean = recipient.toLowerCase();
+    const recClean = recipient.toLowerCase().trim();
     Object.keys(wallets).forEach(key => {
       const w = wallets[key];
-      if (w.email.toLowerCase() === recClean || w.accountNo.toLowerCase() === recClean) {
+      const wHandle = getUserUpiId(w).toLowerCase();
+      const wMobileHandle = w.mobile ? `${w.mobile}@dc` : '';
+      if (w.email.toLowerCase() === recClean || 
+          w.accountNo.toLowerCase() === recClean ||
+          wHandle === recClean ||
+          wMobileHandle === recClean ||
+          (w.mobile && w.mobile === recClean)) {
         recipientName = w.name;
-        recipientAccountNo = w.accountNo;
+        recipientAccountNo = getUserUpiId(w);
         recipientInitial = w.initial || recipientName.charAt(0).toUpperCase();
         targetWallet = w;
       }
@@ -5290,7 +5590,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   // ================= DYNAMIC UNIQUE QR CODE GENERATION =================
   function renderUserDynamicQRCode() {
     if (!currentUser) return;
-    const upiUri = `upi://pay?pa=${currentUser.accountNo}@datacore&pn=${encodeURIComponent(currentUser.name)}&cu=INR&mode=02&orgid=189999`;
+    const userHandle = getUserUpiId(currentUser);
+    const upiUri = `upi://pay?pa=${encodeURIComponent(userHandle)}&pn=${encodeURIComponent(currentUser.name)}&cu=INR&mode=02&orgid=189999`;
 
     // 1. Render in Receive Modal if open
     const recContainer = document.getElementById('receive-qrcode-render');
@@ -5346,7 +5647,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         url: `upi://pay?pa=${currentUser.accountNo}@datacore&pn=${encodeURIComponent(currentUser.name)}&cu=INR`
       }).catch(() => {});
     } else {
-      copyToClipboard(`${currentUser.accountNo}@datacore`, 'UPI handle copied to clipboard!');
+      copyToClipboard(getUserUpiId(currentUser), 'UPI handle copied to clipboard!');
     }
   }
 
@@ -5693,7 +5994,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       return showToast('Please fetch bill details first', false);
     }
     const amt = currentFetchedBill.amount;
-    if (amt > balance) { balance += (amt + 2000.00); renderBalance(); showToast('Demo balance topped up'); }
+    if (amt > balance) { triggerErrorHaptic(); return showToast('Insufficient wallet balance to complete payment', false); }
 
     promptUpiPinKeypad(
       `Electricity Bill: ${currentFetchedBill.boardName}`,
@@ -6073,7 +6374,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
     if (!subId || subId.length < 5) return showToast('Please enter a valid Subscriber ID / VC Number', false);
     if (amt <= 0) return showToast('Please enter a valid recharge amount', false);
-    if (amt > balance) { balance += (amt + 2000.00); renderBalance(); showToast('Demo balance topped up'); }
+    if (amt > balance) { triggerErrorHaptic(); return showToast('Insufficient wallet balance to complete payment', false); }
 
     promptUpiPinKeypad(
       `DTH: ${op}`,
@@ -6444,9 +6745,9 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     } else if (clean.includes('@apl')) {
       badge.className = 'mt-1.5 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-[10px] font-bold';
       badge.innerHTML = '<i class="fa-solid fa-circle-check text-amber-600"></i><span>🟠 Amazon Pay UPI Verified</span>';
-    } else if (clean.includes('@datacore')) {
+    } else if (clean.includes('@dc') || clean.includes('@datacore')) {
       badge.className = 'mt-1.5 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold';
-      badge.innerHTML = '<i class="fa-solid fa-bolt text-blue-600"></i><span>⚡ DataCore Instant Settlement</span>';
+      badge.innerHTML = '<i class="fa-solid fa-circle-check text-blue-600"></i><span>🔷 DataCore Instant UPI Verified (@dc)</span>';
     } else if (clean.includes('@') && clean.length > 4) {
       badge.className = 'mt-1.5 inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-bold';
       badge.innerHTML = '<i class="fa-solid fa-shield-halved text-slate-600"></i><span>🇮🇳 NPCI UPI 2.0 Inter-bank Verified</span>';
@@ -6525,14 +6826,20 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     const accountNo = `DC-${randomMid}-${randomSuffix}`;
     const initial = name.charAt(0).toUpperCase();
 
+    const cleanSlug = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const upiId = `${cleanSlug || 'user'}@dc`;
+    const mobileUpiId = `${mobile}@dc`;
+
     const newWallet = {
       id: `usr_${Date.now()}`,
       name: name,
       email: email,
       mobile: mobile,
+      upiId: upiId,
+      mobileUpiId: mobileUpiId,
       pin: pin,
       upiPin: pin,
-      biometricEnabled: true,
+      biometricEnabled: false,
       accountNo: accountNo,
       initial: initial,
       role: 'Prime Savings A/C',
@@ -6549,9 +6856,9 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
           utr: generateRandomDigits(12),
           type: 'CREDIT',
           to: 'welcome@datacore.io',
-          toName: 'DataCore Initial Deposit',
+          toName: 'DataCore Opening Balance',
           amount: startingBal,
-          desc: 'Initial Opening Balance Provisioning',
+          desc: 'Initial Balance Provisioned',
           date: 'Just now',
           status: 'COMPLETED',
           strategy: 'ATOMIC_CONDITIONAL',
@@ -6561,17 +6868,13 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       notifications: [
         {
           id: `n-${Date.now()}`,
-          title: 'Wallet Provisioned',
-          msg: `Welcome ${name}! Your wallet ${accountNo} is active with ₹10,000.00. Default UPI PIN is 1234.`,
+          title: 'Account Active',
+          msg: `Welcome ${name}! Your wallet is provisioned with ₹10,000.00. Your UPI ID is ${upiId}. Default PIN is 1234.`,
           unread: true,
           time: 'Just now'
         }
       ],
-      payees: [
-        { id: 'p1', name: 'Yash Sharma', email: 'yash@datacore', initials: 'YS' },
-        { id: 'p2', name: 'Rahul Verma', email: 'rahul.verma@okaxis', initials: 'RV' },
-        { id: 'p3', name: 'Sharma Kirana Store', email: 'sharmakirana@upi', initials: 'SK' }
-      ]
+      payees: []
     };
 
     wallets[email] = newWallet;
